@@ -1,0 +1,6 @@
+digit  =  “0” | “1” | ... | “9”.
+number  =  digit {digit}.
+factor  =  number  |  “(“ expression “)” .
+term  =  factor { (“*” | “/”) factor}.
+expression  =  term {(“+” | “-”) term}.
+computation = expression “.” 
