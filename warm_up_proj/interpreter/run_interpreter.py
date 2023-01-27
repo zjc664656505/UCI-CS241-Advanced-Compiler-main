@@ -1,7 +1,9 @@
 import interpreter
 
 while True:
-    text = input('Parser: ')
+    text = input()
+    if text == "exit":
+        break
     result, error = interpreter.main(text)
 
     for i in error:
