@@ -366,7 +366,6 @@ class Interpreter:
         #visit BinOpNOde
         method_name = f'visit_{type(node).__name__}'
         method = getattr(self, method_name, self.no_visit_method)
-        print(node)
         return method(node, context)
 
     def no_visit_method(self, node, context):
