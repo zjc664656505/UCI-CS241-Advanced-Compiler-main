@@ -22,7 +22,7 @@ EQ = 'EQ'
 IDENTIFIER = 'IDENTIFIER'
 KEYWORD = 'KEYWORD'
 
-KEYWORDS = ['var', "computation var"]
+KEYWORDS = ['var', 'computation']
 
 
 # build up token class
@@ -85,12 +85,7 @@ class Lexer:
             identifier_str += self.current_char
             self.next()
 
-        if identifier_str in KEYWORDS:
-            token_type = KEYWORD
-        elif identifier_str == "computation":
-            token_type = COMPUTATION
-        else:
-            token_type = IDENTIFIER
+        token_type = KEYWORD if identifier_str in KEYWORDS else IDENTIFIER
         return Token(token_type, identifier_str)
 
     def make_tokens(self):
@@ -116,9 +111,13 @@ class Lexer:
             elif self.current_char == '/':
                 subtoken.append(Token(DIV))
                 self.next()
-            elif self.current_char == '=':
-                subtoken.append(Token(EQ))
+            elif self.current_char == '<':
                 self.next()
+                if self.current_char == '-':
+                    subtoken.append(Token(EQ))
+                    self.next()
+                # subtoken.append(Token(EQ))
+                # self.next()
             elif self.current_char == '(':
                 subtoken.append(Token(LPAREN))
                 self.next()
@@ -133,7 +132,7 @@ class Lexer:
                 char = self.current_char
                 self.next()
                 return [], IllegalCharError(char)
-        if "." in self.text:
+        if "." in self.text or ";" in self.text:
             return tokens, None
         else:
             return subtoken, None
@@ -250,7 +249,21 @@ class Parser:
         return res.success(left)
 
     def expression(self):
-        if self.current_token.matches(KEYWORD, 'var'):
+        if self.current_token.matches(KEYWORD, 'computation'):
+            self.next()
+            if self.current_token.matches(KEYWORD, 'var'):
+                res = ParseResult()
+                res.register_next()
+                self.next()
+
+                var_name = self.current_token
+                res.register_next()
+                self.next()
+                res.register_next()
+                self.next()
+                expression = res.register(self.expression())
+                return res.success(VarAssignNode(var_name, expression))
+        elif self.current_token.matches(KEYWORD, 'var'):
             res = ParseResult()
             res.register_next()
             self.next()
@@ -353,6 +366,7 @@ class Interpreter:
         #visit BinOpNOde
         method_name = f'visit_{type(node).__name__}'
         method = getattr(self, method_name, self.no_visit_method)
+        print(node)
         return method(node, context)
 
     def no_visit_method(self, node, context):
