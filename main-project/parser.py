@@ -14,7 +14,6 @@ class VarAccessNode:
     def __init__(self, var_name_token):
         self.var_name_token = var_name_token
 
-
 # update: build up variable assign node
 class VarAssignNode:
     def __init__(self, var_name_token, value_node):

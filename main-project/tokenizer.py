@@ -17,6 +17,15 @@ EQ = 'EQ'
 IDENTIFIER = 'IDENTIFIER'
 KEYWORD = 'KEYWORD'
 
+# relops
+EE = "EE"
+NE = "NE"
+LT = "LT"
+GT = "GT"
+LTE = "LTE"
+GTE = "GTE"
+
+
 KEYWORDS = ['var', 'computation']
 
 
@@ -81,6 +90,45 @@ class Lexer:
         token_type = KEYWORD if identifier_str in KEYWORDS else IDENTIFIER
         return Token(token_type, identifier_str)
 
+    def make_less_than(self):
+        token_type = LT
+        self.next()
+        if self.current_char == "=":
+            self.next()
+            token_type = LTE
+        elif self.current_char == "-":
+            self.next()
+            token_type = EQ
+
+        return Token(token_type)
+
+    def make_greater_than(self):
+        token_type = GT
+        self.next()
+
+        if self.current_char == "=":
+            self.next()
+            token_type = GTE
+
+        return Token(token_type)
+
+    def make_equal(self):
+        self.next()
+
+        if self.current_char == "=":
+            self.next()
+            return Token(EE)
+        self.next()
+        return None, IllegalCharError(self.current_char)
+
+    def make_not_equal(self):
+        self.next()
+        if self.current_char == "=":
+            self.next()
+            return Token(NE)
+        self.next()
+        return None, IllegalCharError(self.current_char)
+
     def make_tokens(self):
         tokens = []
         subtoken = []
@@ -105,12 +153,14 @@ class Lexer:
                 subtoken.append(Token(DIV))
                 self.next()
             elif self.current_char == '<':
-                self.next()
-                if self.current_char == '-':
-                    subtoken.append(Token(EQ))
-                    self.next()
-                # subtoken.append(Token(EQ))
+                subtoken.append(self.make_less_than())
                 # self.next()
+            elif self.current_char == '>':
+                subtoken.append(self.make_greater_than())
+            elif self.current_char == '!':
+                subtoken.append(self.make_not_equal())
+            elif self.current_char == "=":
+                subtoken.append(self.make_equal())
             elif self.current_char == '(':
                 subtoken.append(Token(LPAREN))
                 self.next()
