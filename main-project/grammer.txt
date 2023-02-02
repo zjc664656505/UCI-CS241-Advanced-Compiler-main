@@ -1,0 +1,28 @@
+letter  =  “a” | “b” | ... | “z”.
+digit  =  “0” | “1” | ... | “9”.
+relOp  =  “==“ | “!=“ | “<“ | “<=“ | “>“ | “>=“.
+
+ident  =  letter {letter | digit}.
+number  =  digit {digit}.
+
+designator  = ident{ "[" expression "]" }.
+factor  =  designator |  number  |  “(“ expression “)”  | funcCall1 .
+term  =  factor { (“*” | “/”) factor}.
+expression  =  term {(“+” | “-”) term}.
+relation  =  expression relOp expression .
+
+assignment  =  “let” designator “<-” expression.
+funcCall  =  “call” ident [2 “(“ [expression { “,” expression } ] “)” ].
+ifStatement  =  “if” relation “then” statSequence [ “else” statSequence ] “fi”.
+whileStatement  =  “while” relation “do” StatSequence “od”.
+returnStatement  =  “return” [ expression ] .
+
+statement  =  assignment | funcCall3 | ifStatement | whileStatement | returnStatement.
+statSequence  =  statement { “;” statement } [ “;” ]4 .
+
+typeDecl  =  “var” | “array” “[“ number “]” { “[“ number “]” }.
+varDecl  =  typeDecl indent { “,” ident } “;” .
+funcDecl  =  [ “void” ] “function” ident formalParam “;” funcBody “;” .
+formalParam  = “(“ [ident { “,” ident }] “)” .
+funcBody  =  { varDecl } “{” [ statSequence ] “}”.
+computation  =  “main” { varDecl } { funcDecl } “{” statSequence “}” “.” .
