@@ -9,6 +9,5 @@ while True:
     for i in error:
         if i: print(i.error_string())
     else:
-        for i in result:
-            print(i)
+        print(result)
 

@@ -10,6 +10,7 @@ factor  =  designator |  number  |  “(“ expression “)”  | funcCall1 .
 term  =  factor { (“*” | “/”) factor}.
 expression  =  term {(“+” | “-”) term}.
 relation  =  expression relOp expression .
+--- what have been done Feb 02, 2023----
 
 assignment  =  “let” designator “<-” expression.
 funcCall  =  “call” ident [2 “(“ [expression { “,” expression } ] “)” ].

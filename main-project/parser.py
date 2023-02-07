@@ -1,12 +1,23 @@
 # build up parser
 # build up node for taking token values
 from tokenizer import *
+
+# Build number node to assign the number to interpreter
 class NumberNode:
     def __init__(self, token):
         self.token = token
 
     def __repr__(self):
         return f'{self.token}'
+
+# Build Unary Operation node
+class UnaryOpNode:
+    def __init__(self, op_token, node):
+        self.op_token = op_token
+        self.node = node
+
+    def __repr__(self):
+        return f'({self.op_token}, {self.node})'
 
 
 # update: build up variable access node
@@ -90,6 +101,11 @@ class Parser:
                 res.register_next()
                 self.next()
                 return res.success(expression)
+        elif token.type in (PLUS, MINUS):
+            res.register_next()
+            self.next()
+            factor = res.register(self.factor())
+            return res.success(UnaryOpNode(token, factor))
 
 
     def term(self):
@@ -109,10 +125,10 @@ class Parser:
         return res.success(left)
 
     def expression(self):
-        if self.current_token.matches(KEYWORD, 'computation'):
+        res = ParseResult()
+        if self.current_token.matches(KEYWORD, 'let'):
             self.next()
             if self.current_token.matches(KEYWORD, 'var'):
-                res = ParseResult()
                 res.register_next()
                 self.next()
 
@@ -123,33 +139,36 @@ class Parser:
                 self.next()
                 expression = res.register(self.expression())
                 return res.success(VarAssignNode(var_name, expression))
-        elif self.current_token.matches(KEYWORD, 'var'):
-            res = ParseResult()
-            res.register_next()
-            self.next()
+        node = res.register(self.binary_op(self.relation, ((KEYWORD, 'AND'), (KEYWORD, 'OR'))))
+        return res.success(node)
 
-            var_name = self.current_token
+    def arith_expr(self):
+        return self.binary_op(self.term, (PLUS, MINUS))
+
+    def relation(self):
+        res = ParseResult()
+        node = res.register(self.binary_op(self.arith_expr, [RELOP]))
+        return res.success(node)
+
+    def binary_op(self, func_l, op, func_r=None):
+        if func_r == None:
+            func_r = func_l
+
+        res = ParseResult()
+        left = res.register(func_l())
+        if res.error:
+            return res
+        #print(f'current token is {self.current_token}. current op is : {op}')
+        while self.current_token.type in op or (self.current_token.type, self.current_token.value) in op:
+            op_token = self.current_token
             res.register_next()
             self.next()
-            res.register_next()
-            self.next()
-            expression = res.register(self.expression())
-            return res.success(VarAssignNode(var_name, expression))
-        else:
-            res = ParseResult()
-            left = res.register(self.term())
+            right = res.register(func_r())
             if res.error:
                 return res
+            left = BinOpNode(left, op_token, right)
 
-            while self.current_token.type in (PLUS, MINUS):
-                op_token = self.current_token
-                res.register_next()
-                self.next()
-                right = res.register(self.term())
-                if res.error:
-                    return res
-                left = BinOpNode(left, op_token, right)
-            return res.success(left)
+        return res.success(left)
 
     def computation(self):
         res = self.expression()

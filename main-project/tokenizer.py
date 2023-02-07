@@ -4,11 +4,12 @@ import string
 DIGIT = '0123456789'
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGIT
+RELOP = "RELOP" #RELOPS = ["<", "<=", "==", "!=", ">", ">="]
 
 # define global variable for the token type
 INT = 'INT'
-PLUS = 'PLUS'
-MINUS = 'MINUS'
+PLUS = 'ADD'
+MINUS = 'SUB'
 MUL = 'MUL'
 DIV = 'DIV'
 LPAREN = 'LPAREN'
@@ -16,17 +17,8 @@ RPAREN = 'RPAREN'
 EQ = 'EQ'
 IDENTIFIER = 'IDENTIFIER'
 KEYWORD = 'KEYWORD'
+KEYWORDS = ['var', 'AND', 'OR', 'let']
 
-# relops
-EE = "EE"
-NE = "NE"
-LT = "LT"
-GT = "GT"
-LTE = "LTE"
-GTE = "GTE"
-
-
-KEYWORDS = ['var', 'computation']
 
 
 # build up token class
@@ -91,41 +83,53 @@ class Lexer:
         return Token(token_type, identifier_str)
 
     def make_less_than(self):
-        token_type = LT
+        token_type = RELOP
+        relop_str = self.current_char
         self.next()
         if self.current_char == "=":
+            relop_str += self.current_char
             self.next()
-            token_type = LTE
+            return Token(token_type, relop_str)
+
         elif self.current_char == "-":
             self.next()
             token_type = EQ
+            return Token(token_type)
 
-        return Token(token_type)
+        return Token(token_type, relop_str)
 
     def make_greater_than(self):
-        token_type = GT
+        token_type = RELOP
+        relop_str = self.current_char
         self.next()
 
         if self.current_char == "=":
+            relop_str += self.current_char
             self.next()
-            token_type = GTE
+            return Token(token_type, relop_str)
 
-        return Token(token_type)
+        return Token(token_type, relop_str)
 
     def make_equal(self):
+        token_type = RELOP
+        relop_str = self.current_char
         self.next()
 
         if self.current_char == "=":
+            relop_str += self.current_char
             self.next()
-            return Token(EE)
+            return Token(token_type, relop_str)
         self.next()
         return None, IllegalCharError(self.current_char)
 
     def make_not_equal(self):
+        token_type = RELOP
+        relop_str = self.current_char
         self.next()
         if self.current_char == "=":
+            relop_str += self.current_char
             self.next()
-            return Token(NE)
+            return Token(token_type, relop_str)
         self.next()
         return None, IllegalCharError(self.current_char)
 
