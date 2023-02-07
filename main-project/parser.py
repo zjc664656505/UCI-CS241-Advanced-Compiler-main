@@ -139,6 +139,17 @@ class Parser:
                 self.next()
                 expression = res.register(self.expression())
                 return res.success(VarAssignNode(var_name, expression))
+        elif self.current_token.matches(KEYWORD, 'var'):
+            res.register_next()
+            self.next()
+
+            var_name = self.current_token
+            res.register_next()
+            self.next()
+            res.register_next()
+            self.next()
+            expression = res.register(self.expression())
+            return res.success(VarAssignNode(var_name, expression))
         node = res.register(self.binary_op(self.relation, ((KEYWORD, 'AND'), (KEYWORD, 'OR'))))
         return res.success(node)
 
@@ -158,7 +169,7 @@ class Parser:
         left = res.register(func_l())
         if res.error:
             return res
-        #print(f'current token is {self.current_token}. current op is : {op}')
+
         while self.current_token.type in op or (self.current_token.type, self.current_token.value) in op:
             op_token = self.current_token
             res.register_next()
@@ -171,5 +182,7 @@ class Parser:
         return res.success(left)
 
     def computation(self):
+        if self.current_token.matches(KEYWORD, 'main'):
+            self.next()
         res = self.expression()
         return res

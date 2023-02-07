@@ -116,8 +116,11 @@ class Interpreter:
     def visit_VarAccessNode(self, node, context):
         var_name = node.var_name_token.value
         value = context.symbol_table.get(var_name)
-        value = value.copy()
-        return value
+        if value:
+            value = value.copy()
+            return value
+        else:
+            return 0
 
     def visit_NumberNode(self, node, context):
         return Number(node.token.value).set_context(context)
@@ -191,7 +194,8 @@ def main(text):
         return res, [i.error for i in ast]
 
 if __name__ == "__main__":
-    text = "let var a <- 0; let var b <- 1; let var c <- (a AND b); let var d <- (a OR b)."
+    text = "main var a, b, c, d; let var a <- 0; let var b <- 1; let var c <- (a AND b); let var d <- (a OR b)."
+
     result, error = main(text)
 
     for i in error:

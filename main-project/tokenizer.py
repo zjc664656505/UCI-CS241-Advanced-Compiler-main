@@ -17,7 +17,8 @@ RPAREN = 'RPAREN'
 EQ = 'EQ'
 IDENTIFIER = 'IDENTIFIER'
 KEYWORD = 'KEYWORD'
-KEYWORDS = ['var', 'AND', 'OR', 'let']
+KEYWORDS = ['var', 'AND', 'OR', 'let', 'array', 'main', 'if',
+            'then', 'else', 'fi', 'while', 'do', 'od', 'return']
 
 
 
@@ -171,7 +172,7 @@ class Lexer:
             elif self.current_char == ')':
                 subtoken.append(Token(RPAREN))
                 self.next()
-            elif self.current_char == "." or self.current_char == ";":
+            elif self.current_char == "." or self.current_char == ";" or self.current_char == ",":
                 tokens.append(subtoken)
                 subtoken = []
                 self.next()
