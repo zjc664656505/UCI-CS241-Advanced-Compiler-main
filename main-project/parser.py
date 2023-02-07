@@ -10,6 +10,7 @@ class NumberNode:
     def __repr__(self):
         return f'{self.token}'
 
+
 # Build Unary Operation node
 class UnaryOpNode:
     def __init__(self, op_token, node):
@@ -24,6 +25,7 @@ class UnaryOpNode:
 class VarAccessNode:
     def __init__(self, var_name_token):
         self.var_name_token = var_name_token
+
 
 # update: build up variable assign node
 class VarAssignNode:

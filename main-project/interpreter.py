@@ -96,6 +96,7 @@ class Number:
     def __repr__(self):
         return str(self.value)
 
+
 class Interpreter:
     def visit(self, node, context):
         #visit NumberNode
@@ -186,6 +187,7 @@ def main(text):
             parser = Parser(tokens)
             ast = parser.computation()
 
+        print(f'ast: {ast}')
         interpreter = Interpreter()
         context = Context('<main-dlx>')
         context.symbol_table = global_symbol_table
