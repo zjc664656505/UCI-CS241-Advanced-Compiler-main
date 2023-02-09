@@ -1,6 +1,11 @@
 # build up parser
 # build up node for taking token values
 from tokenizer import *
+from utils import Node
+
+"""
+Update Parser to add parse tree and handle the type declaration, variable declaration
+"""
 
 # Build number node to assign the number to interpreter
 class NumberNode:
@@ -43,6 +48,11 @@ class BinOpNode:
     def __repr__(self):
         return f'({self.left_node}, {self.op_token}, {self.right_node})'
 
+class VarDeclNode:
+    def __init__(self, var_name_token):
+        self.var_name_token = var_name_token
+
+
 
 # parse result
 class ParseResult:
@@ -68,6 +78,9 @@ class ParseResult:
         self.error = error
         return self
 
+    def __repr__(self):
+        return f'{self.node}'
+
 
 class Parser:
     def __init__(self, tokens):
@@ -87,6 +100,8 @@ class Parser:
     def factor(self):
         res = ParseResult()
         token = self.current_token
+        if token == '.':
+            self.next()
         if token.type == INT:
             res.register_next()
             self.next()

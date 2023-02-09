@@ -19,6 +19,7 @@ IDENTIFIER = 'IDENTIFIER'
 KEYWORD = 'KEYWORD'
 KEYWORDS = ['var', 'AND', 'OR', 'let', 'array', 'main', 'if',
             'then', 'else', 'fi', 'while', 'do', 'od', 'return']
+CONTROL_SYMBOL = ['.', ',', ';', '{', '}']
 
 
 
@@ -172,15 +173,15 @@ class Lexer:
             elif self.current_char == ')':
                 subtoken.append(Token(RPAREN))
                 self.next()
-            elif self.current_char == "." or self.current_char == ";" or self.current_char == ",":
-                tokens.append(subtoken)
-                subtoken = []
-                self.next()
+            # elif self.current_char == "." or self.current_char == ";":
+            #     tokens.append(subtoken)
+            #     subtoken = []
+            #     self.next()
             else:
                 char = self.current_char
                 self.next()
                 return [], IllegalCharError(char)
-        if "." in self.text or ";" in self.text:
-            return tokens, None
-        else:
-            return subtoken, None
+        # if "." in self.text or ";" in self.text:
+        #     return tokens, None
+        # else:
+        return subtoken, None
