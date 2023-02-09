@@ -45,8 +45,7 @@ class Number:
 
     def sub_by(self, other):
         if isinstance(other, Number):
-            return Number(self.value - other.value).set_context(
-            )
+            return Number(self.value - other.value).set_context(self.context)
 
     def multi_by(self, other):
         if isinstance(other, Number):
