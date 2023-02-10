@@ -1,1 +1,1 @@
-__all__ = ["IResult", "VariableResult"]
+__all__ = ["IResult", "VariableResult", "InstructionResult", "ConstantResult", "BranchResult", "RegisterResult"]
