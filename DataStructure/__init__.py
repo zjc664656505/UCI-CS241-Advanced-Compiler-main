@@ -1,1 +1,1 @@
-__all__ = ["Array", "Operator", "instruction", "Token", "Variable"]
+__all__ = ["Array", "Operator", "Instruction", "Token", "Variable", "PhiInstruction"]
