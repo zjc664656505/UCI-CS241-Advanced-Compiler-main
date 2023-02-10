@@ -1,7 +1,6 @@
 # build up parser
 # build up node for taking token values
 from tokenizer import *
-from utils import Node
 
 """
 Update Parser to add parse tree and handle the type declaration, variable declaration
