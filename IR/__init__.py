@@ -1,1 +1,1 @@
-__all__ = ["CFG", "IrGenerator"]
+__all__ = ["IrGenerator"]

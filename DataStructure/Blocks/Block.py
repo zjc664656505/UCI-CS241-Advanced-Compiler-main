@@ -7,10 +7,9 @@ from DataStructure.Dom.DomNodeCSE import DomNodeCSE
 from multipledispatch import dispatch
 
 class Block(IBlock):
-    def __init__(self, id, function):
+    def __init__(self, id):
         super().__init__()
         self.id = id
-        self.belongsTo = function
         self.instructions = []
         self.parent = None
         self.child = None
@@ -61,6 +60,17 @@ class Block(IBlock):
 
     def tostring(self):
         return "Block " + str(self.id)
+
+    def tostringUtil(self, instr):
+        sb = ""
+        instr_str = ""
+        for i in instr:
+            instr_str = i.toString()
+
+            if instr_str is not None and instr_str != "":
+                sb = sb+ instr_str + "||"
+                instr_str = ""
+        return sb
 
     def getinstrution(self, pc):
         mark = 0
