@@ -1,4 +1,4 @@
-from Token import Token, TokenType
+from DataStructure.Token import Token, TokenType
 import enum
 
 
