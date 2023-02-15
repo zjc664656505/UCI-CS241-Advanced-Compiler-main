@@ -1,5 +1,4 @@
 import enum
-
 from DataStructure.Operator import OperatorCode
 from DataStructure.DataResult.IResult import IResult
 from DataStructure.DataResult.VariableResult import VariableResult
