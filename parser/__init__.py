@@ -1,1 +1,1 @@
-__all__ = ["parser", "parse_util"]
+__all__ = ["parser", "parse_util", "exception"]
