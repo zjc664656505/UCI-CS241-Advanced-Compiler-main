@@ -10,7 +10,7 @@ class Tokenizer:
     def __init__(self, fileName):
         self.reader = FileReader(fileName)
         self.inputSym = self.reader.getSym()
-        self.prevToken: Token = None
+        self.prevToken= None
         self.errorFlag = False
         self.currentString = ""
         self.identAddrCounter = Constants.SCANNER_IDENTIFIER_ADDRESS_OFFSET
@@ -38,7 +38,7 @@ class Tokenizer:
             return self.prevToken
         self.runStateMachine()
         token = Token.getToken(self.currentString)
-        print(f"Token value {token.value}, Token Id {token.id}, Token Type {token.type}")
+        print(f"Token value: {token.value}, Token Id: {token.id}, Token Type: {token.type}")
         if self.errorFlag or token.checkSameType(TokenType.errorToken):
             self.error(illegalTokenException("Token is illegal" + self.currentString))
             sys.exit(1)
