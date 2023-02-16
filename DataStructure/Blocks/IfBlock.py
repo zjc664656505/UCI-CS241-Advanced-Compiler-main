@@ -34,7 +34,7 @@ class IfBlock(Block):
     def getJoinBlock(self):
         return self.joinBlock
 
-    def freezBranch(self, iid:int, targetblock:IBlock):
+    def fixupBranch(self, iid:int, targetblock:IBlock):
         instruction = self.getinstruction(iid)
         if isinstance(instruction.operandy, BranchResult):
             instruction.operandy.set(targetblock)
