@@ -30,7 +30,7 @@ from DataStructure.CFG import CFG
 class Parser:
     def __init__(self, fileName):
         self.filename = fileName
-        self.tokenizer = Tokenizer
+        self.tokenizer = Tokenizer(fileName)
         self.inputSym = None
         self.irGenerator = IrGenerator()
         self.killcounter = 0
@@ -163,7 +163,7 @@ class Parser:
                         term_l = term_l.toInstruction()
                     if term_r.getiid() > 0 and (not isinstance(term_r, RegisterResult)):
                         term_r = term_r.toInstruction()
-                    self.irGenerator.compute(block, term_l, term_r, op)
+                    self.irGenerator.compute(block, op, term_l, term_r)
                     self.irGenerator.pc += 1
                     term_l = term_l.clone()
                     if isinstance(term_l, ConstantResult) or isinstance(term_l, VariableResult):
@@ -180,7 +180,7 @@ class Parser:
                 self.next()
                 expr_r = self.expression(block)
                 if expr_r is not None:
-                    self.irGenerator.compute(block, expr_l, expr_r, op)
+                    self.irGenerator.compute(block, op, expr_l, expr_r)
                     self.irGenerator.pc += 1
                     branch_res.condition = op
                     branch_res.fixuplocation = self.irGenerator.getPC() - 1
@@ -197,6 +197,8 @@ class Parser:
                     op = self.inputSym
                     self.next()
                     expr_res = self.expression(block)
+                    # DEBUG CHECK TYPE OF OBJECT FOR expr_res
+                    #print(expr_res)
                     if expr_res is not None:
                         if isinstance(expr_res, VariableResult):
                             flag = False
@@ -279,9 +281,13 @@ class Parser:
 
     def ifStatement(self, block, kill: list):
         cfg = self.cfg
+
+        # TODO: Handle if block
         if self.inputSym.checkSameType(TokenType.ifToken):
             self.next()
             ifBlock = cfg.initializeIfBlock()
+            # DEBUG CHECK IF BLOCK OBJECT TYPE
+            #print(ifBlock)
             ifBlock.freezessa(block.global_ssa, None) # Update the SSA of the if block
             ifBlock.setparent(block)
             block.setchild(ifBlock)
@@ -301,9 +307,11 @@ class Parser:
             # TODO: what the pc in irGenerator is, should it be incremented by 1?
             self.irGenerator.pc += 1
             tempkill = kill.copy()
+
+            # TODO: Handle then block
             if self.inputSym.checkSameType(TokenType.thenToken):
                 branch_res_then = BranchResult()
-                branch_res.condition = self.inputSym
+                branch_res_then.condition = self.inputSym
                 self.next()
                 thenBlock = cfg.initializeBlock()
                 ifBlock.setThenBlock(thenBlock)
@@ -312,15 +320,23 @@ class Parser:
                 thenBlock.freezessa(ifBlock.global_ssa, None)
                 cfg.block_in_if[ifBlock.id].append(thenBlock.id)
                 thenBlock = self.sequence(thenBlock, kill)
-                # handle left join
+                #DEBUG: check thenBlock
+                #print(f'thenBlock {thenBlock is None}')
 
+                # handle left join
                 # TODO: should the index of joinId be this? 2/16/2023
-                joinId = cfg.block_in_if[cfg.dom_list_if][-1][0]
+                # DEBUG: Check block in if
+                # print(cfg.block_in_if)
+                # print(cfg.dom_list_if)
+                joinId = cfg.block_in_if[cfg.dom_list_if[-1]][0]
                 cfg.join_parent[joinId].append(thenBlock.id)
 
                 if thenBlock is None:
                     return None
                 branch_res_then.set(joinBlock)
+
+                # DEBUG: Check the branch result condition
+                # print(branch_res_then.condition)
 
                 self.irGenerator.compute(thenBlock, branch_res_then.condition, branch_res_then)
                 self.irGenerator.pc += 1
@@ -332,12 +348,16 @@ class Parser:
                     if not  (True in (j.id == k.id for j in tempkill)):
                         thenkill.append(k)
 
+                # TODO: handle else block
                 if self.inputSym.checkSameType(TokenType.elseToken):
                     # handle else block
                     self.next()
                     elseBlock = cfg.initializeBlock()
                     ifBlock.setElseBlock(elseBlock)
                     cfg.block_in_if[ifBlock.id].append(elseBlock.id)
+
+                    # disable global ssa
+                    self.varManager.setssamap(block.getglobalssa())
 
                     if elseBlock is None:
                         return None
@@ -346,9 +366,34 @@ class Parser:
                     joinBlock.setElseBlock(elseBlock)
                     elseBlock.freezessa(ifBlock.global_ssa, None)
 
-                    joinId = cfg.block_in_if[cfg.dom_list_if][-1][0]
+                    else_kill = []
+                    for i in kill:
+                        if not (True in (j.id == i.id for j in tempkill)):
+                            else_kill.append(i)
+                    elseBlock.freezessa(ifBlock.global_ssa, None)
+                    elseBlock = self.sequence(elseBlock, else_kill)
+
+                    joinId = cfg.block_in_if[cfg.dom_list_if[-1]][0]
                     cfg.join_parent[joinId].append(elseBlock.id)
-                    ifBlock.fixupBranches(branch_res.fixuplocation, joinBlock)
+
+                    if len(else_kill) > 0:
+                        joinBlock.addKill(else_kill)
+                else:
+                    else_block = cfg.initializeBlock()
+                    ifBlock.setparent(else_block)
+                    cfg.block_in_if[ifBlock.id].append(else_block.id)
+                    if else_block is None:
+                        return None
+                    else_block.setparent(ifBlock)
+                    else_block.setchild(joinBlock)
+                    joinBlock.setElseBlock(else_block)
+                    else_block.freezessa(ifBlock.global_ssa, None)
+
+                    join_id = cfg.block_in_if[cfg.dom_list_if[-1]][0]
+                    cfg.join_parent[join_id].append(else_block.id)
+                    ifBlock.fixupBranch(branch_res.fixuplocation, joinBlock)
+
+
 
                 if self.inputSym.checkSameType(TokenType.fiToken):
                     # TODO: should we use pop at here?
@@ -359,7 +404,13 @@ class Parser:
                     left_block_ssa = cfg.blocks[cfg.join_parent[joinBlock.id][0] - cfg.base_block_counter].global_ssa
                     right_block_ssa = cfg.blocks[cfg.join_parent[joinBlock.id][1] - cfg.base_block_counter].global_ssa
 
-                    joinBlock.createPhi(left_block_ssa, right_block_ssa)
+                    # DEBUG SSA
+                    # print(f"left_block_ssa {left_block_ssa}")
+                    # print(f"right_block_ssa {right_block_ssa}")
+
+
+
+                    joinBlock.createPhi(self.tokenizer.addr2Ident, left_block_ssa, right_block_ssa)
                     for x in joinBlock.phiManager.phis.keys():
                         joinBlock.phiManager.phis[x].variable.version = self.irGenerator.getPC()
                         joinBlock.phiManager.phis[x].id = self.irGenerator.getPC()
@@ -397,6 +448,7 @@ class Parser:
         elif self.inputSym.checkSameType(TokenType.ifToken):
             new_block = self.ifStatement(block, kill)
             if_flag = True
+        # TODO Debug else
         else:
             self.error(incorrectSyntaxException("No valid token found in block"))
         # TODO: need to implement while statement block generation
@@ -408,6 +460,8 @@ class Parser:
         followblock = None
         cfg.seq_block = []
         while True:
+            # DEBUG: Check the block
+
             # TODO: Need to double check the followblock. 2/15/2023
             if followblock is None:
                 new_block, while_flag, if_flag = self.block_gen(block, kill)
@@ -426,22 +480,31 @@ class Parser:
                     break
             else:
                 break
+
+        # DEBUG: Check the new_block is None
+        print(f"New block is None? {new_block is None}")
         return new_block
 
     def computation(self):
         if self.inputSym.checkSameType(TokenType.mainToken):
             self.next()
-            while self.inputSym.isSameType(TokenType.varToken) or self.inputSym.isSameType(TokenType.arrToken):
+            while self.inputSym.checkSameType(TokenType.varToken) or self.inputSym.checkSameType(TokenType.arrToken):
                 self.varDecl()
                 self.next()
                 kill = list()
                 self.cfg.head.id = self.blockcounter + 1
                 self.cfg.base_block_counter = self.blockcounter + 1
                 self.blockcounter += 1
+
+                # DEBUG sequence function
+                print("RUN TAIL SEQUENCE")
                 self.cfg.tail = self.sequence(self.cfg.head, kill)# TODO: need to be implemented
 
+                # DEBUG: check if tail is None
+                print("Tail is None? ", self.cfg.tail is None)
                 if self.cfg.tail is None:
                     return False
+
                 if self.inputSym.checkSameType(TokenType.periodToken):
                     op = self.inputSym
                     self.next()
@@ -458,7 +521,7 @@ class Parser:
         self.irGenerator.reset()
         self.next()
         self.cfg.done = self.computation()
-        print(self.cfg.done)
+        print("Is CFG done? ", self.cfg.done)
         return self.cfg
 
 

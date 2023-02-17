@@ -20,9 +20,6 @@ class Block(IBlock):
     def getid(self):
         return self.id
 
-    def getinstruction(self):
-        return self.instructions
-
     @dispatch(Instruction)
     def addinstruction(self, instruction):
         self.instructions.append(instruction)
@@ -71,7 +68,7 @@ class Block(IBlock):
                 instr_str = ""
         return sb
 
-    def getinstrution(self, pc):
+    def getinstruction(self, pc):
         mark = 0
         index = 0
         for i in self.instructions:

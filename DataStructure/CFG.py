@@ -27,12 +27,12 @@ class CFG:
     done: bool = False
     iGraph: dict = None
     returnIds: dict = None
-    block_counter: int = 0
+    block_counter: int = -1
 
     def __init__(self, block_counter):
         # TODO: should the block_counter and base_block_counter increment by 1?
-        self.block_counter = block_counter
-        self.base_block_counter = block_counter
+        self.block_counter = block_counter +1
+        self.base_block_counter = block_counter +1
         self.head = Block(block_counter)
         self.blocks = []
         self.mVariableManager = VariableManager()
@@ -66,19 +66,14 @@ class CFG:
 
     def initializeIfBlock(self):
         self.block_counter += 1
-        block = Block(self.block_counter)
+        block = IfBlock(self.block_counter)
         self.blocks.append(block)
         return block
 
-    def initializeThenBlock(self):
-        self.block_counter += 1
-        block = Block(self.block_counter)
-        self.blocks.append(block)
-        return block
 
     def initializeJoinBlock(self):
         self.block_counter += 1
-        block = Block(self.block_counter)
+        block = JoinBlock(self.block_counter)
         self.blocks.append(block)
         return block
 

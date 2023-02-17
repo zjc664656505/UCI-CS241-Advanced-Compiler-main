@@ -6,8 +6,8 @@ from DataStructure.DataResult.VariableResult import VariableResult
 from DataStructure.Variable import Variable
 from multipledispatch import dispatch
 from DataStructure.PhiInstruction import DeleteMode
-from DataStructure.Manager import PhiManager
-from DataStructure.Manager import VariableManager
+from DataStructure.Manager.PhiManager import PhiManager
+from DataStructure.Manager.VariableManager import VariableManager
 
 class JoinBlock(Block):
     elseBlock = None
@@ -74,6 +74,8 @@ class JoinBlock(Block):
     @dispatch(dict, dict, dict, dict, dict)
     def createPhi(self, addr2ident, issmap, tssmap, essamap, ssamap):
         for i in issmap.keys():
+            # print(f"key in instruction ssa map: {i}")
+            # print(f"addr2ident: {addr2ident}")
             x = Variable(addr2ident[i], i)
             if issmap[i] != tssmap[i]: # check whether is if then block
                 y = VariableResult()
@@ -97,9 +99,9 @@ class JoinBlock(Block):
 
     @dispatch(dict, dict, dict)
     def createPhi(self, addr2ident, lb_ssa, rb_ssa):
-        self.freezessa(self.parent.gobal_ssa, self.parent.local_ssa)
+        self.freezessa(self.parent.global_ssa, self.parent.local_ssa)
         if self.thenBlock is None:
-            self.createPhi(addr2ident, self.parent.global_ssa, self.parent.local_ssa,
+            self.createPhi(addr2ident, self.parent.global_ssa, self.parent.global_ssa,
                            self.elseBlock.global_ssa, self.global_ssa)
             self.createPhi(addr2ident, self.parent.local_ssa, self.parent.local_ssa,
                            self.elseBlock.local_ssa, self.local_ssa)

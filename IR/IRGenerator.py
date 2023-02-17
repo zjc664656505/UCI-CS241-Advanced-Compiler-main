@@ -32,7 +32,7 @@ class IrGenerator:
         self.pc = self.pc + 1
 
     @dispatch(IBlock, Token, BranchResult)
-    def compute(self, block, opToken, y, optimize):
+    def compute(self, block, opToken, y):
         opCode = Operator.branchingOperator[Token.tokenValueMap[opToken.value]]
         instruction = None
         if opCode == OperatorCode.bra:
@@ -41,8 +41,8 @@ class IrGenerator:
         else:
             self.pc = self.pc
             instruction = Instruction(self.pc, opCode, y.toInstruction(), y)
-        instruction.deletemode = DeleteMode._NotDeleted
-        block.addInstruction(instruction)
+        instruction.deletemode = DeleteMode._NOT_DEL
+        block.addinstruction(instruction)
 
     @dispatch(IBlock, OperatorCode, IResult, IResult)
     def compute(self, block, opCode, x, y):
@@ -59,7 +59,7 @@ class IrGenerator:
             self.pc = self.pc
             instruction = Instruction(self.pc, opCode, x, y)
 
-        block.addInstruction(instruction)
+        block.addinstruction(instruction)
 
     @dispatch(IBlock, OperatorCode, type(None), IResult)
     def compute(self, block, opCode, x, y):

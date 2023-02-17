@@ -18,7 +18,7 @@ class VariableResult(IResult):
     def setiid(self,iid):
         self.iid = iid
 
-    def getiid(self,iid):
+    def getiid(self):
         return self.iid
 
     def clone(self):
