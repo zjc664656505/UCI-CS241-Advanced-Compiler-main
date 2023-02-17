@@ -1,6 +1,6 @@
 from DataStructure.Blocks.IBlock import IBlock
 from DataStructure.DataResult.IResult import IResult
-from IR.IrGenerator import IrGenerator
+from IR.IRGenerator import IrGenerator
 from DataStructure.Variable import Variable
 from DataStructure.PhiInstruction import PhiInstruction
 

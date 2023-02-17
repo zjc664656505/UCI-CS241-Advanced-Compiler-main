@@ -1,6 +1,6 @@
 from DataStructure.Instruction import Instruction
 from multipledispatch import dispatch
-from DataStructure.Dom.DomTreeNode import DominantTreeNode
+from DataStructure.Dom.DominantTree import DominantTreeNode
 
 class IBlock:
     def getid(self):

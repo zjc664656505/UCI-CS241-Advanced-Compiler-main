@@ -4,7 +4,7 @@
 # TODO: Need to work on Control Flow Graph first.
 
 from parser.exception import illegalTokenException, illegalVariableException, incorrectSyntaxException
-from IR.IrGenerator import IrGenerator
+from IR.IRGenerator import IrGenerator
 from DataStructure.Manager.VariableManager import VariableManager
 from DataStructure.Manager.PhiManager import PhiManager
 from DataStructure.DataResult.VariableResult import VariableResult, Variable
@@ -296,13 +296,99 @@ class Parser:
             joinBlock.setparent(ifBlock)
             branch_res = self.relation(ifBlock)
             # TODO, need to finish the if statement in parser
+            self.irGenerator.compute(ifBlock, branch_res.condition, branch_res)
+
+            # TODO: what the pc in irGenerator is, should it be incremented by 1?
+            self.irGenerator.pc += 1
+            tempkill = kill.copy()
+            if self.inputSym.checkSameType(TokenType.thenToken):
+                branch_res_then = BranchResult()
+                branch_res.condition = self.inputSym
+                self.next()
+                thenBlock = cfg.initializeBlock()
+                ifBlock.setThenBlock(thenBlock)
+                thenBlock.setparent(ifBlock)
+                # thenBlock needs to freeze the ssa of the ifBlock
+                thenBlock.freezessa(ifBlock.global_ssa, None)
+                cfg.block_in_if[ifBlock.id].append(thenBlock.id)
+                thenBlock = self.sequence(thenBlock, kill)
+                # handle left join
+
+                # TODO: should the index of joinId be this? 2/16/2023
+                joinId = cfg.block_in_if[cfg.dom_list_if][-1][0]
+                cfg.join_parent[joinId].append(thenBlock.id)
+
+                if thenBlock is None:
+                    return None
+                branch_res_then.set(joinBlock)
+
+                self.irGenerator.compute(thenBlock, branch_res_then.condition, branch_res_then)
+                self.irGenerator.pc += 1
+                thenBlock.setchild(joinBlock)
+                joinBlock.setparent(thenBlock)
+
+                thenkill = list()
+                for k in kill:
+                    if not  (True in (j.id == k.id for j in tempkill)):
+                        thenkill.append(k)
+
+                if self.inputSym.checkSameType(TokenType.elseToken):
+                    # handle else block
+                    self.next()
+                    elseBlock = cfg.initializeBlock()
+                    ifBlock.setElseBlock(elseBlock)
+                    cfg.block_in_if[ifBlock.id].append(elseBlock.id)
+
+                    if elseBlock is None:
+                        return None
+                    elseBlock.setparent(ifBlock)
+                    elseBlock.setchild(joinBlock)
+                    joinBlock.setElseBlock(elseBlock)
+                    elseBlock.freezessa(ifBlock.global_ssa, None)
+
+                    joinId = cfg.block_in_if[cfg.dom_list_if][-1][0]
+                    cfg.join_parent[joinId].append(elseBlock.id)
+                    ifBlock.fixupBranches(branch_res.fixuplocation, joinBlock)
+
+                if self.inputSym.checkSameType(TokenType.fiToken):
+                    # TODO: should we use pop at here?
+                    cfg.dom_list_if.pop()
+                    self.next()
+
+                    # TODO: Is this correct? 2/16/2023
+                    left_block_ssa = cfg.blocks[cfg.join_parent[joinBlock.id][0] - cfg.base_block_counter].global_ssa
+                    right_block_ssa = cfg.blocks[cfg.join_parent[joinBlock.id][1] - cfg.base_block_counter].global_ssa
+
+                    joinBlock.createPhi(left_block_ssa, right_block_ssa)
+                    for x in joinBlock.phiManager.phis.keys():
+                        joinBlock.phiManager.phis[x].variable.version = self.irGenerator.getPC()
+                        joinBlock.phiManager.phis[x].id = self.irGenerator.getPC()
+                        self.irGenerator.pc += 1
 
 
+                    for instr in joinBlock.instructions:
+                        if isinstance(instr, PhiInstruction):
+                            if instr.variable.address in joinBlock.global_ssa.keys():
+                                joinBlock.global_ssa[instr.variable.address] = instr.variable.version
+                else:
+                    self.error(incorrectSyntaxException("Expecting fi token"))
+                    return None
+            else:
+                self.error(incorrectSyntaxException("Expecting then token"))
+                return None
+        else:
+            self.error(incorrectSyntaxException("Expecting if token"))
+            return None
+        return joinBlock
+
+    def whilestatement(self, block, kill: list):
+        # TODO: need to be implemented before while block is done.
+        pass
 
 
     def block_gen(self, block, kill:list):
         new_block = None
-        #while_flag = False
+        while_flag = False
         if_flag = False
 
         if self.inputSym.checkSameType(TokenType.letToken):
@@ -310,7 +396,12 @@ class Parser:
             new_block = block
         elif self.inputSym.checkSameType(TokenType.ifToken):
             new_block = self.ifStatement(block, kill)
-            # TODO: need to be implemented
+            if_flag = True
+        else:
+            self.error(incorrectSyntaxException("No valid token found in block"))
+        # TODO: need to implement while statement block generation
+
+        return new_block, while_flag, if_flag
 
     def sequence(self, block, kill: list):
         cfg = self.cfg
@@ -319,23 +410,59 @@ class Parser:
         while True:
             # TODO: Need to double check the followblock. 2/15/2023
             if followblock is None:
-                # TODO: need to be implemented
-                pass
+                new_block, while_flag, if_flag = self.block_gen(block, kill)
+            else:
+                new_block, while_flag, if_flag = self.block_gen(followblock, kill)
+            if new_block is None:
+                return None
+            if while_flag:
+                followblock = new_block
+            if if_flag:
+                followblock = new_block
 
+            if self.inputSym.checkSameType(TokenType.semiToken):
+                self.next()
+                if self.inputSym.checkSameType(TokenType.elseToken) or self.inputSym.checkSameType(TokenType.fiToken):
+                    break
+            else:
+                break
+        return new_block
 
     def computation(self):
         if self.inputSym.checkSameType(TokenType.mainToken):
             self.next()
             while self.inputSym.isSameType(TokenType.varToken) or self.inputSym.isSameType(TokenType.arrToken):
-                self.varDecl(None)
-            if self.inputSym.checkSameType(TokenType.beginToken):
+                self.varDecl()
                 self.next()
                 kill = list()
                 self.cfg.head.id = self.blockcounter + 1
                 self.cfg.base_block_counter = self.blockcounter + 1
                 self.blockcounter += 1
-                self.cfg.tail = # TODO: need to be implemented
-                pass
+                self.cfg.tail = self.sequence(self.cfg.head, kill)# TODO: need to be implemented
+
+                if self.cfg.tail is None:
+                    return False
+                if self.inputSym.checkSameType(TokenType.periodToken):
+                    op = self.inputSym
+                    self.next()
+                    self.irGenerator.compute(self.cfg.tail, op, None, None)
+                    self.irGenerator.pc += 1
+                    return True
+                else:
+                    self.error(incorrectSyntaxException("Expecting period token"))
+        else:
+            self.error(incorrectSyntaxException("Expecting main token"))
+        return False
+
+    def run_parser(self):
+        self.irGenerator.reset()
+        self.next()
+        self.cfg.done = self.computation()
+        print(self.cfg.done)
+        return self.cfg
+
+
+
 
 
 

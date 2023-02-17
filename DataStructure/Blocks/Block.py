@@ -2,8 +2,7 @@ from DataStructure.Instruction import Instruction
 from DataStructure.PhiInstruction import PhiInstruction
 from DataStructure.Instruction import DeleteMode
 from DataStructure.Blocks.IBlock import IBlock
-from DataStructure.Dom.DomTreeNode import DominantTreeNode
-from DataStructure.Dom.DomNodeCSE import DomNodeCSE
+from DataStructure.Dom.DominantTree import DominantTreeNode, DomNodeCSE
 from multipledispatch import dispatch
 
 class Block(IBlock):

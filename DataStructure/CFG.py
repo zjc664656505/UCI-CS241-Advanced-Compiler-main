@@ -5,7 +5,7 @@ from DataStructure.Instruction import DeleteMode, Instruction
 from DataStructure.DataResult.IResult import IResult
 from DataStructure.DataResult.VariableResult import VariableResult
 from DataStructure.Blocks.Block import Block
-from IR.IrGenerator import IrGenerator
+from IR.IRGenerator import IrGenerator
 from DataStructure.Blocks.JoinBlock import JoinBlock
 from DataStructure.Blocks.IfBlock import IfBlock
 # TODO: while block needs to be implemented later on
@@ -33,7 +33,7 @@ class CFG:
         # TODO: should the block_counter and base_block_counter increment by 1?
         self.block_counter = block_counter
         self.base_block_counter = block_counter
-        self.head = Block(block_counter, None)
+        self.head = Block(block_counter)
         self.blocks = []
         self.mVariableManager = VariableManager()
         self.returnIds = {}
@@ -70,6 +70,12 @@ class CFG:
         self.blocks.append(block)
         return block
 
+    def initializeThenBlock(self):
+        self.block_counter += 1
+        block = Block(self.block_counter)
+        self.blocks.append(block)
+        return block
+
     def initializeJoinBlock(self):
         self.block_counter += 1
         block = Block(self.block_counter)
@@ -90,6 +96,7 @@ class CFG:
             if block_Instruction:
                 return block_Instruction
         return block_Instruction
+
 
     def find_instr_from_iid(self, iid):
         # iid is the parameter for extracting instruction based on instruction id

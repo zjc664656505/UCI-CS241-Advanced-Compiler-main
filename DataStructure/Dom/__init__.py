@@ -1,1 +1,1 @@
-__all__ = ["DomTreeNode", "DomTreeNode"]
+__all__ = ["DominantTree.py"]
