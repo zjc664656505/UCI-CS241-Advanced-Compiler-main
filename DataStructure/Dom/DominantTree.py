@@ -72,7 +72,7 @@ class DominantTreeNode:
 
 class DomNodeCSE:
 
-    def __int__(self, id):
+    def __init__(self, id):
         self.id = id
         self.instructions = {}
         self.parent = None
@@ -101,3 +101,4 @@ class DomNodeCSE:
                 if self.instructions[instruction.opcode][idx].equals(instruction):
                     return self.instructions[instruction.opcode][idx]
         return Instruction(-1)
+

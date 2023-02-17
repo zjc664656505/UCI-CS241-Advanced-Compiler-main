@@ -7,11 +7,10 @@ from DataStructure.Dom.DominantTree import DomNodeCSE, DominantTreeNode
 
 
 
-print(DomNodeCSE(1).id)
 
 
-# file_dir = "./test/sample_test.txt"
-# # tokenize = Tokenizer(file_dir)
-# # sym = tokenize.getSym()
-# parse = Parser(file_dir)
-# parse.run_parser()
+file_dir = "./test/sample_test.txt"
+# tokenize = Tokenizer(file_dir)
+# sym = tokenize.getSym()
+parse = Parser(file_dir)
+parse.run_parser()
