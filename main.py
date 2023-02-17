@@ -2,7 +2,7 @@ from DataStructure.Operator import OperatorCode, Operator
 from DataStructure.Token import Token, TokenType
 from DataStructure.Variable import Variable
 from parser.parse_util import Tokenizer
-from parser.parser import Parser
+from parser.Parser import Parser
 from DataStructure.Dom.DominantTree import DomNodeCSE, DominantTreeNode
 
 

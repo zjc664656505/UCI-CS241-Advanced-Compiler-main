@@ -32,7 +32,7 @@ class Parser:
         self.filename = fileName
         self.tokenizer = Tokenizer
         self.inputSym = None
-        self.irGenerator = IrGenerator
+        self.irGenerator = IrGenerator()
         self.killcounter = 0
         self.blockcounter = 0
         # TODO: Build cfg
