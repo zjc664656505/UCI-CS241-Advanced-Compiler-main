@@ -31,8 +31,8 @@ class CFG:
 
     def __init__(self, block_counter):
         # TODO: should the block_counter and base_block_counter increment by 1?
-        self.block_counter = block_counter +1
-        self.base_block_counter = block_counter +1
+        self.block_counter = block_counter + 1
+        self.base_block_counter = block_counter + 1
         self.head = Block(block_counter)
         self.blocks = []
         self.mVariableManager = VariableManager()
@@ -70,7 +70,6 @@ class CFG:
         self.blocks.append(block)
         return block
 
-
     def initializeJoinBlock(self):
         self.block_counter += 1
         block = JoinBlock(self.block_counter)
@@ -91,7 +90,6 @@ class CFG:
             if block_Instruction:
                 return block_Instruction
         return block_Instruction
-
 
     def find_instr_from_iid(self, iid):
         # iid is the parameter for extracting instruction based on instruction id
@@ -194,16 +192,15 @@ class CFG:
                         else:
                             print(f"WRONG OPERAND CANNOT BE PROCESSED: {instr.operandx}")
 
-
     def search_cse(self, id, instr):
-        block = self.blocks[id-self.base_block_counter]
+        block = self.blocks[id - self.base_block_counter]
         mark_x = False
         mark_y = False
 
         if len(block.instructions) == 0:
             return self.search_cse(block.parent.id, instr)
 
-        for idx in range(len(block.instructions)-1, -1, -1):
+        for idx in range(len(block.instructions) - 1, -1, -1):
             instr_temp = block.instructions[idx]
             if instr_temp.opcode == OperatorCode.move or instr_temp.opcode == OperatorCode.phi:
                 temp = -1
@@ -345,6 +342,32 @@ class CFG:
         elif block.id != self.base_block_counter:
             return self.search_cse(block.parent.id, instr)
 
+    def load_kill(self, block, base, stop):
+        if len(block.instructions) == 0:
+            return False
+
+        marker = False
+        for i in range(len(block.instructions)):
+            instr_temp = block.instructions[i]
+            if instr_temp.opcode != OperatorCode.store:
+                continue
+            else:
+                # TODO: should we check the base equal to the last instruction in the block?
+                if base != block.instructions[i-1].operandy.constant:
+                    continue
+                else:
+                    marker = True
+                    break
+        if marker == True:
+            return True
+        else:
+            if stop == True:
+                return False
+            else:
+                if isinstance(block.parent, IfBlock):
+                    return False
+                else:
+                    return self.load_kill(block.parent, base, False)
 
 
 

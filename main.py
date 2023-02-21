@@ -4,6 +4,8 @@ from DataStructure.Variable import Variable
 from parser.parse_util import Tokenizer
 from parser.Parser import Parser
 from DataStructure.Dom.DominantTree import DomNodeCSE, DominantTreeNode
+from graphviz import Source
+import graphviz
 
 
 

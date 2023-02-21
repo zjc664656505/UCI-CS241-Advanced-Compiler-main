@@ -12,57 +12,62 @@ class Tuple:
 # enum object has 2 variables: name and value. For example, TokenType.errorToken.name -> errorToken and
 # TokenType.errorToken.name -> 0x0.
 class TokenType(enum.Enum):
-    errorToken = 0x0  # ("", 0x0)
 
-    timesToken = 0x1  # ("*", 0x1)
-    divToken = 0x2  # ("/", 0x2)
+    # Term
+    errorToken = 0  # ("", 0x0)
 
-    plusToken = 0x10  # ("+",0x10)
-    minusToken = 0x11  # ("-" 0x11)
+    timesToken = 1  # ("*", 0x1)
+    divToken = 2  # ("/", 0x2)
 
-    eqlToken = 0x20  # ("==",0x20)
-    neqToken = 0x21  # ("!=",0x21)
-    lssToken = 0x22  # ("<",0x22)
-    gtrToken = 0x23  # (">",0x23)
-    leqToken = 0x24  # ("<=",0x24)
-    geqToken = 0x25  # (">=",0x25)
+    # Expression
+    plusToken = 11  # ("+",11)
+    minusToken = 12  # ("-" 12)
 
-    periodToken = 0x30  # (".", 0x30)
-    commaToken = 0x31  # (",", 0x31)
-    openbracketToken = 0x32  # ("[", 0x32)
-    closebracketToken = 0x33  # ("]", 0x34)
-    openparenToken = 0x35  # ("(",0x35)
-    closeparenToken = 0x36  # (")", 0x36)
-    beginToken = 0x37  # ("{",0x37)
-    endToken = 0x38  # ("}",0x38)
-    returnToken = 0x39  # ("return",0x39)
+    # Relational
+    eqlToken = 20  # ("==",0x20)
+    neqToken = 21  # ("!=",0x21)
+    lssToken = 22  # ("<",0x22)
+    gtrToken = 23  # (">",0x23)
+    leqToken = 24  # ("<=",0x24)
+    geqToken = 25  # (">=",0x25)
 
-    becomesToken = 0x40  # ("<-", 0x40)
-    letToken = 0x42  # ("let",0x42)
+    # Other
+    periodToken = 30  # (".", 0x30)
+    commaToken = 31  # (",", 0x31)
+    openbracketToken = 32  # ("[", 0x32)
+    closebracketToken = 34  # ("]", 0x34)
+    openparenToken = 50  # ("(",0x35)
+    closeparenToken = 35  # (")", 0x36)
+    beginToken = 150  # ("{",0x37)
+    endToken = 80  # ("}",0x38)
+    returnToken = 104  # ("return",0x39)
 
-    ifToken = 0x50  # ("if", 0x50)
-    fiToken = 0x51  # ("fi", 0x51)
-    elseToken = 0x52  # ("else", 0x52)
-    thenToken = 0x53  # ("then",0x53)
+    becomesToken = 40  # ("<-", 0x40)
+    letToken = 100 # ("let",0x42)
 
-    doToken = 0x60  # ("do",0x40)
-    odToken = 0x61  # ("od",0x41)
-    whileToken = 0x63  # ("while", 0x43)
+    ifToken = 102  # ("if", 0x50)
+    fiToken = 82  # ("fi", 0x51)
+    elseToken = 90  # ("else", 0x52)
+    thenToken = 41  # ("then",0x53)
 
-    semiToken = 0x70  # (";", 0x70)
-    callToken = 0x71  # ("call", 0x71)
-    funcToken = 0x72  # ("function", 0x72)
-    voidToken = 0x73  # ("void", 0x73)
+    doToken = 42  # ("do",0x40)
+    odToken = 81  # ("od",0x41)
+    whileToken = 103  # ("while", 0x43)
 
-    number = 0x80  # ("", 0x80)
-    ident = 0x81  # ("", 0x81)
-    varToken = 0x82  # ("var", 0x82)
-    arrToken = 0x83  # ("array", 0x83)
-    sequalToken = 0x84  # ("=", 0x84)
-    exclaimToken = 0x85  # ("!", 0x85)
+    semiToken = 70  # (";", 0x70)
+    callToken = 101  # ("call", 0x71)
+    funcToken = 113  # ("function", 0x72)
+    voidToken = 112  # ("void", 0x73)
 
-    mainToken = 0x90  # ('main' 0x90)
-    eofToken = 0x91  # ('' empty string, 0x91)
+    number = 60  # ("", 0x80)
+    ident = 61  # ("", 0x81)
+    varToken = 110  # ("var", 0x82)
+    arrToken = 111  # ("array", 0x83)
+    sequalToken = 84  # ("=", 0x84)
+    exclaimToken = 85  # ("!", 0x85)
+
+    mainToken = 200  # ('main' 0x90)
+    eofToken = 255  # ('' empty string, 0x91)
 
     @classmethod
     def has_value(cls, value):
@@ -145,13 +150,13 @@ class Token:
         return f"{self.value}, {self.id}"
 
     def checkTerm(self):
-        return 0x0 < self.id < 0x10
+        return 0 < self.id < 10
 
     def checkExpression(self):
-        return 0x10 <= self.id < 0x20
+        return 10 <= self.id < 20
 
     def checkRelation(self):
-        return 0x20 <= self.id <0x30
+        return 20 <= self.id < 30
 
     def compareToken(self, token):
         return token.value == self.value and token.name == self.name

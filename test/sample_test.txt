@@ -1,6 +1,6 @@
 main
 var a, b, c, d, e; {
-    let a <- 1;
+    let a <- call InputNum();
     let b <- a;
     let c <- b;
     let d <- b + c;
@@ -11,4 +11,5 @@ var a, b, c, d, e; {
     else
         let d <- e
     fi;
+    call OutputNum(a)
 }.

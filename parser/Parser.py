@@ -432,6 +432,62 @@ class Parser:
             return None
         return joinBlock
 
+
+    def funcCall(self, block, kill:list):
+        if self.inputSym.isSameType(TokenType.callToken):
+            op = self.inputSym
+            self.next()
+            func_sym = self.inputSym
+            print(f"DEBUG: func_sym {self.inputSym.value}")
+
+            # TODO: double check the irGenerator.pc increment
+            if self.inputSym.value in Operator.standardIoOperator:
+                op = self.inputSym
+                if self.inputSym.value == "InputNum":
+                    self.next()
+                    if self.inputSym.checkSameType(TokenType.openparenToken):
+                        self.next()
+                        if self.inputSym.checkSameType(TokenType.closeparenToken):
+                            self.next()
+                        else:
+                            self.error(incorrectSyntaxException("Expecting )"))
+                            return None
+                elif self.inputSym.value == "OutputNum":
+                    self.next()
+                    if self.inputSym.checkSameType(TokenType.openparenToken):
+                        self.next()
+                        res = self.expression(block, kill)
+                        if res is not None:
+                            self.irGenerator.compute(block, op, res, None)
+                            self.irGenerator.pc += 1
+                        if self.inputSym.checkSameType(TokenType.closeparenToken):
+                            self.next()
+                            return None
+                        else:
+                            self.error(incorrectSyntaxException("Expecting )"))
+                            return None
+                    else:
+                        self.error(incorrectSyntaxException("Expecting ("))
+                        return None
+                elif self.inputSym.value == "OutputNewLine":
+                    self.next()
+                    if self.inputSym.checkSameType(TokenType.openparenToken):
+                        self.next()
+                        if self.inputSym.checkSameType(TokenType.closeparenToken):
+                            self.next()
+                        else:
+                            self.error(incorrectSyntaxException("Expecting )"))
+                            return None
+                    else:
+                        self.error(incorrectSyntaxException("Expecting ("))
+                        return None
+                    self.irGenerator.compute(block, op, None, None)
+                    self.irGenerator.pc += 1
+                    return None
+        else:
+            self.error(incorrectSyntaxException("Expecting call token"))
+            return None
+
     def whilestatement(self, block, kill: list):
         # TODO: need to be implemented before while block is done.
         pass
@@ -445,6 +501,8 @@ class Parser:
         if self.inputSym.checkSameType(TokenType.letToken):
             self.assignment(block, kill)
             new_block = block
+        elif self.inputSym.checkSameType(TokenType.callToken):
+            self.funcCall(block, kill) # Need to define the function call
         elif self.inputSym.checkSameType(TokenType.ifToken):
             new_block = self.ifStatement(block, kill)
             if_flag = True
@@ -461,7 +519,8 @@ class Parser:
         cfg.seq_block = []
         while True:
             # DEBUG: Check the block
-
+            print(f"Block is None? {followblock is None}")
+            print(f"Is current symbol call? {self.inputSym.checkSameType(TokenType.callToken)}")
             # TODO: Need to double check the followblock. 2/15/2023
             if followblock is None:
                 new_block, while_flag, if_flag = self.block_gen(block, kill)
@@ -482,13 +541,14 @@ class Parser:
                 break
 
         # DEBUG: Check the new_block is None
-        print(f"New block is None? {new_block is None}")
+        #print(f"New block is None? {new_block is None}")
         return new_block
 
     def computation(self):
         if self.inputSym.checkSameType(TokenType.mainToken):
             self.next()
             while self.inputSym.checkSameType(TokenType.varToken) or self.inputSym.checkSameType(TokenType.arrToken):
+                print(f"Check current symbol {self.inputSym.value}")
                 self.varDecl()
                 self.next()
                 kill = list()
@@ -497,11 +557,12 @@ class Parser:
                 self.blockcounter += 1
 
                 # DEBUG sequence function
-                print("RUN TAIL SEQUENCE")
+
+                # print("RUN TAIL SEQUENCE")
                 self.cfg.tail = self.sequence(self.cfg.head, kill)# TODO: need to be implemented
 
                 # DEBUG: check if tail is None
-                print("Tail is None? ", self.cfg.tail is None)
+                # print("Tail is None? ", self.cfg.tail is None)
                 if self.cfg.tail is None:
                     return False
 
