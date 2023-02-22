@@ -32,7 +32,9 @@ class VariableManager:
             print("VARIABLE AREALDY EXISTED.")
         else:
             arrayvar.array_addr = self.arrayAddress
-            self.arrayAddress = self.arrayAddress + arrayvar.arraysize
+            #print(f"Arrayaddress: {self.arrayAddress}, ArraySize {arrayvar.arraysize}")
+            self.arrayAddress = int(self.arrayAddress) + int(arrayvar.arraysize)
+
             self.arrays[variable] = arrayvar
             self.varibles.add(variable)
 

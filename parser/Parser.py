@@ -266,7 +266,7 @@ class Parser:
                 if len(dimensionList) == 0:
                     varResult.set(Variable(self.inputSym.value, self.tokenizer.ident2Addr[self.inputSym.value], self.irGenerator.getPC()))
                 else:
-                    varResult.set(Variable(self.inputSym.value, self.tokenizer.ident2Addr[self.inputSym.value], self.irGenerator.getPC(), dimensionList))
+                    varResult.set(Array(self.inputSym.value, self.tokenizer.ident2Addr[self.inputSym.value], self.irGenerator.getPC(), dimensionList))
             try:
                 # TODO: Double check the irGenerator declareVariable method. 2/15/2023
                 self.irGenerator.declareVariable(self.cfg.head, self.varManager, varResult, put=True)
@@ -507,12 +507,12 @@ class Parser:
         if_flag = False
         #print(self.inputSym.type)
         if self.inputSym.checkSameType(TokenType.letToken):
-            print("\n*******assignment is called*******\n")
+            # print("\n*******assignment is called*******\n")
             self.assignment(block, kill)
             new_block = block
             print(f"\n*******Block ID {new_block.id}*******\n")
         elif self.inputSym.checkSameType(TokenType.callToken):
-            print(f"\n*******DEBUG: call token found {self.inputSym.value}*******\n")
+            # print(f"\n*******DEBUG: call token found {self.inputSym.value}*******\n")
             self.funcCall(block) # Need to define the function call
             new_block = block
             print(f"\n*******Block ID {new_block.id}*******\n")
@@ -564,14 +564,13 @@ class Parser:
     def computation(self):
         if self.inputSym.checkSameType(TokenType.mainToken):
             self.next()
+            kill = list()
             while self.inputSym.checkSameType(TokenType.varToken) or self.inputSym.checkSameType(TokenType.arrToken):
                 #print(f"Check current symbol {self.inputSym.value}")
                 self.varDecl()
-                self.cfg.head.id = self.blockcounter
 
             if self.inputSym.checkSameType(TokenType.beginToken):
                 self.next()
-                kill = list()
                 self.cfg.head.id = self.blockcounter + 1
                 self.cfg.base_block_counter = self.blockcounter + 1
                 self.blockcounter += 1

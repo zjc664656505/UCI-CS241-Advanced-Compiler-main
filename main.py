@@ -88,9 +88,9 @@ from DataStructure.DataResult.RegisterResult import RegisterResult
 
 #Test Cases
 #file_dir = "./test/sample_test.txt"
-#file_dir = "./test/1darray.txt"
+file_dir = "./test/1darray.txt"
 #file_dir = "./test/nested_if.text"
-file_dir = "./test/sample2.txt"
+#file_dir = "./test/sample2.txt"
 # file_dir = "./test/random_test.txt"
 
 # tokenize = Tokenizer(file_dir)
