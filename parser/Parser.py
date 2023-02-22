@@ -25,6 +25,7 @@ from DataStructure.Instruction import DeleteMode
 from copy import deepcopy
 import sys
 from DataStructure.CFG import CFG
+from DataStructure.DataResult.InstructionResult import InstructionResult
 
 
 class Parser:
@@ -122,6 +123,8 @@ class Parser:
                     self.next()
                 else:
                     self.error(incorrectSyntaxException("Expected close parenthesis"))
+        elif self.inputSym.checkSameType(TokenType.callToken):
+            result = self.funcCall(block)
 
         if result is not None:
             return result.clone()
@@ -167,6 +170,7 @@ class Parser:
                     self.irGenerator.pc += 1
                     term_l = term_l.clone()
                     if isinstance(term_l, ConstantResult) or isinstance(term_l, VariableResult):
+                        # print(f"term_l is a constant or variable {type(term_l)}")
                         term_l = term_l.toInstruction()
                     term_l.setiid(self.irGenerator.getPC() - 1)
         return term_l
@@ -433,12 +437,13 @@ class Parser:
         return joinBlock
 
 
-    def funcCall(self, block, kill:list):
-        if self.inputSym.isSameType(TokenType.callToken):
+    def funcCall(self, block):
+        #print(f"Function call function is called")
+        if self.inputSym.checkSameType(TokenType.callToken):
             op = self.inputSym
             self.next()
             func_sym = self.inputSym
-            print(f"DEBUG: func_sym {self.inputSym.value}")
+            #print(f"DEBUG: func_sym {self.inputSym.value}")
 
             # TODO: double check the irGenerator.pc increment
             if self.inputSym.value in Operator.standardIoOperator:
@@ -452,11 +457,14 @@ class Parser:
                         else:
                             self.error(incorrectSyntaxException("Expecting )"))
                             return None
+                    self.irGenerator.compute(block, op, None, None)
+                    self.irGenerator.pc += 1
+                    return InstructionResult(self.irGenerator.getPC()-1)
                 elif self.inputSym.value == "OutputNum":
                     self.next()
                     if self.inputSym.checkSameType(TokenType.openparenToken):
                         self.next()
-                        res = self.expression(block, kill)
+                        res = self.expression(block)
                         if res is not None:
                             self.irGenerator.compute(block, op, res, None)
                             self.irGenerator.pc += 1
@@ -497,17 +505,24 @@ class Parser:
         new_block = None
         while_flag = False
         if_flag = False
-
+        #print(self.inputSym.type)
         if self.inputSym.checkSameType(TokenType.letToken):
+            print("\n*******assignment is called*******\n")
             self.assignment(block, kill)
             new_block = block
+            print(f"\n*******Block ID {new_block.id}*******\n")
         elif self.inputSym.checkSameType(TokenType.callToken):
-            self.funcCall(block, kill) # Need to define the function call
+            print(f"\n*******DEBUG: call token found {self.inputSym.value}*******\n")
+            self.funcCall(block) # Need to define the function call
+            new_block = block
+            print(f"\n*******Block ID {new_block.id}*******\n")
         elif self.inputSym.checkSameType(TokenType.ifToken):
             new_block = self.ifStatement(block, kill)
             if_flag = True
+            print(f"\n*******Block ID {new_block.id}********\n")
         # TODO Debug else
         else:
+            print(self.inputSym.value)
             self.error(incorrectSyntaxException("No valid token found in block"))
         # TODO: need to implement while statement block generation
 
@@ -519,8 +534,8 @@ class Parser:
         cfg.seq_block = []
         while True:
             # DEBUG: Check the block
-            print(f"Block is None? {followblock is None}")
-            print(f"Is current symbol call? {self.inputSym.checkSameType(TokenType.callToken)}")
+            # print(f"Block is None? {followblock is None}")
+            # print(f"Is current symbol call? {self.inputSym.checkSameType(TokenType.callToken)}")
             # TODO: Need to double check the followblock. 2/15/2023
             if followblock is None:
                 new_block, while_flag, if_flag = self.block_gen(block, kill)
@@ -533,9 +548,11 @@ class Parser:
             if if_flag:
                 followblock = new_block
 
+            #print(f"Current Symbol Value {self.inputSym.value}")
             if self.inputSym.checkSameType(TokenType.semiToken):
                 self.next()
-                if self.inputSym.checkSameType(TokenType.elseToken) or self.inputSym.checkSameType(TokenType.fiToken):
+                if self.inputSym.checkSameType(TokenType.elseToken) or self.inputSym.checkSameType(TokenType.fiToken)\
+                        or self.inputSym.checkSameType(TokenType.endToken) or self.inputSym.checkSameType(TokenType.odToken):
                     break
             else:
                 break
@@ -548,8 +565,11 @@ class Parser:
         if self.inputSym.checkSameType(TokenType.mainToken):
             self.next()
             while self.inputSym.checkSameType(TokenType.varToken) or self.inputSym.checkSameType(TokenType.arrToken):
-                print(f"Check current symbol {self.inputSym.value}")
+                #print(f"Check current symbol {self.inputSym.value}")
                 self.varDecl()
+                self.cfg.head.id = self.blockcounter
+
+            if self.inputSym.checkSameType(TokenType.beginToken):
                 self.next()
                 kill = list()
                 self.cfg.head.id = self.blockcounter + 1
@@ -558,22 +578,29 @@ class Parser:
 
                 # DEBUG sequence function
 
-                # print("RUN TAIL SEQUENCE")
+                #print("RUN TAIL SEQUENCE")
                 self.cfg.tail = self.sequence(self.cfg.head, kill)# TODO: need to be implemented
 
                 # DEBUG: check if tail is None
-                # print("Tail is None? ", self.cfg.tail is None)
+                #print("Tail is None? ", self.cfg.tail is None)
                 if self.cfg.tail is None:
                     return False
 
-                if self.inputSym.checkSameType(TokenType.periodToken):
-                    op = self.inputSym
+                if self.inputSym.checkSameType(TokenType.endToken):
+                    #print("End token is found")
                     self.next()
-                    self.irGenerator.compute(self.cfg.tail, op, None, None)
-                    self.irGenerator.pc += 1
-                    return True
+                    if self.inputSym.checkSameType(TokenType.periodToken):
+                        op = self.inputSym
+                        self.next()
+                        self.irGenerator.compute(self.cfg.tail, op, None, None)
+                        self.irGenerator.pc += 1
+                        return True
+                    else:
+                        self.error(incorrectSyntaxException("Expecting period token"))
                 else:
-                    self.error(incorrectSyntaxException("Expecting period token"))
+                    self.error(incorrectSyntaxException("Expecting end token"))
+            else:
+                self.error(incorrectSyntaxException("Expecting begin token"))
         else:
             self.error(incorrectSyntaxException("Expecting main token"))
         return False

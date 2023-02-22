@@ -67,21 +67,21 @@ class IrGenerator:
             return
         self.pc = self.pc
         instruction = Instruction(self.pc, opCode, None, y)
-        block.addInstruction(instruction)
+        block.addinstruction(instruction)
 
     @dispatch(IBlock, Token, type(None), type(None))
     def compute(self, block, opToken, x, y):
         opCode = self.operator.getToken(opToken)
         self.pc = self.pc
         instruction = Instruction(self.pc, opCode, x, y)
-        block.addInstruction(instruction)
+        block.addinstruction(instruction)
 
     @dispatch(IBlock, Token, IResult, type(None))
     def compute(self, block, opToken, x, y):
         opCode = self.operator.getToken(opToken)
         self.pc = self.pc
         instruction = Instruction(self.pc, opCode, x, y)
-        block.addInstruction(instruction)
+        block.addinstruction(instruction)
 
     @dispatch(IBlock, Token, IResult, IResult)
     def compute(self, block, opToken, x, y):
