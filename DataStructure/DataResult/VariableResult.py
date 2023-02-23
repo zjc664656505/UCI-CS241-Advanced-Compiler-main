@@ -4,7 +4,7 @@ from DataStructure.Variable import Variable
 from DataStructure.DataResult.InstructionResult import InstructionResult
 
 class VariableResult(IResult):
-    def __init__(self, variable=None, isArray=False, iid=-1):
+    def __init__(self, variable:Variable=None, isArray=False, iid=-1):
         super().__init__()
         self.variable = variable
         self.isAarry = isArray

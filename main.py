@@ -78,15 +78,18 @@ class Graphviz:
         else:
             out_str = '\"<b>bb' + str(block.id) + '|{'
         for instr in block.instructions:
+            #print(f"Instruction {type(instr)}")
             instr_temp = instr
             # if instr_temp.deletemode == DeleteMode._NOT_DEL:
             # TODO: debug phi
-            print(f"phi operation code {instr.opcode}")
-            if instr.opcode == OperatorCode.phi:
-                self.phi_dict[instr.variable.version] = [instr.operandx.iid, instr.operandy.iid]
-            out_str += (instr_temp.toString(True) + '|')
+            #print(f"operation code {instr.opcode}")
+            if instr_temp.deletemode == DeleteMode._NOT_DEL:
+                #print(f"instruction type {type(instr_temp)}, instruction opcode {instr_temp.opcode}")
+                if instr.opcode == OperatorCode.phi:
+                    self.phi_dict[instr.variable.version] = [instr.operandx.iid, instr.operandy.iid]
+                out_str += (instr_temp.toString(True) + '|')
 
-                # Not sure whether need to check move
+
         out_str = out_str[:-1] + '}\"];\n'
         return out_str
 
@@ -126,7 +129,8 @@ if __name__ == "__main__":
     #file_dir = "./test/1darray.txt"
     #file_dir = "./test/nested_if.text"
     #file_dir = "./test/sample2.txt"
-    # file_dir = "./test/random_test.txt"
+    #file_dir = "./test/random_test.txt"
+    #file_dir = "./test/sample3.txt"
 
     # tokenize = Tokenizer(file_dir)
     # sym = tokenize.getSym()
@@ -134,4 +138,4 @@ if __name__ == "__main__":
     cfg = parse.run_parser()
     graph = Graphviz(parse, file_dir, "./visualization/")
     graph.showGraph()
-    graph_show = Source.from_file("./visualization/sample_test.gv").view()
+    # graph_show = Source.from_file("./visualization/sample_test.gv").view()

@@ -10,7 +10,7 @@ class Tokenizer:
     def __init__(self, fileName):
         self.reader = FileReader(fileName)
         self.inputSym = self.reader.getSym()
-        self.prevToken= None
+        self.prevToken = None
         self.errorFlag = False
         self.currentString = ""
         self.identAddrCounter = Constants.SCANNER_IDENTIFIER_ADDRESS_OFFSET
@@ -33,6 +33,7 @@ class Tokenizer:
 
     def error(self, exception):
         self.reader.error(exception)
+
     def getSym(self):
         if self.prevToken is not None and self.prevToken.checkSameType(TokenType.eofToken):
             return self.prevToken
@@ -46,6 +47,7 @@ class Tokenizer:
             if token.value not in self.ident2Addr:
                 self.ident2Addr[token.value] = self.identAddrCounter
                 self.addr2Ident[self.identAddrCounter] = token.value
+                # Comment out ident2AddrCounter to make all variables point to the same address
                 self.identAddrCounter += 1
         self.prevToken = token
         return token
@@ -59,10 +61,10 @@ class Tokenizer:
                     self.nextLine()
                     self.next()
                 elif self.inputSym == " " or self.inputSym == "\t" or self.inputSym == "\r" or self.inputSym == "\n":
-                    if len(self.currentString) >0 and self.currentString in Token.tokenValueMap:
+                    if len(self.currentString) > 0 and self.currentString in Token.tokenValueMap:
                         state = self.scannerState["stop"]
-                    elif state == self.scannerState['digit'] or state == self.scannerState['letter'] or\
-                        state == self.scannerState['relop']:
+                    elif state == self.scannerState['digit'] or state == self.scannerState['letter'] or \
+                            state == self.scannerState['relop']:
                         state = self.scannerState['stop']
                         self.errorFlag = True
                     self.next()
@@ -70,8 +72,8 @@ class Tokenizer:
                     self.add2String()
                     if self.inputSym == "":
                         state = self.scannerState['stop']
-                    elif self.inputSym == "=" or self.inputSym == "!" or\
-                        self.inputSym == ">" or self.inputSym == "<":
+                    elif self.inputSym == "=" or self.inputSym == "!" or \
+                            self.inputSym == ">" or self.inputSym == "<":
                         state = self.scannerState["relop"]
                         self.next()
                     elif self.inputSym == "/":
@@ -112,6 +114,7 @@ class Tokenizer:
                     state = self.scannerState["stop"]
             else:
                 state = self.scannerState['stop']
+
 
 class FileReader:
     def __init__(self, fileName: str):
@@ -157,4 +160,3 @@ class FileReader:
               str(self.lineNo) + ' column: ' + str(self.charPosition))
         print("".join(traceback.TracebackException.from_exception(exception).format()))
         sys.exit(-1)
-

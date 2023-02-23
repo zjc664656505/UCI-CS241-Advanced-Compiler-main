@@ -43,4 +43,4 @@ class Array(Variable):
                 arr.dimensionList.append(i)
 
     def toString(self):
-        return f"{self.name}-{self.version}"
+        return f"{self.name}: {self.version}"

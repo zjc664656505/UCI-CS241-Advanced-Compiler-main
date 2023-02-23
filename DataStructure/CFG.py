@@ -170,6 +170,7 @@ class CFG:
                 if instr.opcode != OperatorCode.move:
                     continue
                 else:
+                    # print(f"move_replacing!")
                     # for variables
                     if isinstance(instr.operandx, VariableResult):
                         if instr.operandx.variable.version == -2:

@@ -13,7 +13,7 @@ class OperatorCode(enum.Enum):
     load = 0x7
     store = 0x8
     move = 0xA
-    phi = 0xB
+    phi = 11
     end = 0xC
     bra = 0xD
     bne = 0xE

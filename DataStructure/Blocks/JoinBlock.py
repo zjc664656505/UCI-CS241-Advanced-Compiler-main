@@ -36,7 +36,7 @@ class JoinBlock(Block):
         instruction = self.getInstruction(PC)
         if instruction:
             return instruction
-        newInstruction = None
+        newInstruction:PhiInstruction = None
         for i in self.phiManager.phis.keys():
             if i == PC:
                 newInstruction = self.phiManager.phis[i]
@@ -99,21 +99,22 @@ class JoinBlock(Block):
 
     @dispatch(dict, dict, dict)
     def createPhi(self, addr2ident, lb_ssa, rb_ssa):
+        print(f"create phi in join block: {addr2ident} {lb_ssa} {rb_ssa}")
         self.freezessa(self.parent.global_ssa, self.parent.local_ssa)
         if self.thenBlock is None:
             self.createPhi(addr2ident, self.parent.global_ssa, self.parent.global_ssa,
                            self.elseBlock.global_ssa, self.global_ssa)
-            self.createPhi(addr2ident, self.parent.local_ssa, self.parent.local_ssa,
-                           self.elseBlock.local_ssa, self.local_ssa)
+            #self.createPhi(addr2ident, self.parent.local_ssa, self.parent.local_ssa,
+            #               self.elseBlock.local_ssa, self.local_ssa)
         elif self.elseBlock is None:
             self.createPhi(addr2ident, self.parent.global_ssa, self.thenBlock.global_ssa,
                            self.parent.global_ssa, self.global_ssa)
-            self.createPhi(addr2ident, self.parent.local_ssa, self.thenBlock.local_ssa,
-                           self.parent.local_ssa, self.local_ssa)
+            #self.createPhi(addr2ident, self.parent.local_ssa, self.thenBlock.local_ssa,
+            #               self.parent.local_ssa, self.local_ssa)
         else:
             self.createPhi(addr2ident, self.parent.global_ssa, lb_ssa, rb_ssa, self.global_ssa)
-            self.createPhi(addr2ident, self.parent.local_ssa, self.thenBlock.local_ssa, self.elseBlock.local_ssa,
-                           self.elseBlock)
+            #self.createPhi(addr2ident, self.parent.local_ssa, self.thenBlock.local_ssa, self.elseBlock.local_ssa,
+            #               self.local_ssa)
 
 
 

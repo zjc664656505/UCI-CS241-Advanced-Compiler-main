@@ -25,7 +25,7 @@ class Instruction:
 
         if create:
             self.inst_conversion = Instruction(COPY_PROP, create=False)
-            self.inst_code = opcode
+            self.inst_conversion.opcode = opcode
 
     def setInstructionOprand(self, rResult, bool_operandX):
         if rResult:
@@ -75,11 +75,14 @@ class Instruction:
                 if isinstance(self.operandx, VariableResult):
                     if self.operandx.variable.version != Constants.FORMAL_PARAMETER_VERSION:
                         if self.opcode != OperatorCode.move:
+                            # print(f"DEBUG xres: {self.operandx.variable.name}: {self.operandx.variable.version}")
                             xres = InstructionResult(self.operandx.variable.version)
                 if isinstance(self.operandy, VariableResult):
                     if self.operandy.variable.version != Constants.FORMAL_PARAMETER_VERSION:
                         if self.opcode != OperatorCode.move:
+                            #print(f"DEBUG yres: {self.operandy.variable.name}: {self.operandy.variable.version}")
                             yres = InstructionResult(self.operandy.variable.version)
+                #print(f"DEBUG XRES: {self.operandx.variable.name}, YRES: {self.operandy.variable.name}")
                 res = f"{self.id}: {self.opcode.name} {xres.toString()} {yres.toString()}"
             else:
                 res = f"{self.id}: {self.opcode.name} {self.operandx.toString()} {self.operandy.toString()}"
