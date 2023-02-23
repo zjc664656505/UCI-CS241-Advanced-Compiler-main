@@ -35,4 +35,4 @@ class ConstantResult(IResult):
         return InstructionResult(self.iid, self.constant)
 
     def toString(self) -> str:
-        return f"& {self.constant}"
+        return f"#{self.constant}"

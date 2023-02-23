@@ -156,6 +156,8 @@ class IrGenerator:
             sys.exit(-1)
             return
         else:
+            #print("declare variable!")
+            #print(block.id)
             varManager.updatessamap(varResult.variable.address, varResult.variable.version)
             block.global_ssa[varResult.variable.address] = varResult.variable.version
             if isinstance(varResult.variable, Array):  # add subarray to the array as an object

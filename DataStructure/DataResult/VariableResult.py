@@ -40,5 +40,5 @@ class VariableResult(IResult):
         if self.isAarry:
             return f"Array {self.variable.toString()}"
         else:
-            return f"Variable {self.variable.toString()}"
+            return self.variable.toString()
 

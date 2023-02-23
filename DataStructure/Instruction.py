@@ -80,29 +80,29 @@ class Instruction:
                     if self.operandy.variable.version != Constants.FORMAL_PARAMETER_VERSION:
                         if self.opcode != OperatorCode.move:
                             yres = InstructionResult(self.operandy.variable.version)
-                res = f"{self.id} - {self.opcode.name} {xres.toString()} {yres.toString()}"
+                res = f"{self.id}: {self.opcode.name} {xres.toString()} {yres.toString()}"
             else:
-                res = f"{self.id} - {self.opcode.name} {self.operandx.toString()} {self.operandy.toString()}"
+                res = f"{self.id}: {self.opcode.name} {self.operandx.toString()} {self.operandy.toString()}"
         elif self.operandx is not None and self.operandy is None:
             if flag:
                 xres = self.operandx
                 if isinstance(self.operandx, VariableResult):
                     if self.operandx.variable.version != Constants.FORMAL_PARAMETER_VERSION:
                         xres = InstructionResult(self.operandx.variable.version)
-                res = f"{self.id} - {self.opcode.name} {xres.toString()}"
+                res = f"{self.id}: {self.opcode.name} {xres.toString()}"
             else:
-                res = f"{self.id} - {self.opcode.name} {self.operandx.toString()}"
+                res = f"{self.id}: {self.opcode.name} {self.operandx.toString()}"
         elif self.operandx is None and self.operandy is not None:
             if flag:
                 yres = self.operandy
                 if isinstance(self.operandy, VariableResult):
                     if self.operandy.variable.version != Constants.FORMAL_PARAMETER_VERSION:
                         yres = InstructionResult(self.operandy.variable.version)
-                res = f"{self.id} - {self.opcode.name} {yres.toString()}"
+                res = f"{self.id}: {self.opcode.name} {yres.toString()}"
             else:
-                res = f"{self.id} - {self.opcode.name} {self.operandy.toString()}"
+                res = f"{self.id}: {self.opcode.name} {self.operandy.toString()}"
         else:
-            res = f"{self.id} {self.opcode.name}"
+            res = f"{self.id}: {self.opcode.name}"
 
         return res
 

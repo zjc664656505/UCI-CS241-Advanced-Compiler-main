@@ -40,9 +40,9 @@ class PhiInstruction(Instruction):
             if isinstance(self.operandy, VariableResult):
                 if self.operandy.variable.version != Constants.FORMAL_PARAMETER_VERSION:
                         yres = InstructionResult(self.operandy.variable.version)
-            return f"{self.id} - phi {self.variable.toString()} = {xres.toString()} {yres.toString()}"
+            return f"{self.id}: phi {self.variable.toString()} := {xres.toString()} {yres.toString()}"
         else:
-            return f"{self.id} - phi {self.variable.toString()} = {self.operandx.toString()} {self.operandy.toString()}"
+            return f"{self.id}: phi {self.variable.toString()} := {self.operandx.toString()} {self.operandy.toString()}"
 
     def equals(self, instr):
         if instr.opcode == OperatorCode.phi:

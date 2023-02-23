@@ -32,4 +32,4 @@ class RegisterResult(IResult):
         return InstructionResult(self.iid)
 
     def toString(self):
-        return f"Register - {self.register}"
+        return f"R{self.register}"

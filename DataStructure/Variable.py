@@ -8,7 +8,7 @@ class Variable:
         return Variable(self.name, self.address, self.version)
 
     def toString(self):
-        res = "{}_{}".format(str(self.name), str(self.version))
+        res = "{}{}".format(str(self.name), str(self.version))
         return res
 
     def equals(self, V):

@@ -258,6 +258,7 @@ class Parser:
         return dimensionList
 
     def varDecl(self):
+        # TODO: Need to initialize the block for variable declaration.
         dimensionList = self.typeDecl()
         while True:
             if self.inputSym.checkSameType(TokenType.ident):
@@ -505,27 +506,31 @@ class Parser:
         new_block = None
         while_flag = False
         if_flag = False
+        # print(f"{self.inputSym.value}")
+        if new_block:
+            print(f"\n*******Block ID {new_block.id}*******\n")
         #print(self.inputSym.type)
         if self.inputSym.checkSameType(TokenType.letToken):
             # print("\n*******assignment is called*******\n")
             self.assignment(block, kill)
             new_block = block
-            print(f"\n*******Block ID {new_block.id}*******\n")
+            #print(f"\n*******Block ID {new_block.id}*******\n")
         elif self.inputSym.checkSameType(TokenType.callToken):
             # print(f"\n*******DEBUG: call token found {self.inputSym.value}*******\n")
             self.funcCall(block) # Need to define the function call
             new_block = block
-            print(f"\n*******Block ID {new_block.id}*******\n")
+            #print(f"\n*******Block ID {new_block.id}*******\n")
         elif self.inputSym.checkSameType(TokenType.ifToken):
             new_block = self.ifStatement(block, kill)
             if_flag = True
-            print(f"\n*******Block ID {new_block.id}********\n")
+            #print(f"\n*******Block ID {new_block.id}********\n")
         # TODO Debug else
         else:
-            print(self.inputSym.value)
+            #print(self.inputSym.value)
             self.error(incorrectSyntaxException("No valid token found in block"))
         # TODO: need to implement while statement block generation
 
+        print(f"\n*******Block ID {new_block.id}*******\n")
         return new_block, while_flag, if_flag
 
     def sequence(self, block, kill: list):
@@ -609,6 +614,7 @@ class Parser:
         self.next()
         self.cfg.done = self.computation()
         print("Is CFG done? ", self.cfg.done)
+        # print([i.instructions for i in self.cfg.blocks])
         return self.cfg
 
 
