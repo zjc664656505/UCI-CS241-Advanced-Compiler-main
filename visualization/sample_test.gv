@@ -1,0 +1,19 @@
+digraph G {
+node [shape=record];
+subgraph cluster_main{
+label = "Main";
+BB1 [shape=record, label="<b>bb1|{5: read|7: add (5) (5)|9: add (5) (5)}"];
+BB2 [shape=record, label="<b>If\bb2|{11: cmp (5) #0|12: bge (11) (5)}"];
+BB3 [shape=record, label="<b>Join\bb3|{17 : phi d17 := (13) (9)|16 : phi a16 := (13) (5)|18: write (16)|19: end}"];
+BB4 [shape=record, label="<b>bb4|{13: add (7) (9)|15: bra (3)}"];
+BB5 [shape=record, label="<b>bb5|}"];
+}
+bb2:b -> bb3:b [color=blue, style=dotted, label="dom"];
+bb2:b -> bb4:b [color=blue, style=dotted, label="dom"];
+bb1:b -> bb2:b [color=blue, style=dotted, label="dom"];
+bb2:b -> bb5:b [color=blue, style=dotted, label="dom"];
+bb2:s -> bb5:n [label="branch"];
+bb5:s -> bb3:n [label="fall-through"];
+bb2:s -> bb4:n [label="fall-through"];
+bb4:s -> bb3:n [label="fall-through"];
+}
