@@ -47,10 +47,10 @@ class PhiInstruction(Instruction):
             # print(f"xres type {type(temp_xResult)}, yres type {type(temp_yResult)}")
             # print(f"Debug check phi {self.operandx.iid} {self.operandy.iid}")
 
-            return "{} : PHI {} := {} {}".format(self.id, self.variable.toString(), temp_xResult.toString(),
+            return "{} : phi {} := {} {}".format(self.id, self.variable.toString(), temp_xResult.toString(),
                                                  temp_yResult.toString())
         else:
-            return "{} : PHI {} := {} {}".format(self.id, self.variable.toString(), self.operandx.toString(),
+            return "{} : phi {} := {} {}".format(self.id, self.variable.toString(), self.operandx.toString(),
                                                  self.operandy.toString())
 
     def equals(self, instruction) -> bool:
