@@ -18,10 +18,12 @@ class Instruction:
                  y: IResult=None, create:bool=True, res_CSE=None):
         self.id = COPY_PROP
         self.opcode = opcode
-        self.operandx = x
-        self.operandy = y
+        self.operandx: InstructionResult = x
+        self.operandy: InstructionResult = y
         self.deletemode = DeleteMode._NOT_DEL
         self.res_CSE = res_CSE
+        # if self.operandx and self.operandy:
+        #    print(f"DEBUG Instruction x:{self.operandx.iid}, y:{self.operandy.iid}")
 
         if create:
             self.inst_conversion = Instruction(COPY_PROP, create=False)
@@ -84,6 +86,7 @@ class Instruction:
                             yres = InstructionResult(self.operandy.variable.version)
                 #print(f"DEBUG XRES: {self.operandx.variable.name}, YRES: {self.operandy.variable.name}")
                 res = f"{self.id}: {self.opcode.name} {xres.toString()} {yres.toString()}"
+                # print(f"DEBUG Instruction toString {xres.iid}")
             else:
                 res = f"{self.id}: {self.opcode.name} {self.operandx.toString()} {self.operandy.toString()}"
         elif self.operandx is not None and self.operandy is None:
@@ -93,6 +96,7 @@ class Instruction:
                     if self.operandx.variable.version != Constants.FORMAL_PARAMETER_VERSION:
                         xres = InstructionResult(self.operandx.variable.version)
                 res = f"{self.id}: {self.opcode.name} {xres.toString()}"
+                # print(f"DEBUG Instruction toString {res}")
             else:
                 res = f"{self.id}: {self.opcode.name} {self.operandx.toString()}"
         elif self.operandx is None and self.operandy is not None:

@@ -106,14 +106,16 @@ class CFG:
                     continue
                 else:
                     if isinstance(instr.operandx, VariableResult):
-                        print('VarX -> Instr')
-                        instr.operandx = InstructionResult(CP_id)
+                        if instr.operandx.variable.version == version:
+                            print('VarX -> Instr')
+                            instr.operandx = InstructionResult(CP_id)
                     elif isinstance(instr.operandx, InstructionResult):
                         if instr.operandx.iid == version:
                             instr.operandx = InstructionResult(CP_id)
                     if isinstance(instr.operandy, VariableResult):
-                        print("VarY -> Instr")
-                        instr.operandy = InstructionResult(CP_id)
+                        if instr.operandy.variable.version == version:
+                            print("VarY -> Instr")
+                            instr.operandy = InstructionResult(CP_id)
                     elif isinstance(instr.operandy, InstructionResult):
                         if instr.operandy.iid == version:
                             instr.operandy = InstructionResult(CP_id)
@@ -127,15 +129,18 @@ class CFG:
                     continue
                 else:
                     if isinstance(instr.operandx, VariableResult):
-                        print("VarX -> Instr")
-                        instr.operandx = ConstantResult(constant)
+                        if instr.operandx.variable.version == version:
+                            print("VarX -> Instr")
+                            instr.operandx = ConstantResult(constant)
                     elif isinstance(instr.operandx, InstructionResult):
                         if instr.operandx.iid == version:
                             instr.operandx = ConstantResult(constant)
+
                     if isinstance(instr.operandy, VariableResult):
-                        print("VarY -> Instr")
-                        instr.operandy = ConstantResult(constant)
-                    elif isinstance(instr.operandx, InstructionResult):
+                        if instr.operandy.variable.version == version:
+                            print("VarY -> Instr")
+                            instr.operandy = ConstantResult(constant)
+                    elif isinstance(instr.operandy, InstructionResult):
                         if instr.operandy.iid == version:
                             instr.operandy = ConstantResult(constant)
 
@@ -165,27 +170,43 @@ class CFG:
 
     def move_replace(self):
         for b in self.blocks:
-            for i in b.instructions:
+            block: Block = b
+            for i in block.instructions:
                 instr = i
                 if instr.opcode != OperatorCode.move:
                     continue
                 else:
                     # print(f"move_replacing!")
                     # for variables
-                    if isinstance(instr.operandx, VariableResult):
-                        if instr.operandx.variable.version == -2:
+
+                    #------Check register result
+                    if isinstance(instr.operandx, RegisterResult):
+                        if instr.operandx.register == 31:
+                            self.CP_replace(instr.id, instr.id)
                             continue
+                    if isinstance(instr.operandy, RegisterResult):
+                        if instr.operandy.register == 31:
+                            self.CP_replace(instr.id, instr.id)
+                            continue
+
+                    #------Check variable result
                     if isinstance(instr.operandy, VariableResult):
                         if instr.operandy.variable.version == -2:
                             continue
+                    if isinstance(instr.operandx, VariableResult):
+                        if instr.operandx.variable.version == -2:
+                            continue
+
+                    #------Check instruction result
                     if isinstance(instr.operandx, InstructionResult):
                         instr.deletemode = DeleteMode.COPY_PROP
                         self.CP_replace(instr.id, instr.operandx.iid)
                     elif isinstance(instr.operandx, VariableResult):
                         instr.deletemode = DeleteMode.COPY_PROP
-                        self.CP_replace_constant(instr.id, instr.operandx.variable.version)
+                        self.CP_replace(instr.id, instr.operandx.variable.version)
                     elif isinstance(instr.operandx, ConstantResult):
-                        self.CP_replace(instr.id, instr.operandx.constant)
+                        mask = self.cse_move_constant(instr, block)
+                        self.CP_replace_constant(instr.id, instr.operandx.constant)
                         instr.deletemode = DeleteMode.COPY_PROP
                     else:
                         if instr.operandx is None:

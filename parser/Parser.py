@@ -460,14 +460,14 @@ class Parser:
                     for instr in joinBlock.instructions:
                         if isinstance(instr, PhiInstruction):
                             if instr.variable.address in joinBlock.global_ssa.keys():
-                                print('#####################', instr.variable.address, instr.variable.version)
+                                #print('#####################', instr.variable.address, instr.variable.version)
 
                                 joinBlock.global_ssa[instr.variable.address] = instr.variable.version
-                                print(f'operandx {instr.operandx.variable.version}, operandy {instr.operandy.variable.version}')
-                                print(joinBlock.global_ssa)
-                                #self.varManager.setssamap(joinBlock.global_ssa)
-                            else:
-                                print(f'operandx {instr.operandx.variable.version}, operandy {instr.operandy.variable.version}')
+                                #print(f'operandx {instr.operandx.variable.version}, operandy {instr.operandy.variable.version}')
+                                #print(joinBlock.global_ssa)
+                                self.varManager.setssamap(joinBlock.global_ssa)
+                            #else:
+                                #print(f'operandx {instr.operandx.variable.version}, operandy {instr.operandy.variable.version}')
                 else:
                     self.error(incorrectSyntaxException("Expecting fi token"))
                     return None
@@ -660,11 +660,11 @@ class Parser:
         self.cfg.move_replace()
 
         print("Is CFG done? ", self.cfg.done)
-        all_instr = [i.instructions for i in self.cfg.blocks]
-        for i in all_instr:
-            for instr in i:
-                if isinstance(instr, PhiInstruction):
-                    print(instr.operandx.iid)
+        # all_instr = [i.instructions for i in self.cfg.blocks]
+        # for i in all_instr:
+        #     for instr in i:
+        #         if isinstance(instr, PhiInstruction):
+        #             print(instr.operandx.iid)
 
 
         return self.cfg
