@@ -8,6 +8,7 @@ from DataStructure.Blocks.Block import Block
 from IR.IRGenerator import IrGenerator
 from DataStructure.Blocks.JoinBlock import JoinBlock
 from DataStructure.Blocks.IfBlock import IfBlock
+from DataStructure.Blocks.ConstantBlock import ConstantBlock
 # TODO: while block needs to be implemented later on
 # from DataStructure.Blocks.WhileBlock import WhileBlock
 from multipledispatch import dispatch
@@ -62,6 +63,11 @@ class CFG:
         # initialize block based on the block_counter which is the block id.
         block = Block(self.block_counter)
         self.blocks.append(block)
+        return block
+
+    def initializeConstantBlock(self):
+        block = ConstantBlock(0)
+        self.blocks.insert(0, block)
         return block
 
     def initializeIfBlock(self):

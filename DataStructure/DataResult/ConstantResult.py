@@ -6,6 +6,7 @@ class ConstantResult(IResult):
         super().__init__()
         self.constant = constant
         self.iid = iid
+        self.flag = True
 
     def set(self, value):
         if type(value) == str:
@@ -35,4 +36,7 @@ class ConstantResult(IResult):
         return InstructionResult(self.iid, self.constant)
 
     def toString(self) -> str:
-        return f"({self.iid})"
+        if self.flag:
+            return f"({self.iid})"
+        else:
+            return f"#{self.constant})"

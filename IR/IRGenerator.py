@@ -44,6 +44,15 @@ class IrGenerator:
         instruction.deletemode = DeleteMode._NOT_DEL
         block.addinstruction(instruction)
 
+    # TODO: compute for constantResult
+    @dispatch(IBlock, Token, type(None), type(None), int)
+    def compute(self, block, opCode, x, y, iid):
+        if opCode is None:
+            return
+        opCode = Operator.constOperator[Token.tokenValueMap[opCode.type]]
+        instruction = Instruction(iid, opCode, x, y)
+        block.addinstruction(instruction)
+
     @dispatch(IBlock, OperatorCode, IResult, IResult)
     def compute(self, block, opCode, x, y):
         if opCode is None:

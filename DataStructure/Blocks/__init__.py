@@ -1,1 +1,1 @@
-__all__ = ["IBlock", "Block", "IfBlock", "JoinBlock", "WhileBlock"]
+__all__ = ["IBlock", "Block", "IfBlock", "JoinBlock", "WhileBlock", "ConstantBlock"]

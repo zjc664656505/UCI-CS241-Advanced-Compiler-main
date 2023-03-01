@@ -113,7 +113,8 @@ class Token:
         "void": TokenType.voidToken,
         "{": TokenType.beginToken,
         "main": TokenType.mainToken,
-        "": TokenType.eofToken
+        "": TokenType.eofToken,
+        "number": TokenType.number
     }
 
     def __init__(self, value, type, id):

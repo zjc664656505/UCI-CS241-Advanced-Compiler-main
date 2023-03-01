@@ -11,6 +11,7 @@ from collections import deque as deq
 from DataStructure.Blocks.Block import Block
 from DataStructure.Blocks.IfBlock import IfBlock
 from DataStructure.Blocks.JoinBlock import JoinBlock
+from DataStructure.Blocks.ConstantBlock import ConstantBlock
 from DataStructure.Instruction import DeleteMode
 from DataStructure.DataResult.RegisterResult import RegisterResult
 from pathlib import Path
@@ -29,6 +30,7 @@ class Graphviz:
         self.dom_edges = set()
         self.branch_edges = set()
         self.fall_through_edges = set()
+        self.connect_edges = set()
 
         # TODO: need to implement while loop
         self.while_loopback_branch = set()
@@ -52,10 +54,13 @@ class Graphviz:
             for idx, main_block in enumerate(self.cfg.blocks):
                 self.writeBlock(main_block, gf, -1)
             for idx, main_block in enumerate(self.cfg.blocks):
-                if idx != 0:
+                if idx == 0:
+                    self.connect_edges.add((0, 1))
+                else:
                     self.findEdge(main_block, self.cfg)
             gf.write('}\n')
-
+            # print(self.connect_edges)
+            self.writeConnectEdge(gf)
             self.writeDomEdge(gf)
             self.writeBranchEdge(gf)
             self.writeFallThroughEdge(gf)
@@ -72,11 +77,11 @@ class Graphviz:
 
     def writeInstruction(self, block, out, FLAG):
         if isinstance(block, IfBlock):
-            out_str = '\"<b>If\\bb' + str(block.id) + '|{'
+            out_str = '\"<b>BB' + str(block.id) + '|{'
         elif isinstance(block, JoinBlock):
-            out_str = '\"<b>Join\\bb' + str(block.id) + '|{'
+            out_str = '\"<b>BB' + str(block.id) + '|{'
         else:
-            out_str = '\"<b>bb' + str(block.id) + '|{'
+            out_str = '\"<b>BB' + str(block.id) + '|{'
         for instr in block.instructions:
             #print(f"Instruction {type(instr)}")
             instr_temp = instr
@@ -99,29 +104,37 @@ class Graphviz:
             self.dom_edges.add((block.id, block.thenBlock.id))
             self.dom_edges.add((block.id, block.elseBlock.id))
             self.dom_edges.add((block.id, block.joinBlock.id))
+
             self.branch_edges.add((block.id, block.elseBlock.id))
             self.fall_through_edges.add((block.id, block.thenBlock.id))
         elif isinstance(block, JoinBlock):
             self.fall_through_edges.add((cfg.join_parent[block.id][1], block.id))
-            self.fall_through_edges.add((cfg.join_parent[block.id][0], block.id))
+            self.branch_edges.add((cfg.join_parent[block.id][0], block.id))
         else:
-            self.dom_edges.add((block.parent.id, block.id))
+            if block.parent.id != 0 and block.id != 1:
+                self.dom_edges.add((block.parent.id, block.id))
 
     def writeDomEdge(self, out):
         for edge in self.dom_edges:
-            out.write(f"bb{edge[0]}:b -> bb{edge[1]}:b [color=blue, style=dotted, label=\"dom\"];\n")
+            out.write(f"BB{edge[0]}:b -> BB{edge[1]}:b [color=blue, style=dotted, label=\"dom\"];\n")
 
     def writeBranchEdge(self, out):
         for edge in self.branch_edges:
-            out.write(f"bb{edge[0]}:s -> bb{edge[1]}:n [label=\"branch\"];\n")
+            out.write(f"BB{edge[0]}:s -> BB{edge[1]}:n [label=\"branch\"];\n")
 
     def writeFallThroughEdge(self, out):
         for edge in self.fall_through_edges:
-            out.write(f"bb{edge[0]}:s -> bb{edge[1]}:n [label=\"fall-through\"];\n")
+            out.write(f"BB{edge[0]}:s -> BB{edge[1]}:n [label=\"fall-through\"];\n")
+
+    def writeConnectEdge(self, out):
+        for edge in self.connect_edges:
+            out.write(f"BB{edge[0]}:s -> BB{edge[1]}:n ;\n")
 
     def writeWhileEdge(self, out):
         # TODO: need to implement while loop
         pass
+
+
 
 if __name__ == "__main__":
     #Test Cases
@@ -138,4 +151,4 @@ if __name__ == "__main__":
     cfg = parse.run_parser()
     graph = Graphviz(parse, file_dir, "./visualization/")
     graph.showGraph()
-    #graph_show = Source.from_file("./visualization/sample_test.gv").view()
+    graph_show = Source.from_file("./visualization/sample_test.gv").view()

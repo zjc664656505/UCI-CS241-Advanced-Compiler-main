@@ -25,6 +25,7 @@ class OperatorCode(enum.Enum):
     read = 0x14
     write = 0x15
     writeNL = 0x16
+    const = 0x17
 
 
 class Operator:
@@ -46,6 +47,8 @@ class Operator:
 
     standardIoOperator = {"InputNum": OperatorCode.read, "OutputNum": OperatorCode.write,
                           "OutputNewLine": OperatorCode.writeNL}
+
+    constOperator = {TokenType.number: OperatorCode.const}
 
     def __init__(self):
         pass

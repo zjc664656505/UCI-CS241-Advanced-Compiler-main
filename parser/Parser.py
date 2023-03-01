@@ -47,6 +47,7 @@ class Parser:
         self.irGenerator = IrGenerator()
         self.killcounter = 0
         self.blockcounter = 0
+        self.constantBlock = None
         # TODO: Build cfg
         self.cfg = CFG(self.blockcounter)
         self.varManager = self.cfg.mVariableManager
@@ -125,9 +126,11 @@ class Parser:
                         result.set(self.irGenerator.getPC() - 1)
         elif self.inputSym.checkSameType(TokenType.number):
             # TODO: Change made to the factor function 2/28/2023
+            op = self.inputSym
             result = ConstantResult()
             result.set(self.inputSym.value)
             result.setiid(self.irGenerator.getPC()+1)
+            self.irGenerator.compute(self.constantBlock, op, None, None, self.irGenerator.getPC()+1)
             self.next()
         elif self.inputSym.checkSameType(TokenType.openparenToken):
             self.next()
@@ -481,7 +484,7 @@ class Parser:
 
                     for x in joinBlock.phiManager.phis.values():
                         #print(f"Phi instruction {x.toString()} , version {x.variable.version}, addr {x.variable.address}")
-                        joinBlock.instructions.insert(0,x)
+                        joinBlock.instructions.append(x)
 
 
                     for instr in joinBlock.instructions:
@@ -647,9 +650,17 @@ class Parser:
 
             if self.inputSym.checkSameType(TokenType.beginToken):
                 self.next()
+
+
+                self.constantBlock = self.cfg.initializeConstantBlock()
+
                 self.cfg.head.id = self.blockcounter + 1
                 self.cfg.base_block_counter = self.blockcounter + 1
                 self.blockcounter += 1
+                self.cfg.head.setparent(self.constantBlock)
+                self.constantBlock.setchild(self.cfg.head)
+
+
 
                 # DEBUG sequence function
 
@@ -678,6 +689,7 @@ class Parser:
                 self.error(incorrectSyntaxException("Expecting begin token"))
         else:
             self.error(incorrectSyntaxException("Expecting main token"))
+
         return False
 
     def run_parser(self):
@@ -685,13 +697,11 @@ class Parser:
         self.next()
         self.cfg.done = self.computation()
         self.cfg.move_replace()
+        print(self.cfg.blocks)
 
         print("Is CFG done? ", self.cfg.done)
         # all_instr = [i.instructions for i in self.cfg.blocks]
-        # for i in all_instr:
-        #     for instr in i:
-        #         if isinstance(instr, PhiInstruction):
-        #             print(instr.operandx.iid)
+        # print(all_instr)
 
 
         return self.cfg
