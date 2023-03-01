@@ -47,6 +47,6 @@ class BranchResult(IResult):
         return InstructionResult(self.iid)
 
     def toString(self):
-        return "(" + str(self.targetBlock.getid()) + ")"
+        return "block:= b(" + str(self.targetBlock.getid()) + ")"
 
 

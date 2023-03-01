@@ -34,7 +34,8 @@ Debug Log:
 1. Check the variable declaration. Making sure all variables declared at the beginning are pointing to the same address.
    (Variable version and address issue solved).
    2. Now, the second problem is to update the instruction id after variable declaration. For example, after var a is
-   declared, the instruction id should be updated to the next instruction id.
+      declared, the instruction id should be updated to the next instruction id. (Solved.)
+   3. Third problem is to add the constant results into a block and update this block has the head of cfg.
 """
 
 
@@ -123,8 +124,10 @@ class Parser:
                         result = result.toInstruction()
                         result.set(self.irGenerator.getPC() - 1)
         elif self.inputSym.checkSameType(TokenType.number):
+            # TODO: Change made to the factor function 2/28/2023
             result = ConstantResult()
             result.set(self.inputSym.value)
+            result.setiid(self.irGenerator.getPC()+1)
             self.next()
         elif self.inputSym.checkSameType(TokenType.openparenToken):
             self.next()
@@ -156,10 +159,16 @@ class Parser:
                         factor_l = factor_l.toInstruction()
                     if factor_r.getiid() > 0 and (not isinstance(factor_r, RegisterResult)):
                         factor_r = factor_r.toInstruction()
-                    self.irGenerator.compute(block, op, factor_l, factor_r)
-                    self.irGenerator.pc += 1
+
+                    if isinstance(factor_l, ConstantResult) or isinstance(factor_r, ConstantResult):
+                        self.irGenerator.compute(block, op, factor_l, factor_r)
+                        self.irGenerator.pc += 2
+                    else:
+                        self.irGenerator.compute(block, op, factor_l, factor_r)
+                        self.irGenerator.pc += 1
                     factor_l = factor_l.clone()
                     if isinstance(factor_l, ConstantResult) or isinstance(factor_l, VariableResult):
+                        print(f"*******Is Term checked?********\n")
                         factor_l = factor_l.toInstruction()
                     factor_l.setiid(self.irGenerator.getPC() - 1)
         return factor_l
@@ -179,11 +188,17 @@ class Parser:
                         term_l = term_l.toInstruction()
                     if term_r.getiid() > 0 and (not isinstance(term_r, RegisterResult)):
                         term_r = term_r.toInstruction()
-                    self.irGenerator.compute(block, op, term_l, term_r)
-                    self.irGenerator.pc += 1
+
+                    if isinstance(term_l, ConstantResult) or isinstance(term_r, ConstantResult):
+                        self.irGenerator.compute(block, op, term_l, term_r)
+                        self.irGenerator.pc += 2
+                    else:
+                        self.irGenerator.compute(block, op, term_l, term_r)
+                        self.irGenerator.pc += 1
+
                     term_l = term_l.clone()
                     if isinstance(term_l, ConstantResult) or isinstance(term_l, VariableResult):
-                        # print(f"term_l is a constant or variable {type(term_l)}")
+                        print(f"*******Is Expression checked?********\n")
                         term_l = term_l.toInstruction()
                     term_l.setiid(self.irGenerator.getPC() - 1)
         return term_l
@@ -200,13 +215,24 @@ class Parser:
                 #       f" expr_r version {expr_r.iid}\n")
                 # print(op.value)
                 if expr_r is not None:
-                    self.irGenerator.compute(block, op, expr_l, expr_r)
-                    self.irGenerator.pc += 1
-                    branch_res.condition = op
-                    branch_res.fixuplocation = self.irGenerator.getPC()
-                    print(f"branch_res.fixuplocation {branch_res.fixuplocation}")
-                    branch_res.iid = self.irGenerator.getPC() - 1
-                    # print(f"branch_res.fixuplocation {branch_res.fixuplocation}")
+                    if isinstance(expr_r, ConstantResult):
+                        #print("Debug: ConstantResult in relation for expr_r")
+                        self.irGenerator.compute(block, op, expr_l, expr_r)
+                        self.irGenerator.pc += 2
+                        branch_res.condition = op
+                        branch_res.fixuplocation = self.irGenerator.getPC()
+                        # print(f"branch_res.fixuplocation {branch_res.fixuplocation}")
+                        branch_res.iid = self.irGenerator.getPC() - 2
+                        # print(f"branch_res.fixuplocation {branch_res.fixuplocation}")
+
+                    else:
+                        self.irGenerator.compute(block, op, expr_l, expr_r)
+                        self.irGenerator.pc += 1
+                        branch_res.condition = op
+                        branch_res.fixuplocation = self.irGenerator.getPC()
+                        # print(f"branch_res.fixuplocation {branch_res.fixuplocation}")
+                        branch_res.iid = self.irGenerator.getPC() - 1
+                        # print(f"branch_res.fixuplocation {branch_res.fixuplocation}")
                     branch_res.targetBlock = block
         return branch_res.clone()
 
@@ -247,11 +273,11 @@ class Parser:
                                     self.irGenerator.compute(block, op, designator_res, expr_res)
                                     # TODO shoudl the pc of IRGenerator be incremented at here? 2/15/2023
                                     self.irGenerator.pc += 1
-                                    print(f"UPDATE SSAMAP")
-                                    print(var.name)
-                                    print(var.address)
-                                    print(var.version)
-                                    print("-------------------\n")
+                                    # print(f"UPDATE SSAMAP")
+                                    # print(var.name)
+                                    # print(var.address)
+                                    # print(var.version)
+                                    # print("-------------------\n")
                                     varManager.updatessamap(var.address, var.version)
                                 block.global_ssa[var.address] = var.version
 
@@ -303,6 +329,7 @@ class Parser:
                 self.next()
             if not self.inputSym.checkSameType(TokenType.ident):
                 break
+        self.irGenerator.pc += 1
         if self.inputSym.checkSameType(TokenType.semiToken):
             self.next()
         else:

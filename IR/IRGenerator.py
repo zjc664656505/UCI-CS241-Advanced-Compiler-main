@@ -172,10 +172,12 @@ class IrGenerator:
                     block.global_ssa[varResult.variable.address] = self.pc
                     self.compute(block, OperatorCode.move, newResult, varResult)
                     #self.pc = Constants.INSTRUCTION_START_COUNTER
-                    self.pc = self.pc + 1
+                    #self.pc = self.pc + 1
+                    self.pc = 0
 
                 elif put:
                     self.compute(block, OperatorCode.move, varResult, ConstantResult())
                     #self.pc = Constants.INSTRUCTION_START_COUNTER
-                    self.pc += 1
+                    #self.pc += 1
+                    self.pc = 0
 

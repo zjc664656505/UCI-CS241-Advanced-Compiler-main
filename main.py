@@ -138,4 +138,4 @@ if __name__ == "__main__":
     cfg = parse.run_parser()
     graph = Graphviz(parse, file_dir, "./visualization/")
     graph.showGraph()
-    graph_show = Source.from_file("./visualization/sample_test.gv").view()
+    #graph_show = Source.from_file("./visualization/sample_test.gv").view()
