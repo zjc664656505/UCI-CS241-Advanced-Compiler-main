@@ -5,6 +5,7 @@ from DataStructure.DataResult.VariableResult import VariableResult
 from util.Constants import Constants
 from DataStructure.Variable import Variable
 from DataStructure.DataResult.InstructionResult import InstructionResult
+from DataStructure.DataResult.ConstantResult import ConstantResult
 
 class DeleteMode(enum.Enum):
     COPY_PROP = 0x0
@@ -90,15 +91,22 @@ class Instruction:
             else:
                 res = f"{self.id}: {self.opcode.name} {self.operandx.toString()} {self.operandy.toString()}"
         elif self.operandx is not None and self.operandy is None:
+            #print("OPERANDX IS NONE")
             if flag:
                 xres = self.operandx
                 if isinstance(self.operandx, VariableResult):
                     if self.operandx.variable.version != Constants.FORMAL_PARAMETER_VERSION:
                         xres = InstructionResult(self.operandx.variable.version)
-                res = f"{self.id}: {self.opcode.name} {xres.toString()}"
+                elif isinstance(self.operandx, ConstantResult):
+                    res = f"{self.id}: {self.opcode.name} #{self.operandx.constant}"
+                else:
+                    res = f"{self.id}: {self.opcode.name} {xres.toString()}"
                 # print(f"DEBUG Instruction toString {res}")
             else:
-                res = f"{self.id}: {self.opcode.name} {self.operandx.toString()}"
+                if isinstance(self.operandx, ConstantResult):
+                    res = f"{self.id} {self.opcode.name} #{self.operandx.constant}"
+                else:
+                    res = f"{self.id}: {self.opcode.name} {self.operandx.toString()}"
         elif self.operandx is None and self.operandy is not None:
             if flag:
                 yres = self.operandy

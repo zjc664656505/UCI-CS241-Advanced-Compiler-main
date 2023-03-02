@@ -152,7 +152,7 @@ class Graphviz:
 
 
 if __name__ == "__main__":
-    file = "while_basic"
+    file = "1darray"
     file_dir = "./test/" + file + ".txt"
 
 

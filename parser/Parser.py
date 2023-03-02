@@ -136,7 +136,7 @@ class Parser:
             result = ConstantResult()
             result.set(self.inputSym.value)
             result.setiid(self.irGenerator.getPC()+1)
-            self.irGenerator.compute(self.constantBlock, op, None, None, self.irGenerator.getPC()+1)
+            self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC()+1)
             self.next()
         elif self.inputSym.checkSameType(TokenType.openparenToken):
             self.next()
@@ -280,7 +280,7 @@ class Parser:
                                 if flag:
                                     var.version = self.irGenerator.getPC()
                                     self.irGenerator.compute(block, op, designator_res, expr_res)
-                                    # TODO shoudl the pc of IRGenerator be incremented at here? 2/15/2023
+                                    # TODO should the pc of IRGenerator be incremented at here? 2/15/2023
 
                                     self.irGenerator.pc += 1
                                     # print(f"UPDATE SSAMAP")

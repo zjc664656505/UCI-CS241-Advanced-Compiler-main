@@ -45,7 +45,7 @@ class IrGenerator:
         block.addinstruction(instruction)
 
     # TODO: compute for constantResult
-    @dispatch(IBlock, Token, type(None), type(None), int)
+    @dispatch(IBlock, Token, IResult, type(None), int)
     def compute(self, block, opCode, x, y, iid):
         if opCode is None:
             return

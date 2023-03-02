@@ -2,7 +2,7 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{3: const|4: const|7: const|14: const}"];
+BB0 [shape=record, label="<b>BB0|{3: const #0|4: const #3|7: const #7|14: const #1}"];
 BB1 [shape=record, label="<b>BB1|}"];
 BB2 [shape=record, label="<b>BB2|{3: cmp (3) (4)|5: bge (3) block:= [4]|16 : phi i16 := (3) (13)}"];
 BB3 [shape=record, label="<b>BB3|{6: mul (16) (-1)|7: adda (6) (-1)|8: store (7) (7)|9: add (16) (16)|9: mul (9) (-1)|10: adda (9) (-1)|11: load (10)|12: write (11)|13: add (16) (14)|15: bra block:= [2]}"];
