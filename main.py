@@ -15,6 +15,7 @@ from DataStructure.Blocks.ConstantBlock import ConstantBlock
 from DataStructure.Instruction import DeleteMode
 from DataStructure.DataResult.RegisterResult import RegisterResult
 from pathlib import Path
+from DataStructure.Blocks.WhileBlock import WhileBlock
 
 
 class Graphviz:
@@ -63,6 +64,7 @@ class Graphviz:
             self.writeConnectEdge(gf)
             self.writeDomEdge(gf)
             self.writeBranchEdge(gf)
+            self.writeWhileBranch(gf)
             self.writeFallThroughEdge(gf)
 
             gf.write('}\n')
@@ -107,6 +109,15 @@ class Graphviz:
 
             self.branch_edges.add((block.id, block.elseBlock.id))
             self.fall_through_edges.add((block.id, block.thenBlock.id))
+        elif isinstance(block, WhileBlock):
+            self.dom_edges.add((block.parent.id, block.id))
+            self.dom_edges.add((block.id, block.loopblock.id))
+            self.dom_edges.add((block.id, block.followBlock.id))
+
+            self.branch_edges.add((block.id, block.followBlock.id))
+            self.fall_through_edges.add((block.id, block.loopblock.id))
+
+            self.while_loopback_branch.add((cfg.block_in_while[block.id][-1], block.id))
         elif isinstance(block, JoinBlock):
             self.fall_through_edges.add((cfg.join_parent[block.id][1], block.id))
             self.branch_edges.add((cfg.join_parent[block.id][0], block.id))
@@ -121,6 +132,10 @@ class Graphviz:
     def writeBranchEdge(self, out):
         for edge in self.branch_edges:
             out.write(f"BB{edge[0]}:s -> BB{edge[1]}:n [label=\"branch\"];\n")
+
+    def writeWhileBranch(self, out):
+        for edge in self.while_loopback_branch:
+            out.write(f"BB{edge[0]}:s -> BB{edge[1]}:e [label=\"branch\"];\n")
 
     def writeFallThroughEdge(self, out):
         for edge in self.fall_through_edges:
@@ -137,13 +152,10 @@ class Graphviz:
 
 
 if __name__ == "__main__":
-    #Test Cases
-    file_dir = "./test/sample_test.txt"
-    #file_dir = "./test/1darray.txt"
-    #file_dir = "./test/nested_if.text"
-    #file_dir = "./test/sample2.txt"
-    #file_dir = "./test/random_test.txt"
-    #file_dir = "./test/sample3.txt"
+    file = "while_basic"
+    file_dir = "./test/" + file + ".txt"
+
+
 
     # tokenize = Tokenizer(file_dir)
     # sym = tokenize.getSym()
@@ -151,4 +163,4 @@ if __name__ == "__main__":
     cfg = parse.run_parser()
     graph = Graphviz(parse, file_dir, "./visualization/")
     graph.showGraph()
-    graph_show = Source.from_file("./visualization/sample_test.gv").view()
+    graph_show = Source.from_file("./visualization/"+ file+ ".gv").view()

@@ -16,7 +16,7 @@ class Array(Variable):
             self.arraysize = 0
 
         self.index_list = []
-        self.array_addr = 0x0
+        self.array_addr = 0
 
     def getBaseAddress(self):
         return Variable(self.name, self.address, self.version)
@@ -38,7 +38,7 @@ class Array(Variable):
             arr.index_list.append(i.clone())
 
         arr.dimensionList = []
-        if self.dimensionList:
+        if bool(self.dimensionList):
             for i in self.dimensionList:
                 arr.dimensionList.append(i)
 

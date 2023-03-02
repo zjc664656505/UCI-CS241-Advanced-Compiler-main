@@ -8,7 +8,7 @@ from util.Constants import Constants
 from DataStructure.Blocks.IBlock import IBlock
 from DataStructure.DataResult.BranchResult import BranchResult
 from multipledispatch import dispatch
-from DataStructure.DataResult import InstructionResult
+from DataStructure.DataResult.InstructionResult import InstructionResult
 from DataStructure.Array import Array
 import sys
 from DataStructure.Operator import Operator, OperatorCode

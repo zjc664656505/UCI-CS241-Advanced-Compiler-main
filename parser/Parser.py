@@ -20,7 +20,7 @@ from DataStructure.Variable import *
 from util.Constants import Constants
 from parser.parse_util import Tokenizer
 from DataStructure.Blocks.JoinBlock import JoinBlock
-# from DataStructure.Blocks.WhileBlock import WhileBlock
+from DataStructure.Blocks.WhileBlock import WhileBlock
 from DataStructure.Instruction import DeleteMode
 from copy import deepcopy
 import sys
@@ -36,6 +36,8 @@ Debug Log:
    2. Now, the second problem is to update the instruction id after variable declaration. For example, after var a is
       declared, the instruction id should be updated to the next instruction id. (Solved.)
    3. Third problem is to add the constant results into a block and update this block has the head of cfg.
+   
+2. Update while statement to parser.
 """
 
 
@@ -84,14 +86,18 @@ class Parser:
                         array_var.array_addr = array_in_vm.array_addr
                         index_List = []
                         while True:
+                            #print(f"DEBUG: current inputSym {self.inputSym.value}")
                             self.next()
-                            index_List.append(self.expression(block))
+                            index = self.expression(block)
+                            #print(f"Debug: index {index}")
+                            index_List.append(index)
+
                             if self.inputSym.checkSameType(TokenType.closebracketToken):
                                 self.next()
                             else:
-                                self.error(incorrectSyntaxException("Expected close bracket"))
+                                self.error(incorrectSyntaxException("Expected close bracket for array element"))
                                 return None
-                            if self.inputSym.checkSameType(TokenType.openbracketToken):
+                            if not self.inputSym.checkSameType(TokenType.openbracketToken):
                                 break
                         array_var.indexList = index_List
                         varResult.set(array_var)
@@ -275,6 +281,7 @@ class Parser:
                                     var.version = self.irGenerator.getPC()
                                     self.irGenerator.compute(block, op, designator_res, expr_res)
                                     # TODO shoudl the pc of IRGenerator be incremented at here? 2/15/2023
+
                                     self.irGenerator.pc += 1
                                     # print(f"UPDATE SSAMAP")
                                     # print(var.name)
@@ -572,7 +579,137 @@ class Parser:
 
     def whilestatement(self, block, kill: list):
         # TODO: need to be implemented before while block is done.
-        pass
+        cfg = self.cfg
+        followBlock = None
+
+        if self.inputSym.checkSameType(TokenType.whileToken):
+            self.next()
+            whileBlock = cfg.initializeWhileBlock()
+
+            if len(cfg.dom_list_if) >0:
+                if len(cfg.dom_list) > 0:
+                    if cfg.dom_list_if[-1] < cfg.dom_list_if[-1]:
+                        cfg.while_in_if[cfg.dom_list_if[-1]].append(whileBlock.id)
+                    else:
+                        cfg.while_in_if[cfg.dom_list_if[-1]].append(whileBlock.id)
+
+            cfg.block_in_while[whileBlock.id] = [whileBlock.id]
+            cfg.loopblocks_in_while[whileBlock.id] = []
+            cfg.dom_list.append(whileBlock.id)
+            parent_id = 0
+
+            if len(cfg.parent_stack) == 0:
+                parent_id = block.id
+            else:
+                parent_id = cfg.parent_stack.pop()
+            print(cfg.blocks)
+            # print(f"block0 ssa {cfg.blocks[0].getglobalssa()}, block1 ssa {cfg.blocks[1].getglobalssa()} ")
+            # print(f"ssa0 {cfg.blocks[whileBlock.id - cfg.base_block_counter].getglobalssa()}")
+            # print(f"ssa1 {cfg.blocks[parent_id-cfg.base_block_counter-1].getglobalssa()}")
+            # print(f"while block id {whileBlock.id}, parent id {parent_id}")
+
+            cfg.blocks[whileBlock.id].getglobalssa().update(cfg.blocks[parent_id].getglobalssa())
+            cfg.parent_stack.append(whileBlock.id)
+
+            whileBlock.setparent(block)
+            block.setchild(whileBlock)
+            # print(f"DEBUG while ssa. All ssa in cfg {[i.getglobalssa() for i in cfg.blocks]}")
+
+            loopBlock = cfg.initializeBlock()
+            whileBlock.setLoopBlock(loopBlock)
+            loopBlock.setparent(whileBlock)
+
+            # print(f"***\n block ssa {block.global_ssa}")
+            whileBlock.freezessa(block.global_ssa, None)
+
+            branch_res = self.relation(whileBlock)
+            self.irGenerator.compute(whileBlock, branch_res.condition, branch_res)
+            self.irGenerator.pc += 1
+
+            tempkill = kill.copy()
+            if self.inputSym.checkSameType(TokenType.doToken):
+                branch_res_do = BranchResult()
+                branch_res_do.condition = self.inputSym
+                branch_res_do.set(whileBlock)
+                self.next()
+
+                if len(cfg.dom_list) == 0 or len(cfg.parent_stack) == 0:
+                    print("Warning: dom_list or parent_stack is empty.")
+
+                parent_id = cfg.parent_stack.pop()
+                for i in cfg.dom_list:
+                    cfg.block_in_while[i].append(loopBlock.id)
+
+                cfg.loopblocks_in_while[cfg.dom_list[-1]].append(loopBlock.id)
+                cfg.blocks[loopBlock.id].getglobalssa().update(cfg.blocks[parent_id].getglobalssa())
+                #print(f"DEBUG while ssa do. All ssa in cfg {[i.getglobalssa() for i in cfg.blocks]}")
+
+                cfg.parent_stack.append(loopBlock.id)
+                loopBlock.freezessa(whileBlock.global_ssa, None)
+
+                loopBlock = self.sequence(loopBlock, tempkill)
+
+                if loopBlock is None:
+                    return None
+                if self.inputSym.checkSameType(TokenType.odToken):
+                    self.next()
+                    branch_res_do.set(whileBlock)
+                    self.irGenerator.compute(loopBlock, branch_res_do.condition, branch_res_do)
+                    self.irGenerator.pc += 1
+                    loopBlock.setchild(whileBlock)
+                    whileBlock.setchild(loopBlock)
+
+                    loopkill = []
+                    for i in kill:
+                        if not (True in (j.id == i.id for j in tempkill)):
+                            loopkill.append(i)
+                    if len(loopkill) >0:
+                        whileBlock.addKill(loopkill)
+                    print(f"DEBUG: cfg.block_in_while {cfg.block_in_while}")
+                    print(f"DEBUG: input create phi block id {cfg.blocks[cfg.block_in_while[whileBlock.id][-1]].id}")
+
+
+                    whileBlock.createPhis(cfg.blocks[cfg.block_in_while[whileBlock.id][-1]],
+                                          self.tokenizer.addr2Ident, self.irGenerator)
+                    #print(f"DEBUG while ssa do. All ssa in cfg {[i.getglobalssa() for i in cfg.blocks]}")
+                    # print(f"whileBlock.phiManager.phis.values(): {cfg.blocks[cfg.block_in_while[whileBlock.id][-1]-cfg.base_block_counter]}")
+                    # print(f"\n****Debug While Loop phi: {whileBlock.phiManager.phis.values()}")
+
+                    #breakpoint()
+                    cfg.dom_list.pop()
+
+                    for i in whileBlock.phiManager.phis.values():
+                        whileBlock.instructions.append(i)
+
+                    phi_dict = {}
+                    print(f"\n****Debug While Loop phi: {whileBlock.phiManager.phis.values()}")
+                    for i in whileBlock.phiManager.phis.values():
+                        i.variable.version = self.irGenerator.pc
+                        i.id = self.irGenerator.pc
+                        phi_dict[i.variable.name] = InstructionResult(i.id)
+                        self.irGenerator.pc += 1
+                        whileBlock.global_ssa[i.variable.address] = i.variable.version
+                    print(f"\n****Debug While Loop phi: {whileBlock.phiManager.phis.values()}")
+
+
+                    whileBlock.phi_optimization(cfg)
+
+                    followBlock = cfg.initializeBlock()
+                    followBlock.setparent(whileBlock)
+                    followBlock.freezessa(whileBlock.global_ssa, None)
+                    whileBlock.setFollowBlock(followBlock)
+                    whileBlock.fixupbranch(branch_res.fixuplocation, followBlock)
+                else:
+                    self.error(incorrectSyntaxException("Expecting od token"))
+                    return None
+            else:
+                self.error(incorrectSyntaxException("Expecting do token"))
+                return None
+        else:
+            self.error(incorrectSyntaxException("Expecting while token"))
+            return None
+        return followBlock
+
 
 
     def block_gen(self, block, kill:list):
@@ -598,11 +735,13 @@ class Parser:
             new_block = self.ifStatement(block, kill)
             if_flag = True
             #print(f"\n*******Block ID {new_block.id}********\n")
-        # TODO Debug else
+        elif self.inputSym.checkSameType(TokenType.whileToken):
+            new_block = self.whilestatement(block, kill)
+            while_flag = True
         else:
             #print(self.inputSym.value)
             self.error(incorrectSyntaxException("No valid token found in block"))
-        # TODO: need to implement while statement block generation
+
 
         #print(f"\n*******Block ID {new_block.id}*******\n")
         return new_block, while_flag, if_flag
@@ -618,8 +757,26 @@ class Parser:
             # TODO: Need to double check the followblock. 2/15/2023
             if followblock is None:
                 new_block, while_flag, if_flag = self.block_gen(block, kill)
+                if while_flag:
+                    if len(cfg.dom_list) > 0:
+                        if new_block.id not in cfg.loopblocks_in_while[cfg.dom_list[-1]]:
+                            cfg.loopblocks_in_while[cfg.dom_list[-1]].append(new_block.id)
+                            cfg.block_in_while[cfg.dom_list[-1]].append(new_block.id)
+                if if_flag:
+                    if len(cfg.dom_list) > 0:
+                        if isinstance(new_block, JoinBlock):
+                            cfg.block_in_while[cfg.dom_list[-1]].append(new_block.id)
             else:
                 new_block, while_flag, if_flag = self.block_gen(followblock, kill)
+                if while_flag:
+                    if len(cfg.dom_list) > 0:
+                        if new_block.id not in cfg.loopblocks_in_while[cfg.dom_list[-1]]:
+                            cfg.loopblocks_in_while[cfg.dom_list[-1]].append(new_block.id)
+                            cfg.block_in_while[cfg.dom_list[-1]].append(new_block.id)
+                if if_flag:
+                    if len(cfg.dom_list) > 0:
+                        if isinstance(new_block, JoinBlock):
+                            cfg.block_in_while[cfg.dom_list[-1]].append(new_block.id)
             if new_block is None:
                 return None
             if while_flag:
@@ -696,6 +853,7 @@ class Parser:
         self.irGenerator.reset()
         self.next()
         self.cfg.done = self.computation()
+        self.cfg.cse_optimization()
         self.cfg.move_replace()
         print(self.cfg.blocks)
 

@@ -1,8 +1,0 @@
-main
-var a, b, c, d; {
-    let c <- a + b;
-    call OutputNum(a);
-    call OutputNum(b);
-    call OutputNum(c);
-    let c <- c -1;
-}.
