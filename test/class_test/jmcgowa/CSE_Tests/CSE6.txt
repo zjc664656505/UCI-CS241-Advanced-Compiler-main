@@ -1,0 +1,10 @@
+main
+var a,b,c;
+array[10] d;
+{
+	let d[1] <- 2000;
+	let b <- 10 + 10;
+	while d[1] > 0 do
+		let d[1] <- d[1] - (10 + 10);
+	od;
+}.

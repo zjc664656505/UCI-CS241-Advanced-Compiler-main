@@ -1,0 +1,16 @@
+main
+var a,b,c;
+{
+	let a <- 10;
+	let b <- 12;
+	if a < b * 2then
+		let c <- 1776;
+		if a + 200000 > c - 12 then
+			let b <- a * 4 / c;
+		fi
+	else
+		let c <- 1992;
+		let b <- a + 1;
+	fi;
+	let a <- c + b;
+}.

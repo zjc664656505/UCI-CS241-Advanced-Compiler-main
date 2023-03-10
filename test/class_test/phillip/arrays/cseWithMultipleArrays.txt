@@ -1,0 +1,17 @@
+main
+
+var i, x;
+array[10] a, b;
+
+{
+    let i <- call InputNum();
+    let x <- call InputNum();
+
+    call OutputNum(a[i]);
+    call OutputNum(b[i]);
+
+    let a[i] <- x;
+    
+    call OutputNum(a[i]);
+    call OutputNum(b[i]);
+}.

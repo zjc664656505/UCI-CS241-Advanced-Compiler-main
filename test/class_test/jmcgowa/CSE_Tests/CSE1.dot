@@ -1,0 +1,1 @@
+digraph G {bb0[shape=record, label="<b>BB0 | {0: FRAME_POINTER|1: CONSTANT (#10)} | a: (0)\nb: (0)\nc: (0)\n"]bb1[shape=record, label="<b>BB1 | {2: ADD (#10)  (#10)|4: CALL (OutputNum) (2)|5: CALL (OutputNum) (2)} | a: (1)\nb: (2)\nc: (3)\n"]bb0:s -> bb1:n[color="blue"];}

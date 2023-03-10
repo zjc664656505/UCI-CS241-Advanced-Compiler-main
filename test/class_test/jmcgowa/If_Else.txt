@@ -1,0 +1,12 @@
+main
+var a,b,c;
+{
+	let a <- 10;
+	let b <- 12;
+	if a < b * 2 then
+		let c <- 1776;
+	else
+		let c <- 1992;
+	fi;
+	let a <- c + b;
+}.

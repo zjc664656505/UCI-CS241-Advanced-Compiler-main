@@ -15,6 +15,7 @@ class ConstantResult(IResult):
             self.constant = value
 
     def setiid(self, iid: int):
+        print(f"Debug constant res iid {self.iid}")
         self.iid = iid
 
     def getiid(self):

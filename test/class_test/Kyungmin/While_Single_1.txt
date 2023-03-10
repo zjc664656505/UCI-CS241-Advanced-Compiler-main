@@ -1,0 +1,21 @@
+main
+var i, x, y, z, j, k; {
+    let i <- call InputNum();
+    let x <- 0;
+    let y <- 0;
+    let z <- 0;
+    let j <- i;
+    let k <- i;
+    while x < 10 do
+        let x <- i + 1;
+        let y <- j + 1;
+        let z <- k + 1;
+        let y <- y + 1;
+        let i <- i + 1;
+    od;
+    call OutputNum(x);
+    call OutputNum(y);
+    call OutputNum(z);
+    call OutputNum(i);
+    call OutputNum(j)
+}.

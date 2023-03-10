@@ -37,7 +37,7 @@ Debug Log:
       declared, the instruction id should be updated to the next instruction id. (Solved.)
    3. Third problem is to add the constant results into a block and update this block has the head of cfg.
    
-2. Update while statement to parser.
+2. Debug Copy Propagation and Array.
 """
 
 

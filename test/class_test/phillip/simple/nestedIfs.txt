@@ -1,0 +1,30 @@
+main
+
+var a, b, c;
+var d, e;
+
+{
+    let a <- 99;
+    let b <- a;
+    let c <- b;
+    let d <- b + c;
+    let e <- a + b;
+
+    if a < 0 then
+        let d <- d + e;
+        let a <- d;
+
+        if e > 0 then
+            let b <- a;
+        else
+            let b <- a * 2;
+        fi;
+
+
+    else
+        let d <- e;
+    fi;
+
+    let a <- a * 2;
+
+}.

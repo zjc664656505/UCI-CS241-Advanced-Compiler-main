@@ -1,0 +1,14 @@
+digraph G {
+        bb0 [shape=record, label="<b>BB0|{2: const #0|3: const #10|7: const #1|12: const #2}|"];
+        bb1 [shape=record, label="<b>BB1|{1: read}|i: (1)\nx: (2)\ny: (2)\nj: (1)\nk: (2)\nl: (2)\n"];
+        bb2 [shape=record, label="<b>join\nBB2|{19: phi (1) (21) var i|17: phi (2) (13) var l|14: phi (2) (13) var k|11: phi (2) (20) var y|9: phi (2) (8) var x|4: cmp (9) (3)|5: bge (4) (6)}|i: (19)\nx: (9)\ny: (11)\nj: (1)\nk: (14)\nl: (17)\n"];
+        bb3 [shape=record, label="<b>BB3|{8: add (19) (7)|10: add (1) (7)|13: mul (10) (12)|20: add (10) (7)|21: add (8) (7)|22: bra (19)}|i: (21)\nx: (8)\ny: (20)\nj: (1)\nk: (13)\nl: (13)\n"];
+        bb4 [shape=record, label="<b>BB4|{6: \<empty\>|23: write (9)|24: write (11)|25: write (14)|26: write (17)|27: write (19)}|i: (19)\nx: (9)\ny: (11)\nj: (1)\nk: (14)\nl: (17)\n"];
+bb0:s->bb1:n;
+bb1:s->bb2:n;
+bb2:b->bb3:b [color=blue, style=dotted, label="dom"]
+bb2:b->bb4:b [color=blue, style=dotted, label="dom"]
+bb2:s->bb3:n [label="fall-through"];
+bb2:s->bb4:n [label="branch"];
+bb3:s->bb2:n;
+}

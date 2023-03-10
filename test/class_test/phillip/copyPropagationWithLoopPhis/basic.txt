@@ -1,0 +1,18 @@
+main
+
+var i, j;
+
+{
+    let i <- 0;
+    let j <- 0;
+
+    while i < 100
+    do
+        call OutputNum(i);
+        call OutputNum(j);
+        let i <- i + 1;
+    od;
+
+    call OutputNum(i);
+    call OutputNum(j);    
+}.

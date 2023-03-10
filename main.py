@@ -152,8 +152,8 @@ class Graphviz:
 
 
 if __name__ == "__main__":
-    file = "1darray"
-    file_dir = "./test/" + file + ".txt"
+    file = "While_Single_1"
+    file_dir = "./test/class_test/Kyungmin/" + file + ".txt"
 
 
 

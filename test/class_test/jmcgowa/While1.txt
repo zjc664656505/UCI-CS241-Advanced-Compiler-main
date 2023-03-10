@@ -1,0 +1,13 @@
+main
+var a,b;
+{
+	let a <- 1776;
+	let b <- 1000;
+	while a > 0 do
+		if a < b then
+			let a <- 100;
+			let b <- 0;
+		fi;
+		let a <- a - 1;
+	od;
+}.

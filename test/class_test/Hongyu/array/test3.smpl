@@ -1,0 +1,16 @@
+main
+var a, b;
+array[1] x, y;
+{
+    let x[0] <- 10;
+    let a <- x[0];
+    let b <- x[0];
+
+    let y[0] <- x[0];
+    let b <- y[0];
+
+    call OutputNum(a);
+    call OutputNum(b);
+    call OutputNum(x[0]);
+    call OutputNum(y[0]);
+}.

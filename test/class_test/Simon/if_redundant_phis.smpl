@@ -1,0 +1,11 @@
+main
+var a, b; {
+    let a <- call InputNum();
+    let b <- 10;
+    if a < 10
+    then
+        let a <- b;
+    else
+        let a <- b;
+    fi;
+}.

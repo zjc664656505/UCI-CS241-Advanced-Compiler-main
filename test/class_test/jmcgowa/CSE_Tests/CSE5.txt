@@ -1,0 +1,9 @@
+main
+var a,b,c;
+{
+	let a <- 2000;
+	let b <- 10 + 10;
+	while a > 0 do
+		let a <- a - (10 + 10);
+	od;
+}.

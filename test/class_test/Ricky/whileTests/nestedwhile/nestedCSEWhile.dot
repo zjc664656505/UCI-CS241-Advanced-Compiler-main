@@ -1,0 +1,36 @@
+digraph G {
+	bb0[shape=record, label="<b>BB0|{3: const #10|6: const #1}"];
+	bb1[shape=record, label="<b>BB1|{0: read|1: read|2: read}|{i: (0, 0)|j: (0, 1)|k: (0, 2)|x: (0, 0)|y: (0, 1)|z: (0, 2)}"];
+	bb2[shape=record, label="<b>join\nBB2|{7: phi (12) (1)|17: phi (15) (0)|21: phi (19) (1)|23: phi (19) (2)|27: phi (26) (0)|4: cmp (27) (3)|5: bge (4) (29)}|{j: (1, 7)|x: (1, 17)|y: (1, 21)|z: (1, 23)|i: (1, 27)}"];
+	bb3[shape=record, label="<b>do\nBB3|{8: \<empty\>}|{j: (1, 24)}"];
+	bb4[shape=record, label="<b>join\nBB4|{16: phi (15) (17)|20: phi (19) (21)|22: phi (19) (23)|24: phi (12) (6)|9: cmp (24) (3)|10: bge (9) (26)}|{x: (1, 16)|y: (1, 20)|z: (1, 22)|j: (2, 24)}"];
+	bb5[shape=record, label="<b>do\nBB5|{11: add (27) (6)|12: add (24) (6)|13: add (11) (12)|14: add (2) (6)|15: add (13) (14)|18: add (11) (14)|19: add (18) (12)|25: bra (16)}|{x: (1, 15)|y: (1, 19)|z: (1, 19)|j: (2, 12)}"];
+	bb6[shape=record, label="<b>exit\nBB6|{26: add (27) (6)|28: bra (7)}|{i: (1, 26)}"];
+	bb7[shape=record, label="<b>exit\nBB7|{29: write (27)|30: end}"];
+
+	bb0:s -> bb1:n;
+	bb1:s -> bb2:n;
+	bb6:s -> bb2:n[label="branch", constraint=false];
+	bb2:s -> bb3:n[label="fall-through"];
+	bb3:s -> bb4:n[label="fall-through"];
+	bb5:s -> bb4:n[label="branch", constraint=false];
+	bb4:s -> bb5:n[label="fall-through"];
+	bb4:s -> bb6:n[label="branch"];
+	bb2:s -> bb7:n[label="branch"];
+	bb1:b -> bb2:b [color="red", style=dashed, label="dom"];
+	bb2:b -> bb3:b [color="green", style=dashed, label="dom"];
+	bb1:b -> bb3:b [color="red", style=dashed, label="dom"];
+	bb3:b -> bb4:b [color="cyan3", style=dashed, label="dom"];
+	bb2:b -> bb4:b [color="green", style=dashed, label="dom"];
+	bb1:b -> bb4:b [color="red", style=dashed, label="dom"];
+	bb4:b -> bb5:b [color="purple", style=dashed, label="dom"];
+	bb3:b -> bb5:b [color="cyan3", style=dashed, label="dom"];
+	bb2:b -> bb5:b [color="green", style=dashed, label="dom"];
+	bb1:b -> bb5:b [color="red", style=dashed, label="dom"];
+	bb4:b -> bb6:b [color="purple", style=dashed, label="dom"];
+	bb3:b -> bb6:b [color="cyan3", style=dashed, label="dom"];
+	bb2:b -> bb6:b [color="green", style=dashed, label="dom"];
+	bb1:b -> bb6:b [color="red", style=dashed, label="dom"];
+	bb2:b -> bb7:b [color="green", style=dashed, label="dom"];
+	bb1:b -> bb7:b [color="red", style=dashed, label="dom"]; 
+}

@@ -1,0 +1,23 @@
+main
+var a, b, c;
+{
+    let a <- 0;
+    let b <- 5;
+    let c <- 10;
+
+    if a > b
+    then
+        let a <- 5;
+        if a > c
+        then
+            let a <- 10;
+        else
+            let a <- 6;
+        fi;
+        let a <- a + 1;
+    else
+        let a <- 0;
+    fi;
+
+    let a <- c + 100;
+}.

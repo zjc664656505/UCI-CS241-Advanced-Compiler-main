@@ -1,0 +1,9 @@
+main 
+var x;
+{ 
+  let x <- 1; 
+  while x + 1 < 10 
+  do 
+    let x <- x + 2; 
+  od;
+}.
