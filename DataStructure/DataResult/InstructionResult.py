@@ -6,6 +6,7 @@ class InstructionResult(IResult):
         # constant -> instruction value
         self.iid = iid
         self.constant = constant
+        self.org_type = None
 
     def set(self, value):
         self.iid = value
@@ -25,7 +26,11 @@ class InstructionResult(IResult):
         return False
 
     def toInstruction(self):
+        self.org_type = type(self)
         return InstructionResult(self.iid)
+
+    def org_convert(self):
+        return self.org_type
 
     def toString(self):
         return f"({self.iid})"

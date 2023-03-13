@@ -98,13 +98,14 @@ class IrGenerator:
         self.compute(block, opCode, x, y)
 
     def loadAarray(self, block, varManager, varResult):
-        print("load array")
+        print("\n ***********load array")
         array = varResult.variable
         x = array.dimensionList
         y = array.indexList
         z = [0] * len(x)
         for i in range(len(y)):
             for j in range(i + 1, len(x)):
+                self.pc+=1
                 if z[i] == 0:
                     x_j = ConstantResult(x[j])
                     self.compute(block, OperatorCode.mul, y[i], x_j)
@@ -120,6 +121,7 @@ class IrGenerator:
         for i in range(i, len(z)):
             self.compute(block, OperatorCode.add, z[i - 1], z[i])
             z[i] = InstructionResult(self.pc)
+            self.pc += 1
         self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4))
         self.pc = self.pc + 1
         self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 1), ConstantResult(array.array_addr))
@@ -128,11 +130,12 @@ class IrGenerator:
         self.pc = self.pc + 1
 
     def storeArray(self, block, varManager, lrhResult, rrResult):
-        print("store array")
+        print("*****************\nstore array\n")
         array = lrhResult.variable
         x = array.dimensionList
         y = array.indexList
         z = [0] * len(x)
+        print(f"array start pc num: {self.pc}")
 
         for i in range(len(y)):
             for j in range(i + 1, len(x)):
@@ -152,6 +155,8 @@ class IrGenerator:
             self.compute(block, OperatorCode.add, z[i - 1], z[i])
             z[i] = InstructionResult(self.pc)
             self.pc = self.pc + 1
+
+        print(f"array end pc num: {self.pc}")
         self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4))
         self.pc = self.pc + 1
         self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 1), ConstantResult(array.array_addr))

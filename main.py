@@ -16,6 +16,7 @@ from DataStructure.Instruction import DeleteMode
 from DataStructure.DataResult.RegisterResult import RegisterResult
 from pathlib import Path
 from DataStructure.Blocks.WhileBlock import WhileBlock
+import os
 
 
 class Graphviz:
@@ -152,8 +153,8 @@ class Graphviz:
 
 
 if __name__ == "__main__":
-    file = "While_Single_1"
-    file_dir = "./test/class_test/Kyungmin/" + file + ".txt"
+    file = "1darray"
+    file_dir = "./test/" + file + ".txt"
 
 
 
@@ -163,4 +164,4 @@ if __name__ == "__main__":
     cfg = parse.run_parser()
     graph = Graphviz(parse, file_dir, "./visualization/")
     graph.showGraph()
-    graph_show = Source.from_file("./visualization/"+ file+ ".gv").view()
+    #graph_show = Source.from_file("./visualization/"+ file+ ".gv").view()

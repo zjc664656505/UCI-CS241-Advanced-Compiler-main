@@ -28,7 +28,6 @@ from DataStructure.CFG import CFG
 from DataStructure.DataResult.InstructionResult import InstructionResult
 from DataStructure.Operator import OperatorCode
 
-
 """
 Debug Log:
 1. Check the variable declaration. Making sure all variables declared at the beginning are pointing to the same address.
@@ -36,9 +35,8 @@ Debug Log:
    2. Now, the second problem is to update the instruction id after variable declaration. For example, after var a is
       declared, the instruction id should be updated to the next instruction id. (Solved.)
    3. Third problem is to add the constant results into a block and update this block has the head of cfg.
-   
-2. Debug Copy Propagation:
-   1. The copy propagation should be removed if move happens. Double check the assignment function.
+
+2. Debug Copy Propagation and Array.
 """
 
 
@@ -51,6 +49,7 @@ class Parser:
         self.killcounter = 0
         self.blockcounter = 0
         self.constantBlock = None
+        self.constants = {}
         # TODO: Build cfg
         self.cfg = CFG(self.blockcounter)
         self.varManager = self.cfg.mVariableManager
@@ -62,7 +61,7 @@ class Parser:
         self.tokenizer.error(e)
 
     def designator(self, block):
-        #print(self.irGenerator.pc)
+        # print(self.irGenerator.pc)
         varResult = VariableResult()
         if self.inputSym.checkSameType(TokenType.ident):
             # get the input symbol value -> e.g. main, var1, var2
@@ -87,10 +86,10 @@ class Parser:
                         array_var.array_addr = array_in_vm.array_addr
                         index_List = []
                         while True:
-                            #print(f"DEBUG: current inputSym {self.inputSym.value}")
+                            # print(f"DEBUG: current inputSym {self.inputSym.value}")
                             self.next()
                             index = self.expression(block)
-                            #print(f"Debug: index {index}")
+                            # print(f"Debug: index {index}")
                             index_List.append(index)
 
                             if self.inputSym.checkSameType(TokenType.closebracketToken):
@@ -116,10 +115,10 @@ class Parser:
         else:
             self.error(incorrectSyntaxException("Expected identifier"))
             return None
-        #print(f"*******\nDEBUG: Variable name {v.name}, Variable Version {v.version}********\n")
+        # print(f"*******\nDEBUG: Variable name {v.name}, Variable Version {v.version}********\n")
         return varResult
 
-    def factor(self, block):
+    def factor(self, block, array_flag=False):
         result = None
         if self.inputSym.checkSameType(TokenType.ident):
             result = self.designator(block)
@@ -135,10 +134,27 @@ class Parser:
             # TODO: Change made to the factor function 2/28/2023
             op = self.inputSym
             result = ConstantResult()
-            result.set(self.inputSym.value)
-            result.setiid(self.irGenerator.getPC()+1)
-            self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC()+1)
-            self.next()
+            if array_flag == False:
+                if self.inputSym.value not in self.constants:
+                    result.set(self.inputSym.value)
+                    result.setiid(self.irGenerator.getPC() + 1)
+                    self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 1)
+                    self.constants[self.inputSym.value] = self.irGenerator.getPC()+1
+                else:
+                    result.set(self.inputSym.value)
+                    result.setiid(self.constants[self.inputSym.value])
+                self.next()
+            else:
+                print("CREATE CONSTANT BLOCK FOR ARRAY")
+                if self.inputSym.value not in self.constants:
+                    result.set(self.inputSym.value)
+                    result.setiid(self.irGenerator.getPC() + 3)
+                    self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 3)
+                    self.constants[self.inputSym.value] = self.irGenerator.getPC()+3
+                else:
+                    result.set(self.inputSym.value)
+                    result.setiid(self.constants[self.inputSym.value])
+                self.next()
         elif self.inputSym.checkSameType(TokenType.openparenToken):
             self.next()
             result = self.expression(block)
@@ -155,8 +171,8 @@ class Parser:
             return result.clone()
         return result
 
-    def term(self, block):
-        factor_l = self.factor(block)
+    def term(self, block, array_flag=False):
+        factor_l = self.factor(block, array_flag)
         if factor_l is not None:
             while self.inputSym.checkTerm():
                 op = self.inputSym
@@ -183,14 +199,14 @@ class Parser:
                     factor_l.setiid(self.irGenerator.getPC() - 1)
         return factor_l
 
-    def expression(self, block):
-        term_l = self.term(block)
+    def expression(self, block, array_flag=False):
+        term_l = self.term(block, array_flag)
         if term_l is not None:
             while self.inputSym.checkExpression():
                 op = self.inputSym
                 self.next()
                 term_r = self.term(block)
-                #print(f"term_l version {term_r.variable.version}; term_l version {term_l.variable.version}")
+                # print(f"term_l version {term_r.variable.version}; term_l version {term_l.variable.version}")
                 if term_r is not None:
                     if isinstance(term_l, VariableResult):
                         term_l.setiid(term_l.variable.version)
@@ -207,7 +223,7 @@ class Parser:
                         self.irGenerator.pc += 1
 
                     term_l = term_l.clone()
-                    if isinstance(term_l, ConstantResult) or isinstance(term_l, VariableResult):
+                    if (isinstance(term_l, ConstantResult) or isinstance(term_l, VariableResult)) and array_flag == False:
                         print(f"*******Is Expression checked?********\n")
                         term_l = term_l.toInstruction()
                     term_l.setiid(self.irGenerator.getPC() - 1)
@@ -220,13 +236,14 @@ class Parser:
             while self.inputSym.checkRelation():
                 op = self.inputSym
                 self.next()
+                self.irGenerator.pc += 1
                 expr_r = self.expression(block)
                 # print(f"\nDEBUG: expr_l version {expr_l.iid}"
                 #       f" expr_r version {expr_r.iid}\n")
                 # print(op.value)
                 if expr_r is not None:
                     if isinstance(expr_r, ConstantResult):
-                        #print("Debug: ConstantResult in relation for expr_r")
+                        # print("Debug: ConstantResult in relation for expr_r")
                         self.irGenerator.compute(block, op, expr_l, expr_r)
                         self.irGenerator.pc += 2
                         branch_res.condition = op
@@ -255,42 +272,56 @@ class Parser:
                 if self.inputSym.checkSameType(TokenType.becomesToken):
                     op = self.inputSym
                     self.next()
-                    expr_res = self.expression(block)
-                    # DEBUG CHECK TYPE OF OBJECT FOR expr_res
-                    #print(expr_res)
-                    if expr_res is not None:
-                        if isinstance(expr_res, VariableResult):
-                            flag = False
-                        else:
-                            flag = True
-                        if expr_res.getiid() > 0 and (not isinstance(expr_res, RegisterResult)):
-                            expr_res = expr_res.toInstruction()
-                        var = designator_res.variable
-                        if varManager.isVariable(var):
-                            if designator_res.isAarry:
-                                self.irGenerator.storeArray(block, varManager, designator_res, expr_res)
-                                newKill = Instruction(0)
-                                # TODO: Should the killcounter be incremented at here? 2/15/2023
-                                self.killcounter += 1
-                                newKill.setExternel(self.killcounter, OperatorCode.store, designator_res, None)
-                                kill.append(newKill)
-                                designator_res = designator_res.toInstruction()
-                                designator_res.set(self.irGenerator.getPC() - 1)
-                            else:
-                                var.version = expr_res.iid
-                                if flag:
-                                    var.version = self.irGenerator.getPC()
-                                    self.irGenerator.compute(block, op, designator_res, expr_res)
-                                    # TODO should the pc of IRGenerator be incremented at here? 2/15/2023
+                    # expr_res = self.expression(block)
+                    # # DEBUG CHECK TYPE OF OBJECT FOR expr_res
+                    # # print(expr_res)
+                    # if expr_res is not None:
+                    #     if isinstance(expr_res, VariableResult):
+                    #         flag = False
+                    #     else:
+                    #         flag = True
+                    var = designator_res.variable
+                    if varManager.isVariable(var):
+                        if designator_res.isAarry:
+                            expr_res = self.expression(block, array_flag=True)
+                            if expr_res.getiid() > 0:
+                                expr_res = expr_res.toInstruction()
+                            print(f"\nEEEEEEE***** expr_res is ConstantResult with iid {expr_res.constant} Desnator {designator_res.iid}\n")
 
-                                    self.irGenerator.pc += 1
-                                    # print(f"UPDATE SSAMAP")
-                                    # print(var.name)
-                                    # print(var.address)
-                                    # print(var.version)
-                                    # print("-------------------\n")
-                                    varManager.updatessamap(var.address, var.version)
-                                block.global_ssa[var.address] = var.version
+
+                            self.irGenerator.storeArray(block, varManager, designator_res, expr_res)
+                            self.irGenerator.pc += 1
+
+                            newKill = Instruction(0)
+                            # TODO: Should the killcounter be incremented at here? 2/15/2023
+                            self.killcounter += 1
+                            newKill.setExternel(self.killcounter, OperatorCode.store, designator_res, None)
+                            kill.append(newKill)
+                            designator_res = designator_res.toInstruction()
+                            designator_res.set(self.irGenerator.getPC()-1)
+                        else:
+                            expr_res = self.expression(block)
+                            if expr_res is not None:
+                                if isinstance(expr_res, VariableResult):
+                                    flag = False
+                                else:
+                                    flag = True
+                            if expr_res.getiid() > 0:
+                                expr_res = expr_res.toInstruction()
+                            var.version = expr_res.iid
+                            if flag:
+                                var.version = self.irGenerator.getPC()
+                                self.irGenerator.compute(block, op, designator_res, expr_res)
+                                # TODO should the pc of IRGenerator be incremented at here? 2/15/2023
+
+                                self.irGenerator.pc += 1
+                                # print(f"UPDATE SSAMAP")
+                                # print(var.name)
+                                # print(var.address)
+                                # print(var.version)
+                                # print("-------------------\n")
+                                varManager.updatessamap(var.address, var.version)
+                            block.global_ssa[var.address] = var.version
 
     def typeDecl(self):
         dimensionList = list()
@@ -326,9 +357,11 @@ class Parser:
                 # TODO: Need to double check whether this is correct. 2/15/2023
                 varResult = VariableResult()
                 if len(dimensionList) == 0:
-                    varResult.set(Variable(self.inputSym.value, self.tokenizer.ident2Addr[self.inputSym.value], self.irGenerator.getPC()))
+                    varResult.set(Variable(self.inputSym.value, self.tokenizer.ident2Addr[self.inputSym.value],
+                                           self.irGenerator.getPC()))
                 else:
-                    varResult.set(Array(self.inputSym.value, self.tokenizer.ident2Addr[self.inputSym.value], self.irGenerator.getPC(), dimensionList))
+                    varResult.set(Array(self.inputSym.value, self.tokenizer.ident2Addr[self.inputSym.value],
+                                        self.irGenerator.getPC(), dimensionList))
             try:
                 # TODO: Double check the irGenerator declareVariable method. 2/15/2023
                 self.irGenerator.declareVariable(self.cfg.head, self.varManager, varResult, put=True)
@@ -354,8 +387,8 @@ class Parser:
             self.next()
             ifBlock = cfg.initializeIfBlock()
             # DEBUG CHECK IF BLOCK OBJECT TYPE
-            #print(ifBlock)
-            ifBlock.freezessa(block.global_ssa, None) # Update the SSA of the if block
+            # print(ifBlock)
+            ifBlock.freezessa(block.global_ssa, None)  # Update the SSA of the if block
             print(f"global ssa: {block.global_ssa}")
             ifBlock.setparent(block)
             block.setchild(ifBlock)
@@ -369,7 +402,7 @@ class Parser:
             ifBlock.setJoinBlock(joinBlock)
             joinBlock.setparent(ifBlock)
             branch_res = self.relation(ifBlock)
-            #print(branch_res.iid)
+            # print(branch_res.iid)
             # TODO, need to finish the if statement in parser
             self.irGenerator.compute(ifBlock, branch_res.condition, branch_res)
 
@@ -389,8 +422,8 @@ class Parser:
                 thenBlock.freezessa(ifBlock.global_ssa, None)
                 cfg.block_in_if[ifBlock.id].append(thenBlock.id)
                 thenBlock = self.sequence(thenBlock, kill)
-                #DEBUG: check thenBlock
-                #print(f'thenBlock {thenBlock is None}')
+                # DEBUG: check thenBlock
+                # print(f'thenBlock {thenBlock is None}')
 
                 # handle left join
                 # TODO: should the index of joinId be this? 2/16/2023
@@ -414,7 +447,7 @@ class Parser:
 
                 thenkill = list()
                 for k in kill:
-                    if not  (True in (j.id == k.id for j in tempkill)):
+                    if not (True in (j.id == k.id for j in tempkill)):
                         thenkill.append(k)
 
                 # TODO: handle else block
@@ -465,8 +498,6 @@ class Parser:
                     cfg.join_parent[join_id].append(else_block.id)
                     ifBlock.fixupBranch(branch_res.fixuplocation, joinBlock)
 
-
-
                 if self.inputSym.checkSameType(TokenType.fiToken):
                     # TODO: should we use pop at here?
                     cfg.dom_list_if.pop()
@@ -475,37 +506,35 @@ class Parser:
                     # TODO: Is this correct? 2/16/2023
                     left_block_ssa = cfg.blocks[cfg.join_parent[joinBlock.id][0] - cfg.base_block_counter].global_ssa
                     right_block_ssa = cfg.blocks[cfg.join_parent[joinBlock.id][1] - cfg.base_block_counter].global_ssa
-                    #print(f"SSA left {left_block_ssa}, SSA right {right_block_ssa}")
+                    # print(f"SSA left {left_block_ssa}, SSA right {right_block_ssa}")
 
                     # DEBUG SSA
                     # print(f"left_block_ssa {left_block_ssa}")
                     # print(f"right_block_ssa {right_block_ssa}")
 
-
                     # TODO: need to fix the phi instruction
                     joinBlock.createPhi(self.tokenizer.addr2Ident, left_block_ssa, right_block_ssa)
-                    #print(f"JoinBlock Phis: {joinBlock.phiManager.phis}")
+                    # print(f"JoinBlock Phis: {joinBlock.phiManager.phis}")
                     for x in joinBlock.phiManager.phis.keys():
                         joinBlock.phiManager.phis[x].variable.version = self.irGenerator.getPC()
                         joinBlock.phiManager.phis[x].id = self.irGenerator.getPC()
                         self.irGenerator.pc += 1
 
                     for x in joinBlock.phiManager.phis.values():
-                        #print(f"Phi instruction {x.toString()} , version {x.variable.version}, addr {x.variable.address}")
+                        # print(f"Phi instruction {x.toString()} , version {x.variable.version}, addr {x.variable.address}")
                         joinBlock.instructions.append(x)
-
 
                     for instr in joinBlock.instructions:
                         if isinstance(instr, PhiInstruction):
                             if instr.variable.address in joinBlock.global_ssa.keys():
-                                #print('#####################', instr.variable.address, instr.variable.version)
+                                # print('#####################', instr.variable.address, instr.variable.version)
 
                                 joinBlock.global_ssa[instr.variable.address] = instr.variable.version
-                                #print(f'operandx {instr.operandx.variable.version}, operandy {instr.operandy.variable.version}')
-                                #print(joinBlock.global_ssa)
+                                # print(f'operandx {instr.operandx.variable.version}, operandy {instr.operandy.variable.version}')
+                                # print(joinBlock.global_ssa)
                                 self.varManager.setssamap(joinBlock.global_ssa)
-                            #else:
-                                #print(f'operandx {instr.operandx.variable.version}, operandy {instr.operandy.variable.version}')
+                            # else:
+                            # print(f'operandx {instr.operandx.variable.version}, operandy {instr.operandy.variable.version}')
                 else:
                     self.error(incorrectSyntaxException("Expecting fi token"))
                     return None
@@ -517,14 +546,13 @@ class Parser:
             return None
         return joinBlock
 
-
     def funcCall(self, block):
-        #print(f"Function call function is called")
+        # print(f"Function call function is called")
         if self.inputSym.checkSameType(TokenType.callToken):
             op = self.inputSym
             self.next()
             func_sym = self.inputSym
-            #print(f"DEBUG: func_sym {self.inputSym.value}")
+            # print(f"DEBUG: func_sym {self.inputSym.value}")
 
             # TODO: double check the irGenerator.pc increment
             if self.inputSym.value in Operator.standardIoOperator:
@@ -540,13 +568,13 @@ class Parser:
                             return None
                     self.irGenerator.compute(block, op, None, None)
                     self.irGenerator.pc += 1
-                    return InstructionResult(self.irGenerator.getPC()-1)
+                    return InstructionResult(self.irGenerator.getPC() - 1)
                 elif self.inputSym.value == "OutputNum":
                     self.next()
                     if self.inputSym.checkSameType(TokenType.openparenToken):
                         self.next()
                         res = self.expression(block)
-                        #print(f"expression type {type(res)}")
+                        # print(f"expression type {type(res)}")
                         if res is not None:
                             self.irGenerator.compute(block, op, res, None)
                             self.irGenerator.pc += 1
@@ -587,7 +615,7 @@ class Parser:
             self.next()
             whileBlock = cfg.initializeWhileBlock()
 
-            if len(cfg.dom_list_if) >0:
+            if len(cfg.dom_list_if) > 0:
                 if len(cfg.dom_list) > 0:
                     if cfg.dom_list_if[-1] < cfg.dom_list_if[-1]:
                         cfg.while_in_if[cfg.dom_list_if[-1]].append(whileBlock.id)
@@ -643,7 +671,7 @@ class Parser:
 
                 cfg.loopblocks_in_while[cfg.dom_list[-1]].append(loopBlock.id)
                 cfg.blocks[loopBlock.id].getglobalssa().update(cfg.blocks[parent_id].getglobalssa())
-                #print(f"DEBUG while ssa do. All ssa in cfg {[i.getglobalssa() for i in cfg.blocks]}")
+                # print(f"DEBUG while ssa do. All ssa in cfg {[i.getglobalssa() for i in cfg.blocks]}")
 
                 cfg.parent_stack.append(loopBlock.id)
                 loopBlock.freezessa(whileBlock.global_ssa, None)
@@ -664,19 +692,18 @@ class Parser:
                     for i in kill:
                         if not (True in (j.id == i.id for j in tempkill)):
                             loopkill.append(i)
-                    if len(loopkill) >0:
+                    if len(loopkill) > 0:
                         whileBlock.addKill(loopkill)
                     print(f"DEBUG: cfg.block_in_while {cfg.block_in_while}")
                     print(f"DEBUG: input create phi block id {cfg.blocks[cfg.block_in_while[whileBlock.id][-1]].id}")
 
-
                     whileBlock.createPhis(cfg.blocks[cfg.block_in_while[whileBlock.id][-1]],
                                           self.tokenizer.addr2Ident, self.irGenerator)
-                    #print(f"DEBUG while ssa do. All ssa in cfg {[i.getglobalssa() for i in cfg.blocks]}")
+                    # print(f"DEBUG while ssa do. All ssa in cfg {[i.getglobalssa() for i in cfg.blocks]}")
                     # print(f"whileBlock.phiManager.phis.values(): {cfg.blocks[cfg.block_in_while[whileBlock.id][-1]-cfg.base_block_counter]}")
                     # print(f"\n****Debug While Loop phi: {whileBlock.phiManager.phis.values()}")
 
-                    #breakpoint()
+                    # breakpoint()
                     cfg.dom_list.pop()
 
                     for i in whileBlock.phiManager.phis.values():
@@ -691,7 +718,6 @@ class Parser:
                         self.irGenerator.pc += 1
                         whileBlock.global_ssa[i.variable.address] = i.variable.version
                     print(f"\n****Debug While Loop phi: {whileBlock.phiManager.phis.values()}")
-
 
                     whileBlock.phi_optimization(cfg)
 
@@ -711,40 +737,37 @@ class Parser:
             return None
         return followBlock
 
-
-
-    def block_gen(self, block, kill:list):
+    def block_gen(self, block, kill: list):
         new_block = None
         while_flag = False
         if_flag = False
         # print(f"{self.inputSym.value}")
         if new_block:
-            #print(f"\n*******Block ID {new_block.id}*******\n")
+            # print(f"\n*******Block ID {new_block.id}*******\n")
             pass
-        #print(self.inputSym.type)
+        # print(self.inputSym.type)
         if self.inputSym.checkSameType(TokenType.letToken):
             # print("\n*******assignment is called*******\n")
             self.assignment(block, kill)
             new_block = block
-            #print(f"\n*******Block ID {new_block.id}*******\n")
+            # print(f"\n*******Block ID {new_block.id}*******\n")
         elif self.inputSym.checkSameType(TokenType.callToken):
             # print(f"\n*******DEBUG: call token found {self.inputSym.value}*******\n")
-            self.funcCall(block) # Need to define the function call
+            self.funcCall(block)  # Need to define the function call
             new_block = block
-            #print(f"\n*******Block ID {new_block.id}*******\n")
+            # print(f"\n*******Block ID {new_block.id}*******\n")
         elif self.inputSym.checkSameType(TokenType.ifToken):
             new_block = self.ifStatement(block, kill)
             if_flag = True
-            #print(f"\n*******Block ID {new_block.id}********\n")
+            # print(f"\n*******Block ID {new_block.id}********\n")
         elif self.inputSym.checkSameType(TokenType.whileToken):
             new_block = self.whilestatement(block, kill)
             while_flag = True
         else:
-            #print(self.inputSym.value)
+            # print(self.inputSym.value)
             self.error(incorrectSyntaxException("No valid token found in block"))
 
-
-        #print(f"\n*******Block ID {new_block.id}*******\n")
+        # print(f"\n*******Block ID {new_block.id}*******\n")
         return new_block, while_flag, if_flag
 
     def sequence(self, block, kill: list):
@@ -785,17 +808,18 @@ class Parser:
             if if_flag:
                 followblock = new_block
 
-            #print(f"Current Symbol Value {self.inputSym.value}")
+            # print(f"Current Symbol Value {self.inputSym.value}")
             if self.inputSym.checkSameType(TokenType.semiToken):
                 self.next()
-                if self.inputSym.checkSameType(TokenType.elseToken) or self.inputSym.checkSameType(TokenType.fiToken)\
-                        or self.inputSym.checkSameType(TokenType.endToken) or self.inputSym.checkSameType(TokenType.odToken):
+                if self.inputSym.checkSameType(TokenType.elseToken) or self.inputSym.checkSameType(TokenType.fiToken) \
+                        or self.inputSym.checkSameType(TokenType.endToken) or self.inputSym.checkSameType(
+                    TokenType.odToken):
                     break
             else:
                 break
 
         # DEBUG: Check the new_block is None
-        #print(f"New block is None? {new_block is None}")
+        # print(f"New block is None? {new_block is None}")
         return new_block
 
     def computation(self):
@@ -803,12 +827,11 @@ class Parser:
             self.next()
             kill = list()
             while self.inputSym.checkSameType(TokenType.varToken) or self.inputSym.checkSameType(TokenType.arrToken):
-                #print(f"Check current symbol {self.inputSym.value}")
+                # print(f"Check current symbol {self.inputSym.value}")
                 self.varDecl()
 
             if self.inputSym.checkSameType(TokenType.beginToken):
                 self.next()
-
 
                 self.constantBlock = self.cfg.initializeConstantBlock()
 
@@ -818,20 +841,18 @@ class Parser:
                 self.cfg.head.setparent(self.constantBlock)
                 self.constantBlock.setchild(self.cfg.head)
 
-
-
                 # DEBUG sequence function
 
-                #print("RUN TAIL SEQUENCE")
-                self.cfg.tail = self.sequence(self.cfg.head, kill)# TODO: need to be implemented
+                # print("RUN TAIL SEQUENCE")
+                self.cfg.tail = self.sequence(self.cfg.head, kill)  # TODO: need to be implemented
 
                 # DEBUG: check if tail is None
-                #print("Tail is None? ", self.cfg.tail is None)
+                # print("Tail is None? ", self.cfg.tail is None)
                 if self.cfg.tail is None:
                     return False
 
                 if self.inputSym.checkSameType(TokenType.endToken):
-                    #print("End token is found")
+                    # print("End token is found")
                     self.next()
                     if self.inputSym.checkSameType(TokenType.periodToken):
                         op = self.inputSym
@@ -855,13 +876,17 @@ class Parser:
         self.next()
         self.cfg.done = self.computation()
         self.cfg.cse_optimization()
+        for i in self.cfg.blocks:
+            for j in i.instructions:
+                print(j.toString(True))
+        print("---------------------\n")
+
+
+        self.cfg.dup_variable_removal()
         self.cfg.move_replace()
         print(self.cfg.blocks)
 
         print("Is CFG done? ", self.cfg.done)
-        # all_instr = [i.instructions for i in self.cfg.blocks]
-        # print(all_instr)
-
 
         return self.cfg
 
