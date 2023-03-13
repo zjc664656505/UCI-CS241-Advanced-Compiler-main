@@ -1,0 +1,16 @@
+main
+var a, b, c, d;
+{
+    let a <- 1;
+    let b <- a;
+    let c <- 10;
+    let d <- 1;
+
+    while a < c
+    do
+        let d <- a;
+        let b <- a;
+        let a <- a + a;
+        let b <- d + b;
+    od;
+}.

@@ -1,0 +1,10 @@
+main
+
+var a, b, c;
+
+{
+    let a <- 10;
+    let c <- a + b;
+
+    call OutputNum(c);
+}.

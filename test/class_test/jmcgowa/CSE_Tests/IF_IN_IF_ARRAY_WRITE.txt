@@ -1,0 +1,16 @@
+main
+array[12] d;
+{
+	let d[5] <- 1776;
+	call OutputNum(d[5]);
+	if 5 < 12 then
+		if 5 < 11 then
+			let d[5] <- 1992;
+		else
+			call OutputNum(d[5]);
+		fi;
+	else
+		call OutputNum(d[5]);
+	fi;
+	call OutputNum(d[5]);
+}.

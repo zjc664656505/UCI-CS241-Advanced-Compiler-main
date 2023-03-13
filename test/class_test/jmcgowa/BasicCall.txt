@@ -1,0 +1,14 @@
+main
+var a,b,c;
+{
+	let a <- 10;
+	let b <- 12;
+	if a < b * 2then
+		let c <- call InputNum();
+		call OutputNum(c * 2);
+	else
+		let c <- 1992;
+		call OutputNum(call InputNum * 20);
+	fi;
+	let a <- c + b;
+}.

@@ -1,0 +1,9 @@
+main
+var a, b; {
+    let a <- 10;
+    if a < 20
+    then 
+        let b <- 9;
+    fi;
+    call OutputNum(b);
+}.

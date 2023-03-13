@@ -1,0 +1,18 @@
+main
+
+var i, x;
+array[10] a;
+
+{
+    let i <- call InputNum();
+    let x <- call InputNum();
+
+    call OutputNum(a[i]);
+
+    if i > 9999 then
+        call OutputNum(a[i]);
+        let a[i] <- x;
+    fi;
+
+    call OutputNum(a[i]);
+}.

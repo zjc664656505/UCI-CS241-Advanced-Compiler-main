@@ -1,0 +1,12 @@
+main
+function function1(x);
+{
+    return x * x;
+};
+function function2(y);
+{
+    return y + 1;
+};
+{
+    call OutputNum(call function1(12) + call function2(10));
+}.

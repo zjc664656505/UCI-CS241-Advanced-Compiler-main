@@ -1,0 +1,13 @@
+main
+var a, b;
+{
+    let a <- 1;
+    let b <- a;
+    let b <- (a + a) * 10;
+    while a < 40 do
+        let a <- a + a;
+        while a < b do
+            let a <- a + b;
+        od;
+    od;
+}.

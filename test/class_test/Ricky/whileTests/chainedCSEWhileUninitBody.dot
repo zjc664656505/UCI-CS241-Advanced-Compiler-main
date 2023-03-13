@@ -1,0 +1,18 @@
+digraph G {
+	bb0[shape=record, label="<b>BB0|{0: const #5|1: const #1|5: const #10|8: const #0|11: const #2}"];
+	bb1[shape=record, label="<b>BB1|{2: \<empty\>}|{b: (0, 0)|i: (0, 1)|j: (0, 1)|y: (0, 1)}"];
+	bb2[shape=record, label="<b>join\nBB2|{10: phi (16) (1)|14: phi (13) (8)|15: phi (21) (1)|3: add (15) (1)|4: add (3) (10)|6: cmp (4) (5)|7: bge (6) (22)}|{y: (1, 10)|a: (1, 14)|a: (0, 8)|i: (1, 15)}"];
+	bb3[shape=record, label="<b>do\nBB3|{18: add (1) (1)|9: mul (14) (10)|12: add (1) (11)|20: add (15) (11)|13: add (3) (12)|21: add (3) (20)|19: add (18) (12)|16: mul (13) (19)|17: bra (10)}|{a: (1, 13)|a: (0, 13)|y: (3, 16)|y: (2, 19)|y: (1, 9)|i: (1, 21)}"];
+	bb4[shape=record, label="<b>exit\nBB4|{22: add (14) (0)|23: add (22) (15)|24: add (23) (1)|25: mul (24) (10)|26: add (14) (25)|27: end}|{b: (1, 25)|a: (2, 26)}"];
+
+	bb0:s -> bb1:n;
+	bb1:s -> bb2:n;
+	bb3:s -> bb2:n[label="branch", constraint=false];
+	bb2:s -> bb3:n[label="fall-through"];
+	bb2:s -> bb4:n[label="branch"];
+	bb1:b -> bb2:b [color="red", style=dashed, label="dom"];
+	bb2:b -> bb3:b [color="green", style=dashed, label="dom"];
+	bb1:b -> bb3:b [color="red", style=dashed, label="dom"];
+	bb2:b -> bb4:b [color="green", style=dashed, label="dom"];
+	bb1:b -> bb4:b [color="red", style=dashed, label="dom"]; 
+}

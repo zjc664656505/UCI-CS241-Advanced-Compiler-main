@@ -1,0 +1,5 @@
+digraph main {
+ bb0 [shape=record,label="<b>BB0| {1: const#0}"];
+	bb1 [shape=record,label="<b>BB1| {2: write (1)}"];
+bb0:s -> bb1:n [label="fall-through"]
+}

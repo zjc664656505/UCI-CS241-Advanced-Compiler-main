@@ -1,0 +1,13 @@
+main
+
+var i, j, x;
+array[10][5] a;
+
+{
+    let i <- call InputNum();
+    let j <- call InputNum();
+
+    let a[i][j] <- 9999;
+    
+    call OutputNum(a[i][j]);
+}.

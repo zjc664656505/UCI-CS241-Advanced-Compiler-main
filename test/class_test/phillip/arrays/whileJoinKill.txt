@@ -1,0 +1,16 @@
+main
+
+var i, x;
+array[10] a;
+
+{
+    let i <- call InputNum();
+    let x <- call InputNum();
+
+    call OutputNum(a[i]);
+
+    while i > 9999 do
+        call OutputNum(a[i]);
+        let a[i] <- x;
+    od;
+}.

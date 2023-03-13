@@ -1,0 +1,18 @@
+./singleBlock
+    ./CSEOperandAgnostic.txt: tests for CSE and copy propagation
+
+./ifTests
+    ./iftest.txt: a basic if test with no else block
+    ./ifElestTest.txt: basic if-else test
+    ./nestedIfElse.txt: tests nested if else statements
+
+./whileTests
+    ./basicWhile.txt: tests a basic functionality of the while loop
+    ./chainedCSEwhile.txt: tests if CSE and copy propagation is performed correctly for loop invariant expressions and subexpressions
+    ./chainedCSEWhileUninitRelations.txt: same test as above, except "a" is not initialized prior to entering relations
+    ./chainedCSEWhileUninitBody.txt: similar test to 3. except "a" is not initialized and is used in body
+    ./whileCSERelations.txt: tests CSE and CP in relation body + correct SSA phi replacement
+
+    ./nestedWhile
+        ./basicNestedWhile.txt: tests a basic nested while
+        ./nestedCSEWhile.txt: tests loop invariance and CSE within nested loops

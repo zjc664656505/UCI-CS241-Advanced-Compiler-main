@@ -1,0 +1,26 @@
+digraph main {
+    bb0 [shape=record,label="<b>BB0| {14: const#1|6: const#5|1: const#10}"];
+    bb1 [shape=record,label="<b>BB1| {2: read}"];
+    bb2 [shape=record,label="<b>BB2| {5: phi (13) (1)|4: phi (9) (2)|3: phi (12) (1)|7: cmp (5) (6)|8: bgt (7) (9)}"];
+    bb3 [shape=record,label="<b>BB3| {19: write (5)}"];
+    bb4 [shape=record,label="<b>BB4| {9: read|10: cmp (3) (9)|11: bgt (10) (15)}"];
+    bb5 [shape=record,label="<b>BB5| {16: mul (5) (5)|17: bra (13)}"];
+    bb6 [shape=record,label="<b>BB6| {15: sub (3) (14)}"];
+    bb7 [shape=record,label="<b>BB7| {13: phi (5) (16)|12: phi (15) (3)|18: bra (5)}"];
+bb0:s -> bb1:n [label="fall-through"]
+bb1:s -> bb2:n [label="fall-through"]
+bb2:s -> bb3:n [label="fall-through"]
+bb2:b -> bb3:b [color=blue, style=dotted, label="dom"]
+bb2:s -> bb4:n [label="branch"]
+bb2:b -> bb4:b [color=blue, style=dotted, label="dom"]
+bb2:b -> bb2:b [color=blue, style=dotted, label="dom"]
+bb4:s -> bb5:n [label="fall-through"]
+bb4:b -> bb5:b [color=blue, style=dotted, label="dom"]
+bb4:s -> bb6:n [label="branch"]
+bb4:b -> bb6:b [color=blue, style=dotted, label="dom"]
+bb4:b -> bb7:b [color=blue, style=dotted, label="dom"]
+bb5:se -> bb7:ne [label="branch"]
+bb6:s -> bb7:n [label="fall-through"]
+bb7:se -> bb2:ne [label="branch"]
+}
+

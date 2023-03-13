@@ -1,0 +1,15 @@
+main
+var a,b,c,d;
+{
+	let a <- 10;
+	let d <- 10;
+	let b <- a + a;
+	let c <- a + a;
+	if 10 < 10 then
+		let d <- a + a + c;
+	else
+		let d <- a + a + c;
+	fi;
+
+	call OutputNum(d);	
+}.

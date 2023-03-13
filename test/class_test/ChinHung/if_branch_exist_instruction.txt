@@ -1,0 +1,16 @@
+main
+var a, b, c, d;
+{
+    let a <- 0;
+    let b <- 5;
+    let c <- a + b;
+
+    if a > b
+    then
+        let d <- a + b;
+    else
+        let d <- a - b;
+    fi;
+
+    let a <- c + d;
+}.
