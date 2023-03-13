@@ -1,6 +1,0 @@
-main
-var a,b,c;
-array[12] d;
-{
-	let d[5] <- 1776;
-}.

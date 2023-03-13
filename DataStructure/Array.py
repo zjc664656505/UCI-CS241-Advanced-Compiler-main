@@ -11,7 +11,7 @@ class Array(Variable):
             # define temperal arraysize = 4.
             self.arraysize = 4
             for i in dimensionList:
-                self.arraysize = self.arraysize*i
+                self.arraysize = self.arraysize* int(i)
         else:
             self.arraysize = 0
 

@@ -154,13 +154,56 @@ class Graphviz:
 
 if __name__ == "__main__":
     cbelem = "class_test/cbelem/while/"
+    # file_dir = "./test/" + cbelem + "nested_while_no_expr_elim.smpl"
+
     ChinHung = "class_test/ChinHung/"
+    # file_dir = "./test/" + ChinHung + "if_branch_exist_instruction.txt"
+    # file_dir = "./test/" + ChinHung + "while_having_computation_in_compare.txt"
 
+    Hongyu = "class_test/Hongyu/"
 
+    ##array##
+    # file_dir = "./test/" + Hongyu + "array/" + "test1.smpl"
+    # file_dir = "./test/" + Hongyu + "array/" + "test2.smpl"
+    # file_dir = "./test/" + Hongyu + "array/" + "test3.smpl"
 
-    #file_dir = "./test/" + cbelem + "nested_while_no_expr_elim.smpl"
-    #file_dir = "./test/" + ChinHung + "if_branch_exist_instruction.txt"
-    file_dir = "./test/" + ChinHung + "while_having_computation_in_compare.txt"
+    ##iftests##
+    # file_dir = "./test/" + Hongyu + "iftests/" + "test1.smpl"
+
+    ##simpletests##
+    # file_dir = "./test/" + Hongyu + "simpletests/" + "test1.smpl"
+
+    ##while##
+    # file_dir = "./test/" + Hongyu + "while/" + "test1.smpl"
+    # file_dir = "./test/" + Hongyu + "while/" + "test2.smpl"
+    # file_dir = "./test/" + Hongyu + "while/" + "test3.smpl"
+    # file_dir = "./test/" + Hongyu + "while/" + "test4.smpl"
+
+    jmcgowa = "class_test/jmcgowa/"
+
+    ##CSE_Tests##
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE1.txt"
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE2.txt"
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE3.txt"
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE4.txt"
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE5.txt"
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE6.txt"
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "IF_ELSE_NO_WRITE.txt"
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "IF_ELSE_WRITE.txt"
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "IF_IN_IF_ARRAY_NO_WRITE.txt"
+    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "IF_IN_IF_ARRAY_WRITE.txt"
+
+    ##Regular Tests##
+    # file_dir = "./test/" + jmcgowa + "Array1.txt"
+    # file_dir = "./test/" + jmcgowa + "Array1_2.txt"
+    # file_dir = "./test/" + jmcgowa + "Array2.txt"
+    # file_dir = "./test/" + jmcgowa + "Array2_2.txt"
+    # file_dir = "./test/" + jmcgowa + "Array3.txt"
+    # file_dir = "./test/" + jmcgowa + "Array3_3.txt"
+    # file_dir = "./test/" + jmcgowa + "BasicCall.txt"
+    # file_dir = "./test/" + jmcgowa + "If_Else.txt"
+    # file_dir = "./test/" + jmcgowa + "Nested_Ifs.txt"
+    file_dir = "./test/" + jmcgowa + "While1.txt"
 
 
 

@@ -776,7 +776,7 @@ class CFG:
                 inst.deletemode = DeleteMode._NOT_DEL
                 # TODO DO: Should the self.id -1 at here?
                 # What is the id here?
-                block.instructions[id - 1].deletemode = DeleteMode._NOT_DEL
+                block.instructions[-1].deletemode = DeleteMode._NOT_DEL
                 return inst
         elif isinstance(block, WhileBlock):
             # need to check the block insider while is complete or not
