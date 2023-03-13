@@ -153,13 +153,19 @@ class Graphviz:
 
 
 if __name__ == "__main__":
-    file = "1darray"
-    file_dir = "./test/" + file + ".txt"
+    cbelem = "class_test/cbelem/while/"
+    ChinHung = "class_test/ChinHung/"
 
 
 
-    # tokenize = Tokenizer(file_dir)
-    # sym = tokenize.getSym()
+    #file_dir = "./test/" + cbelem + "nested_while_no_expr_elim.smpl"
+    #file_dir = "./test/" + ChinHung + "if_branch_exist_instruction.txt"
+    file_dir = "./test/" + ChinHung + "while_having_computation_in_compare.txt"
+
+
+
+    tokenize = Tokenizer(file_dir)
+    sym = tokenize.getSym()
     parse = Parser(file_dir)
     cfg = parse.run_parser()
     graph = Graphviz(parse, file_dir, "./visualization/")
