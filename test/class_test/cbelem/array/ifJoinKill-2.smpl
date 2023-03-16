@@ -1,0 +1,20 @@
+main
+
+    var i, j;
+    array[10] a;
+
+    {
+        let i <- call InputNum();
+        let j <- i;
+
+        call OutputNum(a[i+1]);
+        call OutputNum(a[j+1]);
+
+        if i > 1 then
+            call OutputNum(a[i+1]);
+            call OutputNum(a[j]);
+            let a[i] <- 9999;
+        fi;
+        call OutputNum(a[i]);
+        call OutputNum(a[j]);
+    }.

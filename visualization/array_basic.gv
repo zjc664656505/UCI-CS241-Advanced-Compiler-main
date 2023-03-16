@@ -1,9 +1,0 @@
-digraph G {
-node [shape=record];
-subgraph cluster_main{
-label = "Main";
-BB0 [shape=record, label="<b>BB0|{3: const #5|3: const #1776}"];
-BB1 [shape=record, label="<b>BB1|{2: mul (3) (-1)|3: adda (2) (-1)|4: store (3) (3)|5: end}"];
-}
-BB0:s -> BB1:n ;
-}

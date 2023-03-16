@@ -1,0 +1,7 @@
+digraph G {
+bb0[shape=record, label="<b>BB0|{1: const #1|2: const #2}"];
+bb1[shape=record, label="<b>BB1|{3: mul (1) (2)|4: mul (3) (3)|5: add (4) (1)|6: add (4) (5)|7: end} | {a: 4|b: 5|c: 6}"];
+bb0:s->bb1:n ;
+bb0:b->bb1:b [color=blue, style=dotted, label="dom"];
+}
+

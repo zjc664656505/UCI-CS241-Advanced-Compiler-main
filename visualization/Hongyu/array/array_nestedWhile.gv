@@ -1,0 +1,27 @@
+digraph G {
+node [shape=record];
+subgraph cluster_main{
+label = "Main";
+BB0 [shape=record, label="<b>BB0|{3: const #0|5: const #10|9: const #20|30: const #100|43: const #200|46: const #1}"];
+BB1 [shape=record, label="<b>BB1|{2: mul (3) (-1)|3: adda (2) (-1)|4: store (5) (3)|7: adda (2) (-1)|8: store (9) (7)|11: adda (2) (-1)|12: load (11)}"];
+BB2 [shape=record, label="<b>BB2|{19: adda (2) (-1)|20: load (19)|25: cmp (20) (20)|26: bge (25) block:= [7]|48 : phi x48 := (12) (45)}"];
+BB3 [shape=record, label="<b>BB3|{28: adda (2) (-1)|29: store (30) (28)}"];
+BB4 [shape=record, label="<b>BB4|{32: adda (2) (-1)|33: load (32)|38: cmp (33) (33)|39: bge (38) block:= [6]}"];
+BB5 [shape=record, label="<b>BB5|{41: adda (2) (-1)|42: store (43) (41)|44: bra block:= [4]}"];
+BB6 [shape=record, label="<b>BB6|{45: add (12) (46)|47: bra block:= [2]}"];
+BB7 [shape=record, label="<b>BB7|{49: write (48)|58: write (20)|59: write (20)|60: end}"];
+}
+BB0:s -> BB1:n ;
+BB1:b -> BB2:b [color=blue, style=dotted, label="dom"];
+BB3:b -> BB4:b [color=blue, style=dotted, label="dom"];
+BB2:b -> BB7:b [color=blue, style=dotted, label="dom"];
+BB4:b -> BB6:b [color=blue, style=dotted, label="dom"];
+BB2:b -> BB3:b [color=blue, style=dotted, label="dom"];
+BB4:b -> BB5:b [color=blue, style=dotted, label="dom"];
+BB4:s -> BB6:n [label="branch"];
+BB2:s -> BB7:n [label="branch"];
+BB6:s -> BB2:e [label="branch"];
+BB5:s -> BB4:e [label="branch"];
+BB2:s -> BB3:n [label="fall-through"];
+BB4:s -> BB5:n [label="fall-through"];
+}

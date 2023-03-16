@@ -1,0 +1,14 @@
+ main
+    var x, y;
+    {
+        let x <- 1;
+        let y <- 2 + 5;
+        if x + 1 > 10
+            then
+                let y <- 2 + 5;
+                let x <- x + 1;
+            else
+                let y <- 2 + 5;
+                let x <- x + 3;
+        fi;
+    }.

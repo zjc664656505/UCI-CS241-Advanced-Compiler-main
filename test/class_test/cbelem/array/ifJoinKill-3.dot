@@ -1,0 +1,12 @@
+digraph G {
+bb0[shape=record, label="<b>BB0|{1: const #0|3: const #1|5: const #4|19: const #9999}"];
+bb1[shape=record, label="<b>BB1|{2: read|4: add (2) (3)|6: mul (4) (5)|7: add (BASE) (1)|8: adda (7) (6)|9: load (8)|10: write (9)|11: write (9)|12: cmp (2) (3)|13: ble (12) (22)} | {i: 2|j: 2|a: 1}"];
+bb2[shape=record, label="<b>BB2|{14: write (9)|15: mul (2) (5)|16: adda (7) (15)|17: load (16)|18: write (17)|20: adda (7) (15)|21: store (20) (19)|23: bra (22)} | {i: 19}"];
+bb3[shape=record, label="<b>BB3|{22: phi (2) (19)|24: mul (22) (5)|25: adda (7) (24)|26: load (25)|27: write (26)|28: mul (2) (5)|29: adda (7) (28)|30: load (29)|31: write (30)|32: end} | {i: 22}"];
+bb0:s->bb1:n ;
+bb1:s->bb2:n [label="fall-through"];
+bb2:s->bb3:n [label="branch"];
+bb0:b->bb1:b [color=blue, style=dotted, label="dom"];
+bb1:b->bb2:b [color=blue, style=dotted, label="dom"];
+bb1:b->bb3:b [color=blue, style=dotted, label="dom"];
+}

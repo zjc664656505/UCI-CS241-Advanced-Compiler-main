@@ -1,0 +1,9 @@
+digraph G {
+node [shape=record];
+subgraph cluster_main{
+label = "Main";
+BB0 [shape=record, label="<b>BB0|{5: const #0}"];
+BB1 [shape=record, label="<b>BB1|{4: mul (5) (-1)|5: adda (4) (-1)|6: load (5)|7: write (6)|13: write (6)|17: mul (4) (-1)|23: write (6)|29: mul (17) (-1)|39: write (6)|40: end}"];
+}
+BB0:s -> BB1:n ;
+}

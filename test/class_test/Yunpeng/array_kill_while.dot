@@ -1,0 +1,29 @@
+digraph structs {
+	node [shape=record]
+	BB0:s -> BB2:n
+	BB2:s -> BB3:n
+	BB3:s -> BB4:n
+	BB4:s -> BB6:n [color="#D2691E" fontcolor="#D2691E"]
+	BB4:s -> BB5:n [color="#00BFFF" fontcolor="#00BFFF"]
+	BB5:s -> BB3:n
+	BB6:s -> BB1:n
+	subgraph cluster_0 {
+		color="#40E0D0" fontcolor="#40E0D0" label=<<I>computation block</I>> style=dashed
+		subgraph cluster_3 {
+			color="#40E0D0" fontcolor="#40E0D0" label=<<I>main function</I>> style=dashed
+			subgraph cluster_5 {
+				color="#40E0D0" fontcolor="#40E0D0" label=<<I>while statement</I>> style=dashed
+				subgraph cluster_8 {
+					color="#40E0D0" fontcolor="#40E0D0" label=<<I>while body</I>> style=dashed
+					BB5 [label=<<b>BB5</b> | {<font color="#FF69B4"><b>28</b></font>: write (21)|<font color="#FF69B4"><b>37</b></font>: add (21) (3)|<font color="#FF69B4"><b>39</b></font>: store (37) (9)|<font color="#FF69B4"><b>47</b></font>: load (9)|<font color="#FF69B4"><b>48</b></font>: add (47) (3)|<font color="#FF69B4"><b>50</b></font>: store (48) (9)|<font color="#FF69B4"><b>53</b></font>: bra (61)}>]
+				}
+				BB3 [label=<<b>BB3</b> | {<font color="#FF69B4"><b>61</b></font>: nop}>]
+				BB4 [label=<<b>BB4</b> | {<font color="#FF69B4"><b>21</b></font>: load (9)|<font color="#FF69B4"><b>22</b></font>: cmp (21) (7)|<font color="#FF69B4"><b>51</b></font>: blt (22) (28)|<font color="#FF69B4"><b>52</b></font>: bra (59)}>]
+			}
+			BB6 [label=<<b>BB6</b> | {<font color="#FF69B4"><b>59</b></font>: write (21)}>]
+			BB2 [label=<<b>BB2</b> | {<font color="#FF69B4"><b>5</b></font>: mul (3) (4)|<font color="#FF69B4"><b>6</b></font>: add (5) (3)|<font color="#FF69B4"><b>8</b></font>: mul (6) (7)|<font color="#FF69B4"><b>9</b></font>: adda (2) (8)|<font color="#FF69B4"><b>10</b></font>: store (1) (9)|<font color="#FF69B4"><b>15</b></font>: load (9)|<font color="#FF69B4"><b>16</b></font>: write (15)}>]
+		}
+		BB0 [label=<<b>BB0</b> | {<font color="#FF69B4"><b>0</b></font>: FP|<font color="#FF69B4"><b>1</b></font>: const #0|<font color="#FF69B4"><b>2</b></font>: add (0) (1)|<font color="#FF69B4"><b>3</b></font>: const #1|<font color="#FF69B4"><b>4</b></font>: const #2|<font color="#FF69B4"><b>7</b></font>: const #4}>]
+		BB1 [label=<<b>BB1</b> | {<font color="#FF69B4"><b>60</b></font>: end}>]
+	}
+}

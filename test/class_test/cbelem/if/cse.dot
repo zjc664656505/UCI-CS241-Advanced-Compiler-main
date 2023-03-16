@@ -1,0 +1,17 @@
+main
+var a,b,c,d;
+{
+    let a <- call InputNum;
+    let d <- a;
+    let b <- a + a;
+    let c <- a + a;
+    if c < 10 then
+        let b <- d + d;
+        let d <- a + d + c;
+        let b <- d + d;
+    else
+        let d <- a + a + c;
+    fi;
+
+    call OutputNum(d);
+}.

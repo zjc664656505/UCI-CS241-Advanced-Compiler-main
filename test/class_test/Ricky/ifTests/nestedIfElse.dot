@@ -1,0 +1,36 @@
+digraph G {
+bb0[shape=record, label="<b>BB0|{1: const #0|2: const #6|3: const #5|6: const #7|13: const #10|16: const #100|21: const #2|26: const #50|29: const #150}"];
+bb1[shape=record, label="<b>BB1|{4: mul (2) (3)|5: add (2) (4)|7: cmp (2) (1)|8: ble (7) (33)} | {a: 2|b: 5|c: 2|d: 6}"];
+bb2[shape=record, label="<b>BB2|{9: add (2) (5)|11: cmp (9) (5)|12: ble (11) (23)} | {c: 9}"];
+bb3[shape=record, label="<b>BB3|{14: cmp (6) (13)|15: ble (14) (17)}"];
+bb4[shape=record, label="<b>BB4|{18: bra (17)} | {d: 16}"];
+bb5[shape=record, label="<b>BB5|{17: phi (6) (16)|20: bra (19)} | {d: 17}"];
+bb6[shape=record, label="<b>BB6|{23: nop} | {a: 21}"];
+bb7[shape=record, label="<b>BB7|{19: phi (17) (6)|22: phi (2) (21)|27: cmp (26) (22)|28: bge (27) (30)} | {d: 19|a: 22|c: 26}"];
+bb8[shape=record, label="<b>BB8|{31: bra (30)} | {d: 29}"];
+bb9[shape=record, label="<b>BB9|{30: phi (19) (29)|32: bra (10)} | {d: 30}"];
+bb10[shape=record, label="<b>BB10|{33: nop} | {c: 2}"];
+bb11[shape=record, label="<b>BB11|{10: phi (26) (2)|24: phi (30) (6)|25: phi (22) (2)|34: end} | {c: 10|d: 24|a: 25}"];
+bb0:s->bb1:n ;
+bb1:s->bb2:n [label="fall-through"];bb1:s->bb10:n [label="branch"];
+bb2:s->bb3:n [label="fall-through"];bb2:s->bb6:n [label="branch"];
+bb3:s->bb4:n [label="fall-through"];
+bb4:s->bb5:n [label="branch"];
+bb5:s->bb7:n [label="branch"];
+bb6:s->bb7:n [label="fall-through"];
+bb7:s->bb8:n [label="fall-through"];
+bb8:s->bb9:n [label="branch"];
+bb9:s->bb11:n [label="branch"];
+bb10:s->bb11:n [label="fall-through"];
+bb0:b->bb1:b [color=blue, style=dotted, label="dom"];
+bb1:b->bb2:b [color=blue, style=dotted, label="dom"];
+bb2:b->bb3:b [color=blue, style=dotted, label="dom"];
+bb3:b->bb4:b [color=blue, style=dotted, label="dom"];
+bb3:b->bb5:b [color=blue, style=dotted, label="dom"];
+bb2:b->bb6:b [color=blue, style=dotted, label="dom"];
+bb2:b->bb7:b [color=blue, style=dotted, label="dom"];
+bb7:b->bb8:b [color=blue, style=dotted, label="dom"];
+bb7:b->bb9:b [color=blue, style=dotted, label="dom"];
+bb1:b->bb10:b [color=blue, style=dotted, label="dom"];
+bb1:b->bb11:b [color=blue, style=dotted, label="dom"];
+}

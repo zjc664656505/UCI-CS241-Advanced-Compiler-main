@@ -1,0 +1,18 @@
+digraph G {
+node [shape=record];
+subgraph cluster_main{
+label = "Main";
+BB0 [shape=record, label="<b>BB0|{2: const #0|5: const #100|10: const #1}"];
+BB1 [shape=record, label="<b>BB1|}"];
+BB2 [shape=record, label="<b>BB2|{4: cmp (2) (5)|6: bge (4) block:= [4]|12 : phi i12 := (2) (9)}"];
+BB3 [shape=record, label="<b>BB3|{7: write (12)|8: write (2)|9: add (12) (10)|11: bra block:= [2]}"];
+BB4 [shape=record, label="<b>BB4|{13: write (12)|14: write (2)|15: end}"];
+}
+BB0:s -> BB1:n ;
+BB2:b -> BB3:b [color=blue, style=dotted, label="dom"];
+BB2:b -> BB4:b [color=blue, style=dotted, label="dom"];
+BB1:b -> BB2:b [color=blue, style=dotted, label="dom"];
+BB2:s -> BB4:n [label="branch"];
+BB3:s -> BB2:e [label="branch"];
+BB2:s -> BB3:n [label="fall-through"];
+}

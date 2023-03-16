@@ -1,0 +1,27 @@
+digraph G {
+node [shape=record];
+subgraph cluster_main{
+label = "Main";
+BB0 [shape=record, label="<b>BB0|{2: const #1|4: const #10|7: const #40}"];
+BB1 [shape=record, label="<b>BB1|{2: add (2) (2)|3: mul (2) (4)}"];
+BB2 [shape=record, label="<b>BB2|{6: cmp (2) (7)|8: bge (6) block:= [7]|19 : phi a19 := (2) (17)}"];
+BB3 [shape=record, label="<b>BB3|{9: add (19) (19)}"];
+BB4 [shape=record, label="<b>BB4|{12: cmp (9) (3)|13: bge (12) block:= [6]|17 : phi a17 := (9) (14)}"];
+BB5 [shape=record, label="<b>BB5|{14: add (17) (3)|16: bra block:= [4]}"];
+BB6 [shape=record, label="<b>BB6|{18: bra block:= [2]}"];
+BB7 [shape=record, label="<b>BB7|{20: end}"];
+}
+BB0:s -> BB1:n ;
+BB1:b -> BB2:b [color=blue, style=dotted, label="dom"];
+BB3:b -> BB4:b [color=blue, style=dotted, label="dom"];
+BB2:b -> BB7:b [color=blue, style=dotted, label="dom"];
+BB4:b -> BB6:b [color=blue, style=dotted, label="dom"];
+BB2:b -> BB3:b [color=blue, style=dotted, label="dom"];
+BB4:b -> BB5:b [color=blue, style=dotted, label="dom"];
+BB4:s -> BB6:n [label="branch"];
+BB2:s -> BB7:n [label="branch"];
+BB6:s -> BB2:e [label="branch"];
+BB5:s -> BB4:e [label="branch"];
+BB2:s -> BB3:n [label="fall-through"];
+BB4:s -> BB5:n [label="fall-through"];
+}

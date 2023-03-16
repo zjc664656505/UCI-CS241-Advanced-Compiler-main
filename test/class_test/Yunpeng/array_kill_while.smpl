@@ -1,0 +1,12 @@
+main
+	array[2][2] a;
+	{
+		let a[1][1] <- 0;
+		call OutputNum(a[1][1]);
+		while a[1][1] < 4 do
+			call OutputNum(a[1][1]);
+			let a[1][1] <- a[1][1] + 1;
+			let a[1][1] <- a[1][1] + 1;
+		od;
+		call OutputNum(a[1][1]);
+	}.

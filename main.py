@@ -150,67 +150,44 @@ class Graphviz:
         # TODO: need to implement while loop
         pass
 
-
+def dir_reader(dir_name):
+    out_dir = []
+    out_dir_org = []
+    def token_check(file_list):
+        out = []
+        for file_name in file_list:
+            if ".txt" in file_name:
+                out.append(file_name)
+            elif ".smpl" in file_name:
+                out.append(file_name)
+            else:
+                continue
+        return out
+    for i in os.walk(dir_name):
+        if i[2] != []:
+            for file in token_check(i[2]):
+                dirs = i[0] +"/"+ file
+                org_out = ""
+                for org in dirs.split("class_test/")[1].split("/")[:-1]:
+                    org_out = org_out + org + "/"
+                out_dir_org.append(org_out)
+                out_dir.append(dirs)
+    return zip(out_dir, out_dir_org)
 
 if __name__ == "__main__":
-    cbelem = "class_test/cbelem/while/"
-    # file_dir = "./test/" + cbelem + "nested_while_no_expr_elim.smpl"
+    for file_dirs , file_org in dir_reader("./test"):
+        file_dir = file_dirs
+        tokenize = Tokenizer(file_dir)
+        sym = tokenize.getSym()
+        parse = Parser(file_dir)
+        cfg = parse.run_parser()
 
-    ChinHung = "class_test/ChinHung/"
-    # file_dir = "./test/" + ChinHung + "if_branch_exist_instruction.txt"
-    # file_dir = "./test/" + ChinHung + "while_having_computation_in_compare.txt"
+        #saving path
+        save_path = "./visualization/" + file_org
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
 
-    Hongyu = "class_test/Hongyu/"
-
-    ##array##
-    # file_dir = "./test/" + Hongyu + "array/" + "test1.smpl"
-    # file_dir = "./test/" + Hongyu + "array/" + "test2.smpl"
-    file_dir = "./test/" + Hongyu + "array/" + "test3.smpl"
-
-    ##iftests##
-    # file_dir = "./test/" + Hongyu + "iftests/" + "test1.smpl"
-
-    ##simpletests##
-    # file_dir = "./test/" + Hongyu + "simpletests/" + "test1.smpl"
-
-    ##while##
-    # file_dir = "./test/" + Hongyu + "while/" + "test1.smpl"
-    # file_dir = "./test/" + Hongyu + "while/" + "test2.smpl"
-    # file_dir = "./test/" + Hongyu + "while/" + "test3.smpl"
-    # file_dir = "./test/" + Hongyu + "while/" + "test4.smpl"
-
-    jmcgowa = "class_test/jmcgowa/"
-
-    ##CSE_Tests##
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE1.txt"
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE2.txt"
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE3.txt"
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE4.txt"
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE5.txt"
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "CSE6.txt"
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "IF_ELSE_NO_WRITE.txt"
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "IF_ELSE_WRITE.txt"
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "IF_IN_IF_ARRAY_NO_WRITE.txt"
-    # file_dir = "./test/" + jmcgowa + "CSE_Tests/" + "IF_IN_IF_ARRAY_WRITE.txt"
-
-    ##Regular Tests##
-    # file_dir = "./test/" + jmcgowa + "Array1.txt"
-    # file_dir = "./test/" + jmcgowa + "Array1_2.txt"
-    # file_dir = "./test/" + jmcgowa + "Array2.txt"
-    # file_dir = "./test/" + jmcgowa + "Array2_2.txt"
-    # file_dir = "./test/" + jmcgowa + "Array3.txt"
-    # file_dir = "./test/" + jmcgowa + "Array3_3.txt"
-    # file_dir = "./test/" + jmcgowa + "BasicCall.txt"
-    # file_dir = "./test/" + jmcgowa + "If_Else.txt"
-    # file_dir = "./test/" + jmcgowa + "Nested_Ifs.txt"
-    # file_dir = "./test/" + jmcgowa + "While1.txt"
+        graph = Graphviz(parse, file_dir, save_path)
+        graph.showGraph()
 
 
-
-    tokenize = Tokenizer(file_dir)
-    sym = tokenize.getSym()
-    parse = Parser(file_dir)
-    cfg = parse.run_parser()
-    graph = Graphviz(parse, file_dir, "./visualization/")
-    graph.showGraph()
-    #graph_show = Source.from_file("./visualization/"+ file+ ".gv").view()

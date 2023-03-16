@@ -1,0 +1,24 @@
+digraph G{
+  constNum[shape=record,label="<b>constNum | {27: #200|16: #20|13: #8|7: #4|22: #100|5: #1|11: #10|3: #0|}"];
+   bb0[shape=record,label="<b>BB0(basic)|{4: subi(SP) #0|6: subi(SP) #8|8: mul(3)(7)|9: subi(FP) #4|10: adda(8)(9)|12: store(11) to (10)|14: subi(FP) #8|15: adda(8)(14)|17: store(16) to (15)|18: load(10)|19: load(15)}|{5:(19) | 4:(18)}"];
+   bb1[shape=record,label="<b>BB1(while join)|{36: phi(18)(34)|30: kill 6|24: kill 7|20: load(10)|21: load(15)|37: cmp(20)(21)|38: blt(37)(39)}|{4:(36)}"];
+   bb2[shape=record,label="<b>BB2(loop)|{23: store(22) to (15)}|{}"];
+   bb4[shape=record,label="<b>BB4(while join)|{29: kill 6|25: load(10)|26: load(15)|32: cmp(25)(26)|33: blt(32)(35)}|{}"];
+   bb5[shape=record,label="<b>BB5(loop)|{28: store(27) to (10)|31: bsr(29)}|{}"];
+   bb6[shape=record,label="<b>BB6(basic)|{34: add(19)(5)|35: bsr(30)}|{4:(34)}"];
+   bb3[shape=record,label="<b>BB3(basic)|{39: write (36)|40: load(10)|41: load(15)|42: write (40)|43: write (41)|44: exit}|{5:(41) | 4:(40)}"];
+bb0:s -> bb1:n [label="fall-through"];
+bb1:s -> bb2:n [label="fall-through"];
+bb1:s -> bb3:n [label="branch"];
+bb0:b -> bb1:b [color=blue, style=dotted, label="dom"];
+bb2:s -> bb4:n [label="fall-through"];
+bb1:b -> bb2:b [color=blue, style=dotted, label="dom"];
+bb4:s -> bb5:n [label="fall-through"];
+bb4:s -> bb6:n [label="branch"];
+bb2:b -> bb4:b [color=blue, style=dotted, label="dom"];
+bb5:s -> bb4:n [label="branch"];
+bb4:b -> bb5:b [color=blue, style=dotted, label="dom"];
+bb6:s -> bb1:n [label="branch"];
+bb4:b -> bb6:b [color=blue, style=dotted, label="dom"];
+bb1:b -> bb3:b [color=blue, style=dotted, label="dom"];
+}

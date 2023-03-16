@@ -1,0 +1,14 @@
+digraph structs {
+	node [shape=record]
+	BB0:s -> BB2:n
+	BB2:s -> BB1:n
+	subgraph cluster_0 {
+		color="#40E0D0" fontcolor="#40E0D0" label=<<I>computation block</I>> style=dashed
+		subgraph cluster_3 {
+			color="#40E0D0" fontcolor="#40E0D0" label=<<I>main function</I>> style=dashed
+			BB2 [label=<<b>BB2</b> | {<font color="#FF69B4"><b>5</b></font>: mul (3) (4)|<font color="#FF69B4"><b>6</b></font>: add (5) (3)|<font color="#FF69B4"><b>8</b></font>: mul (6) (7)|<font color="#FF69B4"><b>9</b></font>: adda (2) (8)|<font color="#FF69B4"><b>10</b></font>: store (1) (9)|<font color="#FF69B4"><b>20</b></font>: load (9)|<font color="#FF69B4"><b>21</b></font>: write (20)|<font color="#FF69B4"><b>27</b></font>: write (20)|<font color="#FF69B4"><b>32</b></font>: store (7) (9)|<font color="#FF69B4"><b>37</b></font>: load (9)|<font color="#FF69B4"><b>38</b></font>: write (37)|<font color="#FF69B4"><b>49</b></font>: write (37)}>]
+		}
+		BB0 [label=<<b>BB0</b> | {<font color="#FF69B4"><b>0</b></font>: FP|<font color="#FF69B4"><b>1</b></font>: const #0|<font color="#FF69B4"><b>2</b></font>: add (0) (1)|<font color="#FF69B4"><b>3</b></font>: const #1|<font color="#FF69B4"><b>4</b></font>: const #2|<font color="#FF69B4"><b>7</b></font>: const #4}>]
+		BB1 [label=<<b>BB1</b> | {<font color="#FF69B4"><b>50</b></font>: end}>]
+	}
+}

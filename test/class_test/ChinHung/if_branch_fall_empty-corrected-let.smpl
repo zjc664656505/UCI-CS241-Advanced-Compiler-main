@@ -1,0 +1,13 @@
+main
+    var a, b; {
+    call OutputNum(2 + 5);
+    call OutputNum(3 + 4);
+    if 5 + 2 > 4 + 3
+    then
+        let a <- 2 + 5;
+    else
+        let b <- 3 + 4;
+    fi;
+    call OutputNum(a);
+    call OutputNum(b);
+ }.

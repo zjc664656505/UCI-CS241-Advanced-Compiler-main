@@ -1,0 +1,12 @@
+main 
+var a, b; {
+    let a <- call InputNum();
+    let b <- a;
+    while a >= 1 do
+		call OutputNum(a);
+		call OutputNum(b);
+        let a <- a / 2;
+    od;
+    call OutputNum(a);
+    call OutputNum(b);
+}.

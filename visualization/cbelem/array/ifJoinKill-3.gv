@@ -1,0 +1,21 @@
+digraph G {
+node [shape=record];
+subgraph cluster_main{
+label = "Main";
+BB0 [shape=record, label="<b>BB0|{5: const #1|30: const #9999}"];
+BB1 [shape=record, label="<b>BB1|{2: read|4: add (2) (5)|5: mul (4) (-1)|6: adda (5) (-1)|7: load (6)|8: write (7)|13: write (7)}"];
+BB2 [shape=record, label="<b>BB2|{15: cmp (2) (5)|17: ble (15) block:= [3]}"];
+BB3 [shape=record, label="<b>BB3|{33 : phi i33 := (30) (2)|34: mul (33) (-1)|35: adda (34) (-1)|36: load (35)|37: write (36)|39: adda (23) (-1)|40: load (39)|41: write (40)|42: end}"];
+BB4 [shape=record, label="<b>BB4|{22: write (7)|23: mul (2) (-1)|24: adda (23) (-1)|25: load (24)|26: write (25)|27: mul (2) (-1)|28: adda (27) (-1)|29: store (30) (28)|32: bra block:= [3]}"];
+BB5 [shape=record, label="<b>BB5|}"];
+}
+BB0:s -> BB1:n ;
+BB2:b -> BB3:b [color=blue, style=dotted, label="dom"];
+BB2:b -> BB4:b [color=blue, style=dotted, label="dom"];
+BB1:b -> BB2:b [color=blue, style=dotted, label="dom"];
+BB2:b -> BB5:b [color=blue, style=dotted, label="dom"];
+BB2:s -> BB5:n [label="branch"];
+BB4:s -> BB3:n [label="branch"];
+BB5:s -> BB3:n [label="fall-through"];
+BB2:s -> BB4:n [label="fall-through"];
+}

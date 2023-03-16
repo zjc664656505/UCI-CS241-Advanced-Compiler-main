@@ -1,0 +1,24 @@
+main
+var x, y;
+array[1] a, b;
+{
+    let a[0] <- 10;
+    let b[0] <- 20;
+
+    let x <- a[0];
+    let y <- b[0];
+
+    while a[0] < b[0] do
+        let b[0] <- 100;
+        while a[0] < b[0] do
+            let a[0] <- 200;
+        od;
+        let x <- y + 1;
+    od;
+
+    call OutputNum(x);
+    let x <- a[0];
+    let y <- b[0];
+    call OutputNum(x);
+    call OutputNum(y);
+}.

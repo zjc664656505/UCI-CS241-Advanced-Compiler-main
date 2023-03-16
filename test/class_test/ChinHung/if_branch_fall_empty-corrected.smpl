@@ -1,0 +1,11 @@
+main 
+  { 
+  call OutputNum(2 + 5);
+  call OutputNum(3 + 4);
+  if 5 + 2 > 4 + 3 
+	then 
+		call OutputNum(2 + 5); 
+	else 
+		call OutputNum(3 + 4); 
+  fi;
+}.

@@ -1,0 +1,7 @@
+main
+var a,b,c;
+array[12] d, e;
+{
+	let e[5] <- 1776;
+	let c <- e[5];
+}.

@@ -1,0 +1,6 @@
+digraph G {
+bb0[shape=record, label="<b>BB0|{1: const #0|2: const #4|3: const #12|4: const #36|10: const #2|18: const #3}"];
+bb1[shape=record, label="<b>BB1|{5: mul (1) (2)|6: add (BASE) (1)|7: adda (6) (5)|8: load (7)|9: write (8)|11: mul (1) (10)|12: add (11) (1)|13: mul (12) (2)|14: add (BASE) (2)|15: adda (14) (13)|16: load (15)|17: write (16)|19: mul (18) (10)|20: mul (1) (19)|21: mul (1) (18)|22: add (20) (21)|23: add (22) (1)|24: mul (23) (2)|25: add (BASE) (3)|26: adda (25) (24)|27: load (26)|28: write (27)|29: mul (2) (18)|30: mul (1) (29)|31: add (20) (30)|32: add (31) (5)|33: add (32) (1)|34: mul (33) (2)|35: add (BASE) (4)|36: adda (35) (34)|37: load (36)|38: write (37)|39: end} | {x: 1|y: 2|z: 3|m: 4}"];
+bb0:s->bb1:n ;
+bb0:b->bb1:b [color=blue, style=dotted, label="dom"];
+}
