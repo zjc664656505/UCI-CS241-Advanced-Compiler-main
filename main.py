@@ -165,7 +165,7 @@ if __name__ == "__main__":
     ##array##
     # file_dir = "./test/" + Hongyu + "array/" + "test1.smpl"
     # file_dir = "./test/" + Hongyu + "array/" + "test2.smpl"
-    # file_dir = "./test/" + Hongyu + "array/" + "test3.smpl"
+    file_dir = "./test/" + Hongyu + "array/" + "test3.smpl"
 
     ##iftests##
     # file_dir = "./test/" + Hongyu + "iftests/" + "test1.smpl"
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     # file_dir = "./test/" + jmcgowa + "BasicCall.txt"
     # file_dir = "./test/" + jmcgowa + "If_Else.txt"
     # file_dir = "./test/" + jmcgowa + "Nested_Ifs.txt"
-    file_dir = "./test/" + jmcgowa + "While1.txt"
+    # file_dir = "./test/" + jmcgowa + "While1.txt"
 
 
 

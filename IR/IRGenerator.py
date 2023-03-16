@@ -118,10 +118,10 @@ class IrGenerator:
                     self.pc = self.pc + 1
             if i + 1 == len(x):
                 z[i] = y[i]
-        for i in range(i, len(z)):
-            self.compute(block, OperatorCode.add, z[i - 1], z[i])
-            z[i] = InstructionResult(self.pc)
-            self.pc += 1
+        # for i in range(i, len(z)):
+        #     self.compute(block, OperatorCode.add, z[i - 1], z[i])
+        #     z[i] = InstructionResult(self.pc)
+        #     self.pc += 1
         self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4))
         self.pc = self.pc + 1
         self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 1), ConstantResult(array.array_addr))
@@ -151,10 +151,10 @@ class IrGenerator:
                     self.pc = self.pc + 1
             if i + 1 == len(x):
                 z[i] = y[i]
-        for i in range(1, len(z)):
-            self.compute(block, OperatorCode.add, z[i - 1], z[i])
-            z[i] = InstructionResult(self.pc)
-            self.pc = self.pc + 1
+        # for i in range(1, len(z)):
+        #     self.compute(block, OperatorCode.add, z[i - 1], z[i])
+        #     z[i] = InstructionResult(self.pc)
+        #     self.pc = self.pc + 1
 
         print(f"array end pc num: {self.pc}")
         self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4))
