@@ -175,19 +175,30 @@ def dir_reader(dir_name):
     return zip(out_dir, out_dir_org)
 
 if __name__ == "__main__":
-    for file_dirs , file_org in dir_reader("./test"):
-        file_dir = file_dirs
+    debug_mode = False
+    
+    if debug_mode:
+        file_dir = ""
         tokenize = Tokenizer(file_dir)
         sym = tokenize.getSym()
         parse = Parser(file_dir)
         cfg = parse.run_parser()
-
-        #saving path
-        save_path = "./visualization/" + file_org
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-
-        graph = Graphviz(parse, file_dir, save_path)
+        graph = Graphviz(parse, file_dir, "./visualization")
         graph.showGraph()
+    else:
+        for file_dirs , file_org in dir_reader("./test"):
+            file_dir = file_dirs
+            tokenize = Tokenizer(file_dir)
+            sym = tokenize.getSym()
+            parse = Parser(file_dir)
+            cfg = parse.run_parser()
+
+            #saving path
+            save_path = "./visualization/" + file_org
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
+
+            graph = Graphviz(parse, file_dir, save_path)
+            graph.showGraph()
 
 
