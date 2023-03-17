@@ -39,6 +39,11 @@ class Block(IBlock):
         self.domTreeNode.setParent(block.getdomtreenode())
         self.domNodeCSE.setParent(block.getdomnodecse())
 
+    def findroot(self, block):
+        if block.parent:
+            block = self.findroot(block.parent)
+        return block
+
     def getparent(self):
         return self.parent
 

@@ -97,71 +97,183 @@ class IrGenerator:
         opCode = self.operator.getToken(opToken)
         self.compute(block, opCode, x, y)
 
-    def loadAarray(self, block, varManager, varResult):
+
+    def createConstantToken(self, val, id):
+        return Token(str(val), "number", id)
+
+    def loadAarray(self, block, varManager, varResult, constants):
         print("\n ***********load array")
         array = varResult.variable
         x = array.dimensionList
         y = array.indexList
         z = [0] * len(x)
+        constant_block = block.findroot(block)
+
+
         for i in range(len(y)):
             for j in range(i + 1, len(x)):
                 self.pc+=1
                 if z[i] == 0:
-                    x_j = ConstantResult(x[j])
-                    self.compute(block, OperatorCode.mul, y[i], x_j)
-                    z[i] = InstructionResult(self.pc)
-                    self.pc = self.pc + 1
+                    if self.createConstantToken(x[j], self.pc+1).value not in constants:
+                        constants[self.createConstantToken(x[j], self.pc+1).value] = self.pc+1
+                        x_j = ConstantResult(x[j], self.pc + 1)
+                        self.compute(constant_block, self.createConstantToken(x[j], self.pc + 1), x_j, None,
+                                     self.pc + 1)
+                        x_j = ConstantResult(x[j])
+                        self.compute(block, OperatorCode.mul, y[i], x_j)
+                        z[i] = InstructionResult(self.pc)
+                        self.pc = self.pc + 2
+                    else:
+                        constant_pc = constants[self.createConstantToken(x[j], self.pc + 1).value]
+                        x_j = ConstantResult(x[j], constant_pc)
+                        self.compute(block, OperatorCode.mul, y[i], x_j)
+                        z[i] = InstructionResult(self.pc)
+                        self.pc = self.pc + 2
                 else:
-                    x_j = ConstantResult(x[j])
-                    self.compute(block, OperatorCode.mul, z[i], x_j)
-                    z[i] = InstructionResult(self.pc)
-                    self.pc = self.pc + 1
+                    if self.createConstantToken(x[j], self.pc + 1).value not in constants:
+                        constants[self.createConstantToken(x[j], self.pc + 1).value] = self.pc+1
+                        x_j = ConstantResult(x[j], self.pc+1)
+                        self.compute(constant_block, self.createConstantToken(x[j], self.pc + 1), x_j, None, self.pc + 1)
+                        x_j = ConstantResult(x[j])
+                        self.compute(block, OperatorCode.mul, z[i], x_j)
+                        z[i] = InstructionResult(self.pc)
+                        self.pc = self.pc + 2
+                    else:
+                        constant_pc = constants[self.createConstantToken(x[j], self.pc + 1).value]
+                        x_j = ConstantResult(x[j], constant_pc)
+                        self.compute(block, OperatorCode.mul, y[i], x_j)
+                        z[i] = InstructionResult(self.pc)
+                        self.pc = self.pc + 2
             if i + 1 == len(x):
                 z[i] = y[i]
-        # for i in range(i, len(z)):
-        #     self.compute(block, OperatorCode.add, z[i - 1], z[i])
-        #     z[i] = InstructionResult(self.pc)
-        #     self.pc += 1
-        self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4))
-        self.pc = self.pc + 1
-        self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 1), ConstantResult(array.array_addr))
-        self.pc = self.pc + 1
-        self.compute(block, OperatorCode.load, None, InstructionResult(self.pc - 1))
+
+        if len(z) == 1:
+            self.compute(block, OperatorCode.add, ConstantResult("Frame Pointer", 0), z[0])
+            z[0] = InstructionResult(self.pc)
+            self.pc += 2
+        else:
+            for i in range(1, len(z)):
+                self.compute(block, OperatorCode.add, z[i - 1], z[i])
+                z[i] = InstructionResult(self.pc)
+                self.pc += 2
+
+        #self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4))
+        if not self.createConstantToken(4, self.pc + 1).value in constants:
+            constants[self.createConstantToken(4, self.pc + 1).value] = self.pc + 1
+            self.compute(constant_block, self.createConstantToken(4, self.pc + 1), ConstantResult(4, self.pc+1), None, self.pc + 1)
+            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4, self.pc+1))
+            self.pc = self.pc + 2
+        else:
+            constant_pc1 = constants[self.createConstantToken(4, self.pc + 1).value]
+            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4, constant_pc1))
+            self.pc = self.pc + 2
+
+        if not self.createConstantToken(array.array_addr, self.pc + 1).value in constants:
+            constants[self.createConstantToken(array.array_addr, self.pc + 1).value] = self.pc + 1
+            self.compute(constant_block, self.createConstantToken(array.array_addr, self.pc + 1), ConstantResult(array.array_addr, self.pc+1), None, self.pc + 1)
+            self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 2), ConstantResult(array.array_addr, self.pc+1))
+            self.pc = self.pc + 2
+        else:
+            constants_pc2 = constants[self.createConstantToken(array.array_addr, self.pc + 1).value]
+            self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 2),
+                         ConstantResult(array.array_addr, constants_pc2))
+            self.pc += 2
+
+
+        #self.pc = self.pc + 1
+        #self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 1), ConstantResult(array.array_addr))
+        #self.pc = self.pc + 1
+        print(f"load Aarray constants {constants}")
+        print(f"array address {array.array_addr}")
+        self.compute(block, OperatorCode.load, None, InstructionResult(self.pc - 2))
         self.pc = self.pc + 1
 
-    def storeArray(self, block, varManager, lrhResult, rrResult):
+    def storeArray(self, block, varManager, lrhResult, rrResult, constants):
         print("*****************\nstore array\n")
         array = lrhResult.variable
         x = array.dimensionList
         y = array.indexList
         z = [0] * len(x)
         print(f"array start pc num: {self.pc}")
+        self.pc+= len(x) + 1
+        constant_block = block.findroot(block)
+
 
         for i in range(len(y)):
             for j in range(i + 1, len(x)):
                 if z[i] == 0:
-                    x_j = ConstantResult(x[j])
-                    self.compute(block, OperatorCode.mul, y[i], x_j)
-                    z[i] = InstructionResult(self.pc)
-                    self.pc = self.pc + 1
+                    if self.createConstantToken(x[j], self.pc+1).value not in constants:
+                        constants[self.createConstantToken(x[j], self.pc+1).value] = self.pc+1
+                        x_j = ConstantResult(x[j], self.pc + 1)
+                        self.compute(constant_block, self.createConstantToken(x[j], self.pc + 1), x_j, None,
+                                     self.pc + 1)
+                        self.compute(block, OperatorCode.mul, y[i], x_j)
+                        z[i] = InstructionResult(self.pc)
+                        self.pc = self.pc + 2
+                    else:
+                        constant_pc = constants[self.createConstantToken(x[j], self.pc+1).value]
+                        x_j = ConstantResult(x[j], constant_pc)
+                        self.compute(block, OperatorCode.mul, y[i], x_j)
+                        z[i] = InstructionResult(self.pc)
+                        self.pc = self.pc + 2
+
                 else:
-                    x_j = ConstantResult(x[j])
-                    self.compute(block, OperatorCode.mul, z[i], x_j)
-                    z[i] = InstructionResult(self.pc)
-                    self.pc = self.pc + 1
+                    if self.createConstantToken(x[j], self.pc + 1).value not in constants:
+                        constants[self.createConstantToken(x[j], self.pc + 1).value] = self.pc+1
+                        x_j = ConstantResult(x[j], self.pc+1)
+                        self.compute(constant_block, self.createConstantToken(x[j], self.pc + 1), x_j, None, self.pc + 1)
+                        self.compute(block, OperatorCode.mul, z[i], x_j)
+                        z[i] = InstructionResult(self.pc)
+                        self.pc = self.pc + 2
+                    else:
+                        constant_pc = constants[self.createConstantToken(x[j], self.pc + 1).value]
+                        x_j = ConstantResult(x[j], constant_pc)
+                        self.compute(block, OperatorCode.mul, y[i], x_j)
+                        z[i] = InstructionResult(self.pc)
+                        self.pc = self.pc + 2
+
             if i + 1 == len(x):
                 z[i] = y[i]
-        # for i in range(1, len(z)):
-        #     self.compute(block, OperatorCode.add, z[i - 1], z[i])
-        #     z[i] = InstructionResult(self.pc)
-        #     self.pc = self.pc + 1
+
+        # print(f"DEBUG: show the array length {len(z)}")
+
+
+        for i in range(1, len(z)):
+            print("DEBUG: Have the array element been ever stored?")
+            self.compute(block, OperatorCode.add, z[i - 1], z[i])
+            z[i] = InstructionResult(self.pc)
+            self.pc = self.pc + 2
+
 
         print(f"array end pc num: {self.pc}")
-        self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4))
-        self.pc = self.pc + 1
-        self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 1), ConstantResult(array.array_addr))
-        self.pc = self.pc + 1
-        self.compute(block, OperatorCode.store, InstructionResult(self.pc - 1), rrResult)
+        if not self.createConstantToken(4, self.pc + 1).value in constants:
+            constants[self.createConstantToken(4, self.pc + 1).value] = self.pc + 1
+            self.compute(constant_block, self.createConstantToken(4, self.pc + 1), ConstantResult(4, self.pc+1), None, self.pc + 1)
+            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4, self.pc+1))
+            self.pc = self.pc + 2
+        else:
+            constant_pc1 = constants[self.createConstantToken(4, self.pc + 1).value]
+            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4, constant_pc1))
+            self.pc = self.pc + 2
+
+        if len(z) == 1:
+            self.compute(block, OperatorCode.add, ConstantResult("Frame Pointer", 0), z[0])
+            z[0] = InstructionResult(self.pc)
+            self.pc += 2
+
+        if not self.createConstantToken(array.array_addr, self.pc + 1).value in constants:
+            constants[self.createConstantToken(array.array_addr, self.pc + 1).value] = self.pc+1
+            self.compute(constant_block, self.createConstantToken(array.array_addr, self.pc + 1), ConstantResult(array.array_addr, self.pc+1), None, self.pc + 1)
+            self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 2), ConstantResult(array.array_addr, self.pc+1))
+            self.pc = self.pc + 2
+        else:
+            constants_pc2 = constants[self.createConstantToken(array.array_addr, self.pc + 1).value]
+            self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 2),
+                         ConstantResult(array.array_addr, constants_pc2))
+            self.pc+=2
+
+
+        self.compute(block, OperatorCode.store, InstructionResult(self.pc - 2), rrResult)
         self.pc = self.pc + 1
 
     def declareVariable(self, block, varManager, varResult, put):
@@ -190,7 +302,7 @@ class IrGenerator:
                     self.pc = 0
 
                 elif put:
-                    self.compute(block, OperatorCode.move, varResult, ConstantResult())
+                    self.compute(block, OperatorCode.move, varResult, ConstantResult("Frame Pointer", 0))
                     #self.pc = Constants.INSTRUCTION_START_COUNTER
                     #self.pc += 1
                     self.pc = 0

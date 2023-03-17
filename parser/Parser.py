@@ -53,6 +53,10 @@ class Parser:
         # TODO: Build cfg
         self.cfg = CFG(self.blockcounter)
         self.varManager = self.cfg.mVariableManager
+        self.continuous_iid_track = []
+        self.global_continuous_flag = False
+        self.dimension_track = 0
+        self.dimension_list = []
 
     def next(self):
         self.inputSym: Token = self.tokenizer.getSym()
@@ -79,8 +83,9 @@ class Parser:
                     if self.inputSym.checkSameType(TokenType.openbracketToken):
                         # define array in virtual memory
                         array_in_vm = self.varManager.arrays[variable]
-
                         # create the array variable
+                        self.dimension_list = array_in_vm.dimensionList.copy()
+                        self.dimension_list_len = len(array_in_vm.dimensionList.copy())
                         array_var = Array(array_in_vm.name, array_in_vm.address, array_in_vm.version,
                                           array_in_vm.dimensionList)
                         array_var.array_addr = array_in_vm.array_addr
@@ -127,19 +132,39 @@ class Parser:
                 if self.varManager.isVariable(var.address):
                     var.version = block.global_ssa[var.address]
                     if result.isAarry:
-                        self.irGenerator.loadAarray(block, self.varManager, result)
+                        self.irGenerator.loadAarray(block, self.varManager, result, self.constants)
                         result = result.toInstruction()
                         result.set(self.irGenerator.getPC() - 1)
         elif self.inputSym.checkSameType(TokenType.number):
             # TODO: Change made to the factor function 2/28/2023
             op = self.inputSym
             result = ConstantResult()
+            if self.dimension_list:
+                new_iid = self.dimension_list_len
+
             if array_flag == False:
                 if self.inputSym.value not in self.constants:
                     result.set(self.inputSym.value)
                     result.setiid(self.irGenerator.getPC() + 1)
-                    self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 1)
-                    self.constants[self.inputSym.value] = self.irGenerator.getPC()+1
+                    print(f"\nConstantResult Debug {result.iid}: {self.inputSym.value}")
+                    self.continuous_iid_track.append(result.iid)
+                    if len(self.continuous_iid_track) > 1:
+                        if result.iid == self.continuous_iid_track[-1]:
+                            if len(self.dimension_list) > 1:
+                                self.dimension_track += 1
+                                self.dimension_list.pop()
+
+                            new_iid = result.iid+self.dimension_track
+                            result.setiid(new_iid)
+                            self.irGenerator.compute(self.constantBlock, op, result, None, new_iid)
+                            self.constants[self.inputSym.value] = new_iid
+                            self.global_continuous_flag = True
+                        else:
+                            self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 1)
+                            self.constants[self.inputSym.value] = self.irGenerator.getPC()+1
+                    else:
+                        self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 1)
+                        self.constants[self.inputSym.value] = self.irGenerator.getPC() + 1
                 else:
                     result.set(self.inputSym.value)
                     result.setiid(self.constants[self.inputSym.value])
@@ -147,10 +172,12 @@ class Parser:
             else:
                 print("CREATE CONSTANT BLOCK FOR ARRAY")
                 if self.inputSym.value not in self.constants:
+                    print(self.irGenerator.pc)
+                    print(new_iid)
                     result.set(self.inputSym.value)
-                    result.setiid(self.irGenerator.getPC() + 3)
-                    self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 3)
-                    self.constants[self.inputSym.value] = self.irGenerator.getPC()+3
+                    result.setiid(self.irGenerator.getPC() + new_iid+1)
+                    self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + new_iid+1)
+                    self.constants[self.inputSym.value] = self.irGenerator.getPC()+ new_iid +1
                 else:
                     result.set(self.inputSym.value)
                     result.setiid(self.constants[self.inputSym.value])
@@ -288,8 +315,9 @@ class Parser:
                                 expr_res = expr_res.toInstruction()
                             print(f"\nEEEEEEE***** expr_res is ConstantResult with iid {expr_res.constant} Desnator {designator_res.iid}\n")
 
-
-                            self.irGenerator.storeArray(block, varManager, designator_res, expr_res)
+                            # define functinoal constant reuse
+                            self.irGenerator.pc += 1
+                            self.irGenerator.storeArray(block, varManager, designator_res, expr_res, self.constants)
                             self.irGenerator.pc += 1
 
                             newKill = Instruction(0)
