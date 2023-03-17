@@ -57,6 +57,7 @@ class Parser:
         self.global_continuous_flag = False
         self.dimension_track = 0
         self.dimension_list = []
+        r_constant_flag = False
 
     def next(self):
         self.inputSym: Token = self.tokenizer.getSym()
@@ -148,23 +149,31 @@ class Parser:
                     result.setiid(self.irGenerator.getPC() + 1)
                     print(f"\nConstantResult Debug {result.iid}: {self.inputSym.value}")
                     self.continuous_iid_track.append(result.iid)
+                    print(self.continuous_iid_track)
                     if len(self.continuous_iid_track) > 1:
                         if result.iid == self.continuous_iid_track[-1]:
-                            if len(self.dimension_list) > 1:
-                                self.dimension_track += 1
-                                self.dimension_list.pop()
+                            if self.dimension_list != []:
+                                if len(self.dimension_list) > 1:
+                                    self.dimension_track += 1
+                                    self.dimension_list.pop()
 
-                            new_iid = result.iid+self.dimension_track
-                            result.setiid(new_iid)
-                            self.irGenerator.compute(self.constantBlock, op, result, None, new_iid)
-                            self.constants[self.inputSym.value] = new_iid
-                            self.global_continuous_flag = True
-                        else:
-                            self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 1)
-                            self.constants[self.inputSym.value] = self.irGenerator.getPC()+1
+                                new_iid = result.iid+self.dimension_track
+                                result.setiid(new_iid)
+                                self.irGenerator.compute(self.constantBlock, op, result, None, new_iid)
+                                self.constants[self.inputSym.value] = new_iid
+                                self.global_continuous_flag = True
+                            else:
+                                if result.iid == self.continuous_iid_track[-2]:
+                                    self.irGenerator.compute(self.constantBlock, op, result, None,
+                                                             self.irGenerator.getPC() + 2)
+                                    self.constants[self.inputSym.value] = self.irGenerator.getPC() + 2
+                                else:
+                                    self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 1)
+                                    self.constants[self.inputSym.value] = self.irGenerator.getPC()+1
                     else:
                         self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 1)
                         self.constants[self.inputSym.value] = self.irGenerator.getPC() + 1
+
                 else:
                     result.set(self.inputSym.value)
                     result.setiid(self.constants[self.inputSym.value])
@@ -196,9 +205,12 @@ class Parser:
 
         if result is not None:
             return result.clone()
+
         return result
 
     def term(self, block, array_flag=False):
+        r_constant_flag = False
+        l_constant_flag = False
         factor_l = self.factor(block, array_flag)
         if factor_l is not None:
             while self.inputSym.checkTerm():
@@ -206,7 +218,15 @@ class Parser:
                 self.next()
                 factor_r = self.factor(block)
                 if factor_r is not None:
+                    if isinstance(factor_r, ConstantResult):
+                        print("FACTOR R is Constant Result!!!")
+                        r_constant_flag = True
+
+                    if isinstance(factor_l, ConstantResult):
+                        l_constant_flag = True
+
                     if isinstance(factor_l, VariableResult):
+                        l_constant_flag = False
                         factor_l.setiid(factor_l.variable.version)
                     if factor_l.getiid() > 0 and (not isinstance(factor_l, RegisterResult)):
                         factor_l = factor_l.toInstruction()
@@ -217,43 +237,81 @@ class Parser:
                         self.irGenerator.compute(block, op, factor_l, factor_r)
                         self.irGenerator.pc += 2
                     else:
-                        self.irGenerator.compute(block, op, factor_l, factor_r)
-                        self.irGenerator.pc += 1
+                        if l_constant_flag and r_constant_flag:
+                            factor_r.setiid(self.constants[str(factor_r.constant)])
+                            self.irGenerator.compute(block, op, factor_l, factor_r)
+                            self.irGenerator.pc += 3
+                        else:
+                            self.irGenerator.pc += 1
+                            self.irGenerator.compute(block, op, factor_l, factor_r)
+                            self.irGenerator.pc += 1
                     factor_l = factor_l.clone()
                     if isinstance(factor_l, ConstantResult) or isinstance(factor_l, VariableResult):
                         print(f"*******Is Term checked?********\n")
                         factor_l = factor_l.toInstruction()
-                    factor_l.setiid(self.irGenerator.getPC() - 1)
+
+                    if l_constant_flag and r_constant_flag:
+                        factor_l.setiid(self.irGenerator.getPC() - 3)
+                    else:
+                        factor_l.setiid(self.irGenerator.getPC() -1)
+
         return factor_l
 
     def expression(self, block, array_flag=False):
         term_l = self.term(block, array_flag)
+        r_constant_flag= False
+        l_constant_flag = False
         if term_l is not None:
             while self.inputSym.checkExpression():
                 op = self.inputSym
                 self.next()
                 term_r = self.term(block)
+
                 # print(f"term_l version {term_r.variable.version}; term_l version {term_l.variable.version}")
                 if term_r is not None:
+                    if isinstance(term_r, ConstantResult):
+                        print("TERM R is Constant Result!!!")
+                        r_constant_flag = True
+                    if isinstance(term_l, ConstantResult):
+                        l_constant_flag = True
+
                     if isinstance(term_l, VariableResult):
+                        l_constant_flag = False
+                        print(f"expression current pc when term l is variable result {term_l.variable.version}")
                         term_l.setiid(term_l.variable.version)
+
                     if term_l.getiid() > 0 and (not isinstance(term_l, RegisterResult)):
                         term_l = term_l.toInstruction()
                     if term_r.getiid() > 0 and (not isinstance(term_r, RegisterResult)):
                         term_r = term_r.toInstruction()
-
                     if isinstance(term_l, ConstantResult) or isinstance(term_r, ConstantResult):
                         self.irGenerator.compute(block, op, term_l, term_r)
                         self.irGenerator.pc += 2
                     else:
-                        self.irGenerator.compute(block, op, term_l, term_r)
-                        self.irGenerator.pc += 1
+                        print(f"expression op value {op.value}")
+                        if l_constant_flag and r_constant_flag:
+                            term_r.setiid(self.constants[str(term_r.constant)])
+                            print(f"\nPCCCCCCCCCCCCC --- expression pc org {self.irGenerator.pc}")
+                            print(f"expression current pc {self.irGenerator.pc}")
+                            self.irGenerator.compute(block, op, term_l, term_r)
+                            self.irGenerator.pc += 3
+                            print(f"expression pc after {self.irGenerator.pc}")
+                        else:
+                            self.irGenerator.pc += 1
+                            self.irGenerator.compute(block, op, term_l, term_r)
+                            self.irGenerator.pc += 1
 
                     term_l = term_l.clone()
                     if (isinstance(term_l, ConstantResult) or isinstance(term_l, VariableResult)) and array_flag == False:
                         print(f"*******Is Expression checked?********\n")
                         term_l = term_l.toInstruction()
-                    term_l.setiid(self.irGenerator.getPC() - 1)
+
+                    if l_constant_flag and r_constant_flag:
+                        term_l.setiid(self.irGenerator.getPC()-3)
+                    else:
+                        term_l.setiid(self.irGenerator.getPC() - 1)
+
+
         return term_l
 
     def relation(self, block):
@@ -904,17 +962,17 @@ class Parser:
         self.next()
         self.cfg.done = self.computation()
         self.cfg.cse_optimization()
-        for i in self.cfg.blocks:
-            for j in i.instructions:
-                print(j.toString(True))
-        print("---------------------\n")
+        # for i in self.cfg.blocks:
+        #     for j in i.instructions:
+        #         print(j.toString(True))
+        #print("---------------------\n")
 
 
         self.cfg.dup_variable_removal()
         self.cfg.move_replace()
-        print(self.cfg.blocks)
-
-        print("Is CFG done? ", self.cfg.done)
+        # print(self.cfg.blocks)
+        #
+        # print("Is CFG done? ", self.cfg.done)
 
         return self.cfg
 

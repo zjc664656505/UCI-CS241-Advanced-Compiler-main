@@ -4,12 +4,12 @@ subgraph cluster_main{
 label = "Main";
 BB0 [shape=record, label="<b>BB0|{9: const #10|12: const #1}"];
 BB1 [shape=record, label="<b>BB1|{1: read|3: read|5: read}"];
-BB2 [shape=record, label="<b>BB2|{8: cmp (1) (9)|10: bge (8) block:= [7]|44 : phi i44 := (1) (41)|45 : phi j45 := (3) (37)|46 : phi x46 := (1) (38)|47 : phi y47 := (3) (39)|48 : phi z48 := (5) (40)}"];
+BB2 [shape=record, label="<b>BB2|{8: cmp (1) (9)|10: bge (8) block:= [7]|61 : phi i61 := (1) (58)|62 : phi j62 := (3) (53)|63 : phi x63 := (1) (54)|64 : phi y64 := (3) (55)|65 : phi z65 := (5) (56)}"];
 BB3 [shape=record, label="<b>BB3|}"];
-BB4 [shape=record, label="<b>BB4|{13: cmp (12) (9)|15: bge (13) block:= [6]|37 : phi j37 := (12) (17)|38 : phi x38 := (46) (20)|39 : phi y39 := (47) (26)|40 : phi z40 := (48) (26)}"];
-BB5 [shape=record, label="<b>BB5|{16: add (44) (12)|17: add (37) (12)|18: add (16) (17)|19: add (5) (12)|20: add (18) (19)|24: add (16) (19)|26: add (24) (17)|36: bra block:= [4]}"];
-BB6 [shape=record, label="<b>BB6|{41: add (44) (12)|43: bra block:= [2]}"];
-BB7 [shape=record, label="<b>BB7|{49: write (44)|50: end}"];
+BB4 [shape=record, label="<b>BB4|{13: cmp (12) (9)|15: bge (13) block:= [6]|53 : phi j53 := (12) (19)|54 : phi x54 := (63) (25)|55 : phi y55 := (64) (36)|56 : phi z56 := (65) (36)}"];
+BB5 [shape=record, label="<b>BB5|{17: add (61) (12)|19: add (53) (12)|21: add (17) (19)|23: add (5) (12)|25: add (21) (23)|32: add (17) (23)|36: add (32) (19)|52: bra block:= [4]}"];
+BB6 [shape=record, label="<b>BB6|{58: add (61) (12)|60: bra block:= [2]}"];
+BB7 [shape=record, label="<b>BB7|{66: write (61)|67: end}"];
 }
 BB0:s -> BB1:n ;
 BB1:b -> BB2:b [color=blue, style=dotted, label="dom"];

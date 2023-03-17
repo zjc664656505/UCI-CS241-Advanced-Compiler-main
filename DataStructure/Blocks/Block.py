@@ -4,6 +4,8 @@ from DataStructure.Instruction import DeleteMode
 from DataStructure.Blocks.IBlock import IBlock
 from DataStructure.Dom.DominantTree import DominantTreeNode, DomNodeCSE
 from multipledispatch import dispatch
+from DataStructure.Token import Token, TokenType
+from DataStructure.Operator import OperatorCode
 
 class Block(IBlock):
     def __init__(self, id):
@@ -19,6 +21,11 @@ class Block(IBlock):
 
     def getid(self):
         return self.id
+
+    def def_constant_instruction(self, val):
+        for instr in self.instructions:
+            if val == instr.operandx.constant:
+                self.instructions.remove(instr)
 
     @dispatch(Instruction)
     def addinstruction(self, instruction):

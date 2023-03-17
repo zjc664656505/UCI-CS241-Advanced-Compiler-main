@@ -5,8 +5,8 @@ label = "Main";
 BB0 [shape=record, label="<b>BB0|{2: const #1|4: const #0|6: const #2|10: const #4|12: const #500}"];
 BB1 [shape=record, label="<b>BB1|{5: mul (2) (6)|7: add (5) (2)|9: mul (7) (10)|11: adda (9) (12)|13: store (4) (11)|16: mul (2) (6)|18: add (16) (2)|20: mul (18) (10)|22: adda (20) (12)|24: load (22)|25: write (24)}"];
 BB2 [shape=record, label="<b>BB2|{33: adda (20) (12)|35: load (33)|37: cmp (35) (10)|39: bge (37) block:= [4]}"];
-BB3 [shape=record, label="<b>BB3|{50: write (35)|61: add (35) (2)|72: adda (20) (12)|74: store (61) (72)|83: adda (20) (12)|85: load (83)|86: add (85) (2)|97: adda (20) (12)|99: store (86) (97)|101: bra block:= [2]}"];
-BB4 [shape=record, label="<b>BB4|{112: write (35)|113: end}"];
+BB3 [shape=record, label="<b>BB3|{50: write (35)|62: add (35) (2)|73: adda (20) (12)|75: store (62) (73)|84: adda (20) (12)|86: load (84)|88: add (86) (2)|99: adda (20) (12)|101: store (88) (99)|103: bra block:= [2]}"];
+BB4 [shape=record, label="<b>BB4|{114: write (35)|115: end}"];
 }
 BB0:s -> BB1:n ;
 BB2:b -> BB3:b [color=blue, style=dotted, label="dom"];

@@ -2,11 +2,11 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{3: const #1|4: const #2000|6: const #4|10: const #500|14: const #10|24: const #0}"];
+BB0 [shape=record, label="<b>BB0|{3: const #1|4: const #2000|6: const #4|10: const #500|14: const #10|26: const #0}"];
 BB1 [shape=record, label="<b>BB1|{5: mul (3) (6)|7: add (0) (3)|9: adda (7) (10)|11: store (4) (9)|13: add (14) (14)}"];
-BB2 [shape=record, label="<b>BB2|{17: mul (7) (6)|19: adda (17) (10)|21: load (19)|23: cmp (21) (24)|25: ble (23) block:= [4]}"];
-BB3 [shape=record, label="<b>BB3|{34: sub (21) (13)|42: adda (7) (10)|44: store (34) (42)|46: bra block:= [2]}"];
-BB4 [shape=record, label="<b>BB4|{47: end}"];
+BB2 [shape=record, label="<b>BB2|{19: mul (7) (6)|21: adda (19) (10)|23: load (21)|25: cmp (23) (26)|27: ble (25) block:= [4]}"];
+BB3 [shape=record, label="<b>BB3|{39: sub (23) (13)|47: adda (7) (10)|49: store (39) (47)|51: bra block:= [2]}"];
+BB4 [shape=record, label="<b>BB4|{52: end}"];
 }
 BB0:s -> BB1:n ;
 BB2:b -> BB3:b [color=blue, style=dotted, label="dom"];

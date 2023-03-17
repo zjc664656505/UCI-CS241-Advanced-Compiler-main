@@ -333,6 +333,7 @@ class CFG:
                             else:
                                 inst.operandx = inst_target_X.res_CSE
                     if isinstance(inst.operandy, InstructionResult):
+                        print(f"********\n Debug CFG {inst.operandy.iid}")
                         inst_target_Y = self.find_instr_from_iid(inst.operandy.iid)
                         if inst_target_Y.opcode != OperatorCode.move:
                             if inst_target_Y.deletemode == DeleteMode._NOT_DEL:
