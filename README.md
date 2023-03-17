@@ -1,5 +1,5 @@
 # UCI-CS241-Advanced-Compiler-main 2023 Winter
-1. This project is a humble implementation of DLX SSA-based compiler for the course CS241 Advanced Compiler Class taught by Professor Michael Franz in 2023 winter at UC Irvine by Junchen Zhao. 
+1. This project is a humble implementation of DLX SSA-based compiler for the course CS241 Advanced Compiler Class taught by Professor Michael Franz in 2023 winter at UC Irvine by Junchen Zhao in his second-year PhD study. 
 2. For running the compiler project, python version needs to be > python3.7+.
 3. This project is splitted into 2 parts:
    1. The warmup project: A simple interpreter running the parser in the backend to do the parsing tests on dlx basic algebra computation. The warmup project can be simply run by entering the warmup project folder and do > python run_interpreter.py.
