@@ -2,14 +2,14 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{3: const #0|4: const #10|6: const #4|10: const #500|15: const #20|21: const #504|59: const #100|87: const #200|98: const #1}"];
-BB1 [shape=record, label="<b>BB1|{5: mul (3) (6)|7: add (0) (3)|9: adda (7) (10)|11: store (4) (9)|16: mul (3) (6)|18: add (0) (3)|20: adda (18) (21)|22: store (15) (20)|24: add (0) (3)|26: mul (24) (6)|28: adda (26) (10)|30: load (28)|32: add (0) (3)|34: mul (32) (6)|36: adda (34) (21)|38: load (36)}"];
-BB2 [shape=record, label="<b>BB2|{44: adda (34) (10)|46: load (44)|52: adda (34) (21)|54: load (52)|55: cmp (46) (54)|56: bge (55) block:= [7]|101 : phi x101 := (30) (98)}"];
-BB3 [shape=record, label="<b>BB3|{64: adda (32) (21)|66: store (59) (64)}"];
-BB4 [shape=record, label="<b>BB4|{80: adda (34) (21)|82: load (80)|83: cmp (46) (82)|84: bge (83) block:= [6]}"];
-BB5 [shape=record, label="<b>BB5|{92: adda (32) (10)|94: store (87) (92)|96: bra block:= [4]}"];
-BB6 [shape=record, label="<b>BB6|{98: add (38) (98)|100: bra block:= [2]}"];
-BB7 [shape=record, label="<b>BB7|{102: write (101)|119: write (46)|120: write (54)|121: end}"];
+BB0 [shape=record, label="<b>BB0|{4: const #0|5: const #10|7: const #2000|11: const #500|16: const #20|22: const #504|64: const #100|94: const #200|105: const #1}"];
+BB1 [shape=record, label="<b>BB1|{6: mul (4) (7)|8: add (0) (4)|10: adda (8) (11)|12: store (5) (10)|17: mul (4) (7)|19: add (0) (4)|21: adda (19) (22)|23: store (16) (21)|25: mul (4) (7)|28: add (0) (4)|30: adda (28) (11)|32: load (30)|34: mul (4) (7)|37: add (0) (4)|39: adda (37) (22)|41: load (39)}"];
+BB2 [shape=record, label="<b>BB2|{48: adda (37) (11)|50: load (48)|56: adda (37) (22)|58: load (56)|59: cmp (50) (58)|60: bge (59) block:= [7]|108 : phi x108 := (32) (105)}"];
+BB3 [shape=record, label="<b>BB3|{69: adda (37) (22)|71: store (64) (69)}"];
+BB4 [shape=record, label="<b>BB4|{86: adda (37) (22)|88: load (86)|89: cmp (50) (88)|90: bge (89) block:= [6]}"];
+BB5 [shape=record, label="<b>BB5|{99: adda (37) (11)|101: store (94) (99)|103: bra block:= [4]}"];
+BB6 [shape=record, label="<b>BB6|{105: add (41) (105)|107: bra block:= [2]}"];
+BB7 [shape=record, label="<b>BB7|{109: write (108)|128: write (50)|129: write (58)|130: end}"];
 }
 BB0:s -> BB1:n ;
 BB1:b -> BB2:b [color=blue, style=dotted, label="dom"];

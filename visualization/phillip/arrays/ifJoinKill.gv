@@ -2,11 +2,11 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{9: const #4|11: const #500|16: const #9999}"];
-BB1 [shape=record, label="<b>BB1|{2: read|4: read|6: add (0) (2)|8: mul (6) (9)|10: adda (8) (11)|12: load (10)|13: write (12)}"];
-BB2 [shape=record, label="<b>BB2|{15: cmp (2) (16)|17: ble (15) block:= [3]}"];
-BB3 [shape=record, label="<b>BB3|{40: mul (31) (9)|42: adda (40) (11)|44: load (42)|45: write (44)|46: end}"];
-BB4 [shape=record, label="<b>BB4|{25: write (12)|29: mul (2) (9)|33: adda (6) (11)|35: store (4) (33)|37: bra block:= [3]}"];
+BB0 [shape=record, label="<b>BB0|{11: const #2000|15: const #500|19: const #9999}"];
+BB1 [shape=record, label="<b>BB1|{4: read|7: read|9: mul (4) (11)|12: add (0) (4)|14: adda (12) (15)|16: load (14)|17: write (16)}"];
+BB2 [shape=record, label="<b>BB2|{18: cmp (4) (19)|20: ble (18) block:= [3]}"];
+BB3 [shape=record, label="<b>BB3|{47: adda (35) (15)|49: load (47)|50: write (49)|51: end}"];
+BB4 [shape=record, label="<b>BB4|{29: write (16)|37: adda (12) (15)|39: store (7) (37)|41: bra block:= [3]}"];
 BB5 [shape=record, label="<b>BB5|}"];
 }
 BB0:s -> BB1:n ;

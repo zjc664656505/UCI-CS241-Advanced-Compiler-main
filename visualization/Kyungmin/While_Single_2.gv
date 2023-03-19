@@ -2,11 +2,11 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{4: const #0|9: const #10|12: const #1|18: const #2}"];
-BB1 [shape=record, label="<b>BB1|{1: read}"];
-BB2 [shape=record, label="<b>BB2|{8: cmp (4) (9)|10: bge (8) block:= [4]|35 : phi i35 := (1) (32)|36 : phi x36 := (4) (12)|37 : phi y37 := (4) (29)|38 : phi k38 := (4) (18)|39 : phi l39 := (4) (23)}"];
-BB3 [shape=record, label="<b>BB3|{12: add (35) (12)|18: mul (12) (18)|23: mul (12) (18)|29: add (12) (12)|32: add (12) (12)|34: bra block:= [2]}"];
-BB4 [shape=record, label="<b>BB4|{40: write (36)|41: write (37)|42: write (38)|43: write (39)|44: write (35)|45: end}"];
+BB0 [shape=record, label="<b>BB0|{6: const #0|10: const #10|14: const #1|20: const #2}"];
+BB1 [shape=record, label="<b>BB1|{3: read}"];
+BB2 [shape=record, label="<b>BB2|{9: cmp (6) (10)|11: bge (9) block:= [4]|37 : phi i37 := (3) (34)|38 : phi x38 := (6) (14)|39 : phi y39 := (6) (31)|40 : phi k40 := (6) (20)|41 : phi l41 := (6) (25)}"];
+BB3 [shape=record, label="<b>BB3|{14: add (37) (14)|20: mul (14) (20)|25: mul (14) (20)|31: add (14) (14)|34: add (14) (14)|36: bra block:= [2]}"];
+BB4 [shape=record, label="<b>BB4|{42: write (38)|43: write (39)|44: write (40)|45: write (41)|46: write (37)|47: end}"];
 }
 BB0:s -> BB1:n ;
 BB2:b -> BB3:b [color=blue, style=dotted, label="dom"];

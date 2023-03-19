@@ -2,8 +2,8 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{2: const #1|4: const #0|6: const #2|10: const #4|12: const #500}"];
-BB1 [shape=record, label="<b>BB1|{5: mul (2) (6)|7: add (5) (2)|9: mul (7) (10)|11: adda (9) (12)|13: store (4) (11)|19: mul (2) (6)|21: add (19) (2)|23: mul (21) (10)|25: adda (23) (12)|27: store (4) (25)|30: mul (2) (6)|32: add (30) (2)|34: mul (32) (10)|36: adda (34) (12)|38: load (36)|39: write (38)|41: mul (2) (6)|43: add (41) (2)|45: mul (43) (10)|47: adda (45) (12)|49: load (47)|50: write (49)|55: mul (2) (6)|57: add (55) (2)|59: mul (57) (10)|61: adda (59) (12)|63: store (10) (61)|66: mul (2) (6)|68: add (66) (2)|70: mul (68) (10)|72: adda (70) (12)|74: load (72)|75: write (74)|80: mul (2) (6)|82: add (80) (2)|84: mul (82) (10)|86: adda (84) (12)|88: store (10) (86)|91: mul (2) (6)|93: add (91) (2)|95: mul (93) (10)|97: adda (95) (12)|99: load (97)|100: write (99)|101: end}"];
+BB0 [shape=record, label="<b>BB0|{3: const #1|5: const #0|7: const #2|11: const #2000|13: const #500|55: const #4}"];
+BB1 [shape=record, label="<b>BB1|{6: mul (3) (7)|8: add (6) (3)|10: mul (8) (11)|12: adda (10) (13)|14: store (5) (12)|20: mul (3) (7)|22: add (20) (3)|24: mul (22) (11)|26: adda (24) (13)|28: store (5) (26)|31: mul (3) (7)|33: add (31) (3)|35: mul (33) (11)|37: adda (35) (13)|39: load (37)|40: write (39)|42: mul (3) (7)|44: add (42) (3)|46: mul (44) (11)|48: adda (46) (13)|50: load (48)|51: write (50)|56: mul (3) (7)|58: add (56) (3)|60: mul (58) (11)|62: adda (60) (13)|64: store (55) (62)|67: mul (3) (7)|69: add (67) (3)|71: mul (69) (11)|73: adda (71) (13)|75: load (73)|76: write (75)|81: mul (3) (7)|83: add (81) (3)|85: mul (83) (11)|87: adda (85) (13)|89: store (55) (87)|92: mul (3) (7)|94: add (92) (3)|96: mul (94) (11)|98: adda (96) (13)|100: load (98)|101: write (100)|102: end}"];
 }
 BB0:s -> BB1:n ;
 }

@@ -2,9 +2,9 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{2: const #10|4: const #20|7: const #9}"];
+BB0 [shape=record, label="<b>BB0|{3: const #10|4: const #20|7: const #9}"];
 BB1 [shape=record, label="<b>BB1|}"];
-BB2 [shape=record, label="<b>BB2|{3: cmp (2) (4)|5: bge (3) block:= [3]}"];
+BB2 [shape=record, label="<b>BB2|{3: cmp (3) (4)|5: bge (3) block:= [3]}"];
 BB3 [shape=record, label="<b>BB3|{8 : phi b8 := (7) (-1)|9: write (8)|10: end}"];
 BB4 [shape=record, label="<b>BB4|{7: bra block:= [3]}"];
 BB5 [shape=record, label="<b>BB5|}"];

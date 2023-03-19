@@ -2,15 +2,15 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{2: const #99|10: const #0|21: const #2}"];
-BB1 [shape=record, label="<b>BB1|{3: add (-1) (-1)}"];
-BB2 [shape=record, label="<b>BB2|{9: cmp (-1) (10)|11: bge (9) block:= [9]}"];
-BB3 [shape=record, label="<b>BB3|{25 : phi a25 := (13) (-1)|26 : phi b26 := (23) (-1)|27 : phi d27 := (13) (3)|29: mul (25) (21)|31: end}"];
-BB4 [shape=record, label="<b>BB4|{13: add (3) (3)}"];
-BB5 [shape=record, label="<b>BB5|{16: cmp (3) (10)|18: ble (16) block:= [8]}"];
-BB6 [shape=record, label="<b>BB6|{23 : phi b23 := (13) (21)|24: bra block:= [3]}"];
-BB7 [shape=record, label="<b>BB7|{19: bra block:= [6]}"];
-BB8 [shape=record, label="<b>BB8|{21: mul (13) (21)}"];
+BB0 [shape=record, label="<b>BB0|{3: const #99|10: const #0|20: const #2}"];
+BB1 [shape=record, label="<b>BB1|{4: add (3) (3)}"];
+BB2 [shape=record, label="<b>BB2|{9: cmp (3) (10)|11: bge (9) block:= [9]}"];
+BB3 [shape=record, label="<b>BB3|{24 : phi a24 := (13) (3)|25 : phi b25 := (22) (3)|26 : phi d26 := (13) (4)|28: mul (24) (20)|30: end}"];
+BB4 [shape=record, label="<b>BB4|{13: add (4) (4)}"];
+BB5 [shape=record, label="<b>BB5|{15: cmp (4) (10)|17: ble (15) block:= [8]}"];
+BB6 [shape=record, label="<b>BB6|{22 : phi b22 := (13) (20)|23: bra block:= [3]}"];
+BB7 [shape=record, label="<b>BB7|{18: bra block:= [6]}"];
+BB8 [shape=record, label="<b>BB8|{20: mul (13) (20)}"];
 BB9 [shape=record, label="<b>BB9|}"];
 }
 BB0:s -> BB1:n ;

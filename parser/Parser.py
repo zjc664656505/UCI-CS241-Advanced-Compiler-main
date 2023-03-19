@@ -259,8 +259,8 @@ class Parser:
 
     def expression(self, block, array_flag=False):
         term_l = self.term(block, array_flag)
-        r_constant_flag= False
-        l_constant_flag = False
+        self.r_constant_flag= False
+        self.l_constant_flag = False
         if term_l is not None:
             while self.inputSym.checkExpression():
                 op = self.inputSym
@@ -271,9 +271,9 @@ class Parser:
                 if term_r is not None:
                     if isinstance(term_r, ConstantResult):
                         print("TERM R is Constant Result!!!")
-                        r_constant_flag = True
+                        self.r_constant_flag = True
                     if isinstance(term_l, ConstantResult):
-                        l_constant_flag = True
+                        self.l_constant_flag = True
 
                     if isinstance(term_l, VariableResult):
                         l_constant_flag = False
@@ -289,14 +289,24 @@ class Parser:
                         self.irGenerator.pc += 2
                     else:
                         print(f"expression op value {op.value}")
-                        if l_constant_flag and r_constant_flag:
+                        if self.l_constant_flag and self.r_constant_flag:
                             term_r.setiid(self.constants[str(term_r.constant)])
                             print(f"\nPCCCCCCCCCCCCC --- expression pc org {self.irGenerator.pc}")
                             print(f"expression current pc {self.irGenerator.pc}")
                             self.irGenerator.compute(block, op, term_l, term_r)
                             self.irGenerator.pc += 3
                             print(f"expression pc after {self.irGenerator.pc}")
+                        # elif l_constant_flag == False and r_constant_flag == True:
+                        #     print(f"\nPCCCCCCCCCCCCC --- expression pc org {self.irGenerator.pc}")
+                        #     print(f"expression current pc {self.irGenerator.pc}")
+                        #     print(f"term r iid {term_r.getiid()}")
+                        #
+                        #     term_r.setiid(self.constants[str(term_r.constant)])
+                        #     self.irGenerator.compute(block, op, term_l, term_r)
+                        #     print([i.toString(True) for i in block.instructions])
+                        #     self.irGenerator.pc += 2
                         else:
+                            print("No Constants in expression\n")
                             self.irGenerator.pc += 1
                             self.irGenerator.compute(block, op, term_l, term_r)
                             self.irGenerator.pc += 1
@@ -306,7 +316,7 @@ class Parser:
                         print(f"*******Is Expression checked?********\n")
                         term_l = term_l.toInstruction()
 
-                    if l_constant_flag and r_constant_flag:
+                    if self.l_constant_flag and self.r_constant_flag:
                         term_l.setiid(self.irGenerator.getPC()-3)
                     else:
                         term_l.setiid(self.irGenerator.getPC() - 1)
@@ -317,18 +327,39 @@ class Parser:
     def relation(self, block):
         branch_res = BranchResult()
         expr_l = self.expression(block)
+        expr_r_flag = self.r_constant_flag
+        expr_l_flag = self.l_constant_flag
+        print("\n*******RELATION")
         if expr_l is not None:
             while self.inputSym.checkRelation():
                 op = self.inputSym
                 self.next()
-                self.irGenerator.pc += 1
+                #self.irGenerator.pc += 1
                 expr_r = self.expression(block)
                 # print(f"\nDEBUG: expr_l version {expr_l.iid}"
                 #       f" expr_r version {expr_r.iid}\n")
                 # print(op.value)
                 if expr_r is not None:
                     if isinstance(expr_r, ConstantResult):
+                        expr_r_flag = True
                         # print("Debug: ConstantResult in relation for expr_r")
+
+                    if isinstance(expr_l, ConstantResult):
+                        expr_l_flag = True
+                    print(f"relation expr_l is Constant {expr_l_flag}, expr_r is constant {expr_r_flag}")
+
+                    if expr_l_flag and expr_r_flag:
+                        expr_l.setiid(self.constants[str(expr_l.constant)])
+                        expr_r.setiid(self.constants[str(expr_r.constant)])
+                        self.irGenerator.compute(block, op, expr_l, expr_r)
+                        self.irGenerator.pc += 3
+                        branch_res.condition = op
+                        branch_res.fixuplocation = self.irGenerator.getPC()
+                        # print(f"branch_res.fixuplocation {branch_res.fixuplocation}")
+                        branch_res.iid = self.irGenerator.getPC() - 3
+
+                    elif expr_l_flag == False and expr_r_flag == True:
+                        expr_r.setiid(self.constants[str(expr_r.constant)])
                         self.irGenerator.compute(block, op, expr_l, expr_r)
                         self.irGenerator.pc += 2
                         branch_res.condition = op
@@ -349,6 +380,7 @@ class Parser:
         return branch_res.clone()
 
     def assignment(self, block, kill: list):
+        print("****\n Assignment\n")
         varManager = self.varManager
         if self.inputSym.checkSameType(TokenType.letToken):
             self.next()
@@ -392,8 +424,14 @@ class Parser:
                                     flag = False
                                 else:
                                     flag = True
+
+                            if isinstance(expr_res, ConstantResult):
+                                print("\nexpr_res is Constant in assignment!!!")
+                                print(expr_res.iid)
+
                             if expr_res.getiid() > 0:
                                 expr_res = expr_res.toInstruction()
+
                             var.version = expr_res.iid
                             if flag:
                                 var.version = self.irGenerator.getPC()
@@ -652,6 +690,8 @@ class Parser:
                         else:
                             self.error(incorrectSyntaxException("Expecting )"))
                             return None
+                    self.irGenerator.pc += 1
+                    print(f"\n INPUTTTTTTT Debug inputNum- show current pc : {self.irGenerator.pc}")
                     self.irGenerator.compute(block, op, None, None)
                     self.irGenerator.pc += 1
                     return InstructionResult(self.irGenerator.getPC() - 1)
@@ -739,7 +779,7 @@ class Parser:
 
             branch_res = self.relation(whileBlock)
             self.irGenerator.compute(whileBlock, branch_res.condition, branch_res)
-            self.irGenerator.pc += 1
+            self.irGenerator.pc += 2
 
             tempkill = kill.copy()
             if self.inputSym.checkSameType(TokenType.doToken):
@@ -915,7 +955,7 @@ class Parser:
             while self.inputSym.checkSameType(TokenType.varToken) or self.inputSym.checkSameType(TokenType.arrToken):
                 # print(f"Check current symbol {self.inputSym.value}")
                 self.varDecl()
-
+            self.irGenerator.pc += 1
             if self.inputSym.checkSameType(TokenType.beginToken):
                 self.next()
 

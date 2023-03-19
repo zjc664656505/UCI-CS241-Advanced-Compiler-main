@@ -120,6 +120,10 @@ class IrGenerator:
                         self.compute(constant_block, self.createConstantToken(x[j], self.pc + 1), x_j, None,
                                      self.pc + 1)
                         x_j = ConstantResult(x[j])
+                        print("\n***** mul in for loop load")
+                        print(self.pc)
+                        print(y[i].constant)
+                        print(x_j.constant)
                         self.compute(block, OperatorCode.mul, y[i], x_j)
                         z[i] = InstructionResult(self.pc)
                         self.pc = self.pc + 2
@@ -127,6 +131,10 @@ class IrGenerator:
                         constant_pc = constants[self.createConstantToken(x[j], self.pc + 1).value]
                         x_j = ConstantResult(x[j], constant_pc)
                         self.compute(block, OperatorCode.mul, y[i], x_j)
+                        print("\n***** mul in for loop load1")
+                        print(self.pc)
+                        print(y[i].constant)
+                        print(x_j.constant)
                         z[i] = InstructionResult(self.pc)
                         self.pc = self.pc + 2
                 else:
@@ -134,39 +142,50 @@ class IrGenerator:
                         constants[self.createConstantToken(x[j], self.pc + 1).value] = self.pc+1
                         x_j = ConstantResult(x[j], self.pc+1)
                         self.compute(constant_block, self.createConstantToken(x[j], self.pc + 1), x_j, None, self.pc + 1)
-                        x_j = ConstantResult(x[j])
+                        print("\n***** mul in for loop load2")
+                        print(self.pc)
+                        #print(z[i].constant)
+                        print(x_j.iid)
                         self.compute(block, OperatorCode.mul, z[i], x_j)
                         z[i] = InstructionResult(self.pc)
                         self.pc = self.pc + 2
                     else:
                         constant_pc = constants[self.createConstantToken(x[j], self.pc + 1).value]
                         x_j = ConstantResult(x[j], constant_pc)
-                        self.compute(block, OperatorCode.mul, y[i], x_j)
+                        print("\n***** mul in for loop load3")
+                        print(self.pc)
+                        print(z[i].constant)
+                        print(x_j.constant)
+
+                        self.compute(block, OperatorCode.mul, z[i], x_j)
                         z[i] = InstructionResult(self.pc)
                         self.pc = self.pc + 2
             if i + 1 == len(x):
                 z[i] = y[i]
 
+
+
+        for i in range(1, len(z)):
+            self.compute(block, OperatorCode.add, z[i - 1], z[i])
+            z[i] = InstructionResult(self.pc)
+            self.pc += 2
+
+        #self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(2000))
+        if not self.createConstantToken(2000, self.pc + 2).value in constants:
+            constants[self.createConstantToken(2000, self.pc + 2).value] = self.pc + 2
+            self.compute(constant_block, self.createConstantToken(2000, self.pc + 2), ConstantResult(2000, self.pc+1), None, self.pc + 2)
+            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(2000, self.pc+2))
+            self.pc = self.pc + 2
+        else:
+            constant_pc1 = constants[self.createConstantToken(2000, self.pc + 2).value]
+            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(2000, constant_pc1))
+            self.pc = self.pc + 2
+
         if len(z) == 1:
+            self.pc += 1
             self.compute(block, OperatorCode.add, ConstantResult("Frame Pointer", 0), z[0])
             z[0] = InstructionResult(self.pc)
             self.pc += 2
-        else:
-            for i in range(1, len(z)):
-                self.compute(block, OperatorCode.add, z[i - 1], z[i])
-                z[i] = InstructionResult(self.pc)
-                self.pc += 2
-
-        #self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4))
-        if not self.createConstantToken(4, self.pc + 1).value in constants:
-            constants[self.createConstantToken(4, self.pc + 1).value] = self.pc + 1
-            self.compute(constant_block, self.createConstantToken(4, self.pc + 1), ConstantResult(4, self.pc+1), None, self.pc + 1)
-            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4, self.pc+1))
-            self.pc = self.pc + 2
-        else:
-            constant_pc1 = constants[self.createConstantToken(4, self.pc + 1).value]
-            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4, constant_pc1))
-            self.pc = self.pc + 2
 
         if not self.createConstantToken(array.array_addr, self.pc + 1).value in constants:
             constants[self.createConstantToken(array.array_addr, self.pc + 1).value] = self.pc + 1
@@ -183,9 +202,11 @@ class IrGenerator:
         #self.pc = self.pc + 1
         #self.compute(block, OperatorCode.adda, InstructionResult(self.pc - 1), ConstantResult(array.array_addr))
         #self.pc = self.pc + 1
-        print(f"load Aarray constants {constants}")
-        print(f"array address {array.array_addr}")
+        # print(f"load Aarray constants {constants}")
+        # print(f"array address {array.array_addr}")
+
         self.compute(block, OperatorCode.load, None, InstructionResult(self.pc - 2))
+
         self.pc = self.pc + 1
 
     def storeArray(self, block, varManager, lrhResult, rrResult, constants):
@@ -228,7 +249,7 @@ class IrGenerator:
                     else:
                         constant_pc = constants[self.createConstantToken(x[j], self.pc + 1).value]
                         x_j = ConstantResult(x[j], constant_pc)
-                        self.compute(block, OperatorCode.mul, y[i], x_j)
+                        self.compute(block, OperatorCode.mul, z[i], x_j)
                         z[i] = InstructionResult(self.pc)
                         self.pc = self.pc + 2
 
@@ -246,14 +267,15 @@ class IrGenerator:
 
 
         print(f"array end pc num: {self.pc}")
-        if not self.createConstantToken(4, self.pc + 1).value in constants:
-            constants[self.createConstantToken(4, self.pc + 1).value] = self.pc + 1
-            self.compute(constant_block, self.createConstantToken(4, self.pc + 1), ConstantResult(4, self.pc+1), None, self.pc + 1)
-            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4, self.pc+1))
+        if not self.createConstantToken(2000, self.pc + 1).value in constants:
+            constants[self.createConstantToken(2000, self.pc + 1).value] = self.pc + 1
+            self.compute(constant_block, self.createConstantToken(2000, self.pc + 1), ConstantResult(2000, self.pc+1), None, self.pc + 1)
+            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(2000, self.pc+1))
             self.pc = self.pc + 2
         else:
-            constant_pc1 = constants[self.createConstantToken(4, self.pc + 1).value]
-            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(4, constant_pc1))
+
+            constant_pc1 = constants[self.createConstantToken(2000, self.pc + 1).value]
+            self.compute(block, OperatorCode.mul, z[len(x) - 1], ConstantResult(2000, constant_pc1))
             self.pc = self.pc + 2
 
         if len(z) == 1:
