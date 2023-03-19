@@ -5,7 +5,7 @@ label = "Main";
 BB0 [shape=record, label="<b>BB0|{3: const #10}"];
 BB1 [shape=record, label="<b>BB1|{5: add (3) (3)}"];
 BB2 [shape=record, label="<b>BB2|{10: cmp (3) (3)|13: bge (10) block:= [5]}"];
-BB3 [shape=record, label="<b>BB3|{25 : phi d25 := (17) (23)|26: write (25)|27: end}"];
+BB3 [shape=record, label="<b>BB3|{25 : phi d25 := (17) (23)|26: write (25)|28: end}"];
 BB4 [shape=record, label="<b>BB4|{17: add (5) (5)|19: bra block:= [3]}"];
 BB5 [shape=record, label="<b>BB5|{23: add (5) (5)}"];
 }

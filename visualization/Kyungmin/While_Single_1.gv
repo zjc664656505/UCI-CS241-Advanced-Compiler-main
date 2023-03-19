@@ -6,7 +6,7 @@ BB0 [shape=record, label="<b>BB0|{6: const #0|9: const #10|13: const #1}"];
 BB1 [shape=record, label="<b>BB1|{3: read}"];
 BB2 [shape=record, label="<b>BB2|{8: cmp (6) (9)|10: bge (8) block:= [4]|28 : phi i28 := (3) (13)|29 : phi x29 := (6) (13)|30 : phi y30 := (6) (22)|31 : phi z31 := (6) (13)}"];
 BB3 [shape=record, label="<b>BB3|{13: add (28) (13)|22: add (13) (13)|27: bra block:= [2]}"];
-BB4 [shape=record, label="<b>BB4|{32: write (29)|33: write (30)|34: write (31)|35: write (28)|36: write (3)|37: end}"];
+BB4 [shape=record, label="<b>BB4|{32: write (29)|34: write (30)|36: write (31)|38: write (28)|40: write (3)|42: end}"];
 }
 BB0:s -> BB1:n ;
 BB2:b -> BB3:b [color=blue, style=dotted, label="dom"];

@@ -151,6 +151,7 @@ class Parser:
                     self.continuous_iid_track.append(result.iid)
                     print(self.continuous_iid_track)
                     if len(self.continuous_iid_track) > 1:
+                        print("Continuous iid >1")
                         if result.iid == self.continuous_iid_track[-1]:
                             if self.dimension_list != []:
                                 if len(self.dimension_list) > 1:
@@ -164,12 +165,15 @@ class Parser:
                                 self.global_continuous_flag = True
                             else:
                                 if result.iid == self.continuous_iid_track[-2]:
+                                    print("dup iid!!!!")
                                     self.irGenerator.compute(self.constantBlock, op, result, None,
                                                              self.irGenerator.getPC() + 2)
                                     self.constants[self.inputSym.value] = self.irGenerator.getPC() + 2
+                                    print(f"self.constants: {self.constants}")
                                 else:
                                     self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 1)
                                     self.constants[self.inputSym.value] = self.irGenerator.getPC()+1
+
                     else:
                         self.irGenerator.compute(self.constantBlock, op, result, None, self.irGenerator.getPC() + 1)
                         self.constants[self.inputSym.value] = self.irGenerator.getPC() + 1
@@ -241,6 +245,10 @@ class Parser:
                             factor_r.setiid(self.constants[str(factor_r.constant)])
                             self.irGenerator.compute(block, op, factor_l, factor_r)
                             self.irGenerator.pc += 3
+                        # elif l_constant_flag == False and r_constant_flag == True:
+                        #     factor_r.setiid(self.constants[str(factor_r.constant)])
+                        #     self.irGenerator.compute(block, op, factor_l, factor_r)
+                        #     self.irGenerator.pc += 2
                         else:
                             self.irGenerator.pc += 1
                             self.irGenerator.compute(block, op, factor_l, factor_r)
@@ -250,8 +258,6 @@ class Parser:
                         print(f"*******Is Term checked?********\n")
                         factor_l = factor_l.toInstruction()
 
-                    if l_constant_flag and r_constant_flag:
-                        factor_l.setiid(self.irGenerator.getPC() - 3)
                     else:
                         factor_l.setiid(self.irGenerator.getPC() -1)
 
@@ -276,7 +282,7 @@ class Parser:
                         self.l_constant_flag = True
 
                     if isinstance(term_l, VariableResult):
-                        l_constant_flag = False
+                        self.l_constant_flag = False
                         print(f"expression current pc when term l is variable result {term_l.variable.version}")
                         term_l.setiid(term_l.variable.version)
 
@@ -290,13 +296,17 @@ class Parser:
                     else:
                         print(f"expression op value {op.value}")
                         if self.l_constant_flag and self.r_constant_flag:
+                            print(self.constants)
+                            term_l.setiid(self.constants[str(term_l.constant)])
                             term_r.setiid(self.constants[str(term_r.constant)])
+                            print(f"{term_l.constant}: {term_l.iid}")
+                            print(f"{term_r.constant}: {term_r.iid}")
                             print(f"\nPCCCCCCCCCCCCC --- expression pc org {self.irGenerator.pc}")
                             print(f"expression current pc {self.irGenerator.pc}")
                             self.irGenerator.compute(block, op, term_l, term_r)
                             self.irGenerator.pc += 3
                             print(f"expression pc after {self.irGenerator.pc}")
-                        # elif l_constant_flag == False and r_constant_flag == True:
+                        # elif self.l_constant_flag == False and self.r_constant_flag == True:
                         #     print(f"\nPCCCCCCCCCCCCC --- expression pc org {self.irGenerator.pc}")
                         #     print(f"expression current pc {self.irGenerator.pc}")
                         #     print(f"term r iid {term_r.getiid()}")
@@ -1018,6 +1028,8 @@ class Parser:
                 print(j.toString(True))
         #print("---------------------\n")
         self.cfg.dup_variable_removal()
+
+
         self.cfg.move_replace()
         # print(self.cfg.blocks)
         #

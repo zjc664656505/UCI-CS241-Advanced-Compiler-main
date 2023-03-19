@@ -175,10 +175,10 @@ def dir_reader(dir_name):
     return zip(out_dir, out_dir_org)
 
 if __name__ == "__main__":
-    debug_mode = True
+    debug_mode = False
     
     if debug_mode:
-        file_dir = "./test/class_test/Junchen/triple_while_if_else.txt"
+        file_dir = "./test/class_test/ChinHung/if_branch_fall_empty-corrected.smpl"
         tokenize = Tokenizer(file_dir)
         sym = tokenize.getSym()
         parse = Parser(file_dir)

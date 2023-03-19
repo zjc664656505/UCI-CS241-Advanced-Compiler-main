@@ -3,7 +3,7 @@ node [shape=record];
 subgraph cluster_main{
 label = "Main";
 BB0 [shape=record, label="<b>BB0|{3: const #10}"];
-BB1 [shape=record, label="<b>BB1|{4: add (3) (3)|9: write (4)|10: write (4)|11: end}"];
+BB1 [shape=record, label="<b>BB1|{4: add (3) (3)|9: write (4)|11: write (4)|13: end}"];
 }
 BB0:s -> BB1:n ;
 }
