@@ -3,7 +3,7 @@ node [shape=record];
 subgraph cluster_main{
 label = "Main";
 BB0 [shape=record, label="<b>BB0|{3: const #0|5: const #6|7: const #5}"];
-BB1 [shape=record, label="<b>BB1|{7: mul (5) (7)|9: add (5) (7)}"];
+BB1 [shape=record, label="<b>BB1|{6: mul (5) (7)|9: add (5) (6)}"];
 BB2 [shape=record, label="<b>BB2|{12: cmp (5) (3)|14: ble (12) block:= [5]}"];
 BB3 [shape=record, label="<b>BB3|{20 : phi c20 := (16) (5)|21: end}"];
 BB4 [shape=record, label="<b>BB4|{16: add (5) (9)|19: bra block:= [3]}"];

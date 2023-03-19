@@ -245,10 +245,10 @@ class Parser:
                             factor_r.setiid(self.constants[str(factor_r.constant)])
                             self.irGenerator.compute(block, op, factor_l, factor_r)
                             self.irGenerator.pc += 3
-                        # elif l_constant_flag == False and r_constant_flag == True:
-                        #     factor_r.setiid(self.constants[str(factor_r.constant)])
-                        #     self.irGenerator.compute(block, op, factor_l, factor_r)
-                        #     self.irGenerator.pc += 2
+                        elif l_constant_flag == False and r_constant_flag == True:
+                            factor_r.setiid(self.constants[str(factor_r.constant)])
+                            self.irGenerator.compute(block, op, factor_l, factor_r)
+                            self.irGenerator.pc += 2
                         else:
                             self.irGenerator.pc += 1
                             self.irGenerator.compute(block, op, factor_l, factor_r)
@@ -257,7 +257,10 @@ class Parser:
                     if isinstance(factor_l, ConstantResult) or isinstance(factor_l, VariableResult):
                         print(f"*******Is Term checked?********\n")
                         factor_l = factor_l.toInstruction()
-
+                    if l_constant_flag and r_constant_flag:
+                        factor_l.setiid(self.irGenerator.getPC()-3)
+                    elif r_constant_flag:
+                        factor_l.setiid(self.irGenerator.getPC()-2)
                     else:
                         factor_l.setiid(self.irGenerator.getPC() -1)
 
