@@ -22,10 +22,10 @@ class Block(IBlock):
     def getid(self):
         return self.id
 
-    def def_constant_instruction(self, val):
-        for instr in self.instructions:
-            if val == instr.operandx.constant:
-                self.instructions.remove(instr)
+    def del_instruction(self, block, iid):
+        for instruction in block.instructions:
+            if iid == instruction.id:
+                block.instructions.remove(instruction)
 
     @dispatch(Instruction)
     def addinstruction(self, instruction):
