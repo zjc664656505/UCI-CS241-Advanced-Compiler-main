@@ -703,7 +703,7 @@ class Parser:
                         # print(f"expression type {type(res)}")
                         if res is not None:
                             self.irGenerator.compute(block, op, res, None)
-                            self.irGenerator.pc += 1
+                            self.irGenerator.pc += 2
                         if self.inputSym.checkSameType(TokenType.closeparenToken):
                             self.next()
                             return None
