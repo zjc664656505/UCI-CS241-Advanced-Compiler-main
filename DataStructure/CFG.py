@@ -58,7 +58,7 @@ class CFG:
         self.join_parent = {}
         self.live_range = {}
         self.adjacent = {}
-        self.delete_iid = []
+        self.delete_iid = set()
 
     def initializeBlock(self):
         self.block_counter += 1
@@ -430,7 +430,7 @@ class CFG:
                                         else:
                                             inst.res_CSE = InstructionResult(inst_temp.id)
                                         inst.deletemode = DeleteMode.CSE
-                                        self.delete_iid.append(inst.id)
+                                        self.delete_iid.add(inst.id)
                                         break
                                     else:
                                         continue
@@ -453,7 +453,7 @@ class CFG:
                                         block.instructions[id - 1].deletemode = DeleteMode._NOT_DEL
                                         mark_X = True
                                         mark_Y = True
-                                        self.delete_iid.append(inst.id)
+                                        self.delete_iid.add(inst.id)
                                         print(f"*****CSE on instr {inst.toString(True)} at iid {id-1}!!!*****")
                                         print(f"check whether CSE is turned on -> {block.instructions[id - 1].deletemode}")
                                         break
@@ -473,7 +473,7 @@ class CFG:
                                             inst.res_CSE = InstructionResult(inst_temp.id)
                                             mark_X = True
                                             mark_Y = True
-                                            self.delete_iid.append(inst.id)
+                                            self.delete_iid.add(inst.id)
                                             print(f"*****CSE on instr {inst.toString(True)} at iid {id}!!!*****")
                                             print(f"check whether CSE is turned on -> {inst.deletemode}")
                                             break
@@ -550,7 +550,7 @@ class CFG:
                                         print(f"check whether CSE is turned on -> {inst.deletemode}")
                                         mark_X = True
                                         mark_Y = True
-                                        self.delete_iid.append(inst.id)
+                                        self.delete_iid.add(inst.id)
                                         break
                                 else:
                                     if (temp_x == target_x) and (temp_y == target_y):
@@ -562,7 +562,7 @@ class CFG:
                                         inst.deletemode = DeleteMode.CSE
                                         mark_X = True
                                         mark_Y = True
-                                        self.delete_iid.append(inst.id)
+                                        self.delete_iid.add(inst.id)
                                         print(f"*****CSE on instr {inst.toString(True)} at iid {id}!!!*****")
                                         print(f"check whether CSE is turned on -> {inst.deletemode}")
                                         break
@@ -574,7 +574,7 @@ class CFG:
                                         inst.deletemode = DeleteMode.CSE
                                         mark_X = True
                                         mark_Y = True
-                                        self.delete_iid.append(inst.id)
+                                        self.delete_iid.add(inst.id)
                                         print("2 instructions have the same iid with x=y and y=x")
                                         print("*****CSE!!!*****")
                                         break
@@ -710,6 +710,7 @@ class CFG:
                             else:
                                 instr.res_CSE = InstructionResult(instr_temp.id)
                             instr.deletemode = DeleteMode.CSE
+                            self.delete_iid.add(instr.id)
                             break
                         else:
                             continue
@@ -759,6 +760,7 @@ class CFG:
                             instr.deletemode = DeleteMode.CSE
                             mark_x = True
                             mark_y = True
+                            self.delete_iid.add(instr.id)
                             break
                     else:
                         if temp_x == target_x and temp_y == target_y:
@@ -767,6 +769,7 @@ class CFG:
                             else:
                                 instr.res_CSE = InstructionResult(instr_temp.id)
                             instr.deletemode = DeleteMode.CSE
+                            self.delete_iid.add(instr.id)
                             mark_x = True
                             mark_y = True
                             break
@@ -776,6 +779,7 @@ class CFG:
                             else:
                                 instr.res_CSE = InstructionResult(instr_temp.id)
                             instr.deletemode = DeleteMode.CSE
+                            self.delete_iid.add(instr.id)
                             mark_x = True
                             mark_y = True
                             break
@@ -807,6 +811,7 @@ class CFG:
                 if inst_adda.res_CSE.iid == inst_temp.operandy.iid:
                     inst.deletemode = DeleteMode.CSE
                     inst.res_CSE = InstructionResult(inst_temp.id)
+                    self.delete_iid.add(inst.id)
                     return inst
             else:
                 continue
@@ -885,7 +890,6 @@ class CFG:
                 continue
             b = block
             for inst in b.instructions:
-                for id in self.delete_iid:
-                    if inst.id == id:
-                        print(inst.toString(True))
-                        b.instructions.remove(inst)
+                if inst.id in self.delete_iid:
+                    print(inst.toString(True))
+                    b.instructions.remove(inst)

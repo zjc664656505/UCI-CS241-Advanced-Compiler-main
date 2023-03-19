@@ -9,7 +9,7 @@ BB3 [shape=record, label="<b>BB3|{68: load (66)|69: write (68)|70: end}"];
 BB4 [shape=record, label="<b>BB4|}"];
 BB5 [shape=record, label="<b>BB5|{26: cmp (3) (27)|29: bge (26) block:= [8]}"];
 BB6 [shape=record, label="<b>BB6|{51: bra block:= [3]}"];
-BB7 [shape=record, label="<b>BB7|{37: adda (7) (10)|39: store (32) (37)|41: bra block:= [6]}"];
+BB7 [shape=record, label="<b>BB7|{39: store (32) (37)|41: bra block:= [6]}"];
 BB8 [shape=record, label="<b>BB8|{50: write (20)}"];
 BB9 [shape=record, label="<b>BB9|{60: write (20)}"];
 }

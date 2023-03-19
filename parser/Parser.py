@@ -1002,10 +1002,20 @@ class Parser:
         self.next()
         self.cfg.done = self.computation()
         self.cfg.cse_optimization()
+        print()
+        print("BEFORE CSE")
+        for i in self.cfg.blocks:
+            for j in i.instructions:
+                print(j.toString(True))
+        print()
+
+
         self.cfg.optimize()
-        # for i in self.cfg.blocks:
-        #     for j in i.instructions:
-        #         print(j.toString(True))
+        print()
+        print("AFTER CSE")
+        for i in self.cfg.blocks:
+            for j in i.instructions:
+                print(j.toString(True))
         #print("---------------------\n")
         self.cfg.dup_variable_removal()
         self.cfg.move_replace()
