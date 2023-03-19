@@ -178,7 +178,7 @@ if __name__ == "__main__":
     debug_mode = False
     
     if debug_mode:
-        file_dir = "./test/class_test/ChinHung/if_branch_fall_empty-corrected.smpl"
+        file_dir = "./test/class_test/Hongyu/iftests/test1.smpl"
         tokenize = Tokenizer(file_dir)
         sym = tokenize.getSym()
         parse = Parser(file_dir)

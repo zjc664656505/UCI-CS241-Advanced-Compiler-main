@@ -306,15 +306,15 @@ class Parser:
                             self.irGenerator.compute(block, op, term_l, term_r)
                             self.irGenerator.pc += 3
                             print(f"expression pc after {self.irGenerator.pc}")
-                        # elif self.l_constant_flag == False and self.r_constant_flag == True:
-                        #     print(f"\nPCCCCCCCCCCCCC --- expression pc org {self.irGenerator.pc}")
-                        #     print(f"expression current pc {self.irGenerator.pc}")
-                        #     print(f"term r iid {term_r.getiid()}")
-                        #
-                        #     term_r.setiid(self.constants[str(term_r.constant)])
-                        #     self.irGenerator.compute(block, op, term_l, term_r)
-                        #     print([i.toString(True) for i in block.instructions])
-                        #     self.irGenerator.pc += 2
+                        elif self.l_constant_flag == False and self.r_constant_flag == True:
+                            print(f"\nPCCCCCCCCCCCCC --- expression pc org {self.irGenerator.pc}")
+                            print(f"expression current pc {self.irGenerator.pc}")
+                            print(f"term r iid {term_r.getiid()}")
+
+                            term_r.setiid(self.constants[str(term_r.constant)])
+                            self.irGenerator.compute(block, op, term_l, term_r)
+                            print([i.toString(True) for i in block.instructions])
+                            self.irGenerator.pc += 2
                         else:
                             print("No Constants in expression\n")
                             self.irGenerator.pc += 1
@@ -328,6 +328,8 @@ class Parser:
 
                     if self.l_constant_flag and self.r_constant_flag:
                         term_l.setiid(self.irGenerator.getPC()-3)
+                    elif self.r_constant_flag:
+                        term_l.setiid(self.irGenerator.getPC()-2)
                     else:
                         term_l.setiid(self.irGenerator.getPC() - 1)
 
@@ -392,6 +394,7 @@ class Parser:
     def assignment(self, block, kill: list):
         print("****\n Assignment\n")
         varManager = self.varManager
+        constant_res_flag = False
         if self.inputSym.checkSameType(TokenType.letToken):
             self.next()
             designator_res = self.designator(block)
@@ -438,17 +441,21 @@ class Parser:
                             if isinstance(expr_res, ConstantResult):
                                 print("\nexpr_res is Constant in assignment!!!")
                                 print(expr_res.iid)
+                                constant_res_flag = True
 
                             if expr_res.getiid() > 0:
                                 expr_res = expr_res.toInstruction()
 
                             var.version = expr_res.iid
                             if flag:
-                                var.version = self.irGenerator.getPC()
+                                if constant_res_flag:
+                                    var.version = self.constants[str(expr_res.constant)]
+                                else:
+                                    var.version = self.irGenerator.getPC()
                                 self.irGenerator.compute(block, op, designator_res, expr_res)
                                 # TODO should the pc of IRGenerator be incremented at here? 2/15/2023
 
-                                self.irGenerator.pc += 1
+                                self.irGenerator.pc += 2
                                 # print(f"UPDATE SSAMAP")
                                 # print(var.name)
                                 # print(var.address)
@@ -1027,7 +1034,6 @@ class Parser:
             for j in i.instructions:
                 print(j.toString(True))
         #print("---------------------\n")
-        self.cfg.dup_variable_removal()
 
 
         self.cfg.move_replace()

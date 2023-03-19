@@ -156,9 +156,11 @@ class CFG:
                         if inst.operandy.variable.version == version:
                             #print("Warning the variable result is changed to instruction result")
                             inst.operandy = ConstantResult(constant)
+                            print(inst.operandy.iid)
                     elif isinstance(inst.operandy, InstructionResult):
                         if inst.operandy.iid == version:
                             inst.operandy = ConstantResult(constant)
+                            print(inst.operandy.iid)
 
     def cse_move_constant(self, inst: Instruction, block: Block) -> bool:
         if inst.opcode != OperatorCode.move:
@@ -179,6 +181,7 @@ class CFG:
                     else:
                         inst.deletemode = DeleteMode.COPY_PROP
                         inst.res_CSE = InstructionResult(inst_temp.id)
+
                         return True
         if block.id == self.base_block_counter:
             return False
@@ -203,12 +206,15 @@ class CFG:
                             continue
 
                     if isinstance(inst.operandx, InstructionResult):
+                        print("\n&&&&&&&&&&&& move replace!")
                         inst.deletemode = DeleteMode.COPY_PROP
                         self.CP_replace(inst.id, inst.operandx.iid)
                     elif isinstance(inst.operandx, VariableResult):
+                        print("\n&&&&&&&&&&&& move replace variable!")
                         inst.deletemode = DeleteMode.COPY_PROP
                         self.CP_replace(inst.id, inst.operandx.variable.version)
                     elif isinstance(inst.operandx, ConstantResult):
+                        print("\n&&&&&&&&&&&& move replace constant!")
                         mask: bool = self.cse_move_constant(inst, block)
                         self.CP_replace_constant(inst.id, inst.operandx.iid)
                         inst.deletemode = DeleteMode.COPY_PROP
@@ -893,3 +899,17 @@ class CFG:
                 if inst.id in self.delete_iid:
                     print(inst.toString(True))
                     b.instructions.remove(inst)
+
+    # def remove_assign(self):
+    #     for block in self.blocks:
+    #         if isinstance(block, ConstantBlock):
+    #             continue
+    #         b = block
+    #         for inst in b.instructions:
+    #             print()
+    #             print(inst.toString(True))
+    #             if inst.opcode == OperatorCode.move:
+    #                 print("Remove")
+    #                 inst.deletemode = DeleteMode.COPY_PROP
+    #                 print(inst.toString(True))
+    #                 b.instructions.remove(inst)

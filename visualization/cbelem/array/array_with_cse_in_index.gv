@@ -2,8 +2,8 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{11: const #2000|15: const #500|30: const #10}"];
-BB1 [shape=record, label="<b>BB1|{4: read|7: read|9: mul (4) (11)|12: add (0) (4)|14: adda (12) (15)|16: load (14)|17: write (16)|19: mul (4) (11)|22: add (0) (4)|24: adda (22) (15)|26: load (24)|27: write (26)|33: mul (30) (11)|35: add (0) (30)|37: adda (35) (15)|39: store (7) (37)|48: load (46)|49: write (48)|51: end}"];
+BB0 [shape=record, label="<b>BB0|{13: const #2000|17: const #500|32: const #10}"];
+BB1 [shape=record, label="<b>BB1|{4: read|8: read|11: mul (4) (13)|14: add (0) (4)|16: adda (14) (17)|18: load (16)|19: write (18)|21: mul (4) (13)|24: add (0) (4)|26: adda (24) (17)|28: load (26)|29: write (28)|36: mul (32) (13)|38: add (0) (32)|40: adda (38) (17)|42: store (8) (40)|51: load (49)|52: write (51)|54: end}"];
 }
 BB0:s -> BB1:n ;
 }
