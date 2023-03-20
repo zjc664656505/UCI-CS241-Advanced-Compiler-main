@@ -1,5 +1,5 @@
 # UCI-CS241-Advanced-Compiler-main 2023 Winter
-1. This project is a humble implementation of DLX SSA-based compiler for the course CS241 Advanced Compiler Class taught by Professor Michael Franz in 2023 winter at UC Irvine by Junchen Zhao in his second-year PhD study. 
+1. This project is a humble implementation of DLX SSA-based compiler for the course CS241 Advanced Compiler Class taught by Professor Michael Franz in 2023 winter at UC Irvine.
 2. For running the compiler project, python version needs to be > python3.7+.
    1. Required package: > multipledispatch.
    2. Required package: > graphviz.
