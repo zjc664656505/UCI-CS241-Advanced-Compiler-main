@@ -58,6 +58,8 @@ class Parser:
         self.dimension_track = 0
         self.dimension_list = []
         r_constant_flag = False
+        self.term_r_constant = 0
+        self.term_l_constant = 0
 
     def next(self):
         self.inputSym: Token = self.tokenizer.getSym()

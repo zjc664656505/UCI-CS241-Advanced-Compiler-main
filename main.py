@@ -178,7 +178,7 @@ if __name__ == "__main__":
     debug_mode = False
     
     if debug_mode:
-        file_dir = "./test/class_test/jmcgowa/CSE_Tests/CSE5.txt"
+        file_dir = "./test/class_test/Yunpeng/array_kill_while.smpl"
         tokenize = Tokenizer(file_dir)
         sym = tokenize.getSym()
         parse = Parser(file_dir)

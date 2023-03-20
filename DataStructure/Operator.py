@@ -37,8 +37,8 @@ class Operator:
                         TokenType.leqToken: OperatorCode.cmp, TokenType.gtrToken: OperatorCode.cmp}
 
     branchingOperator = {TokenType.eqlToken: OperatorCode.bne, TokenType.neqToken: OperatorCode.beq,
-                         TokenType.lssToken: OperatorCode.bge, TokenType.leqToken: OperatorCode.bgt,
-                         TokenType.gtrToken: OperatorCode.ble, TokenType.geqToken: OperatorCode.blt,
+                         TokenType.lssToken: OperatorCode.blt, TokenType.leqToken: OperatorCode.bgt,
+                         TokenType.gtrToken: OperatorCode.ble, TokenType.geqToken: OperatorCode.bge,
                          TokenType.thenToken: OperatorCode.bra, TokenType.doToken: OperatorCode.bra,
                          TokenType.callToken: OperatorCode.bra}
 

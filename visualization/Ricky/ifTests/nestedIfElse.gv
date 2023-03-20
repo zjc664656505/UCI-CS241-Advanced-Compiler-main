@@ -15,7 +15,7 @@ BB9 [shape=record, label="<b>BB9|{31 : phi d31 := (29) (15)|32: bra block:= [6]}
 BB10 [shape=record, label="<b>BB10|{30: bra block:= [9]}"];
 BB11 [shape=record, label="<b>BB11|}"];
 BB12 [shape=record, label="<b>BB12|}"];
-BB13 [shape=record, label="<b>BB13|{39: cmp (38) (35)|40: bge (39) block:= [14]}"];
+BB13 [shape=record, label="<b>BB13|{39: cmp (38) (35)|40: blt (39) block:= [14]}"];
 BB14 [shape=record, label="<b>BB14|{44 : phi d44 := (42) (36)|45: bra block:= [3]}"];
 BB15 [shape=record, label="<b>BB15|{43: bra block:= [14]}"];
 BB16 [shape=record, label="<b>BB16|}"];
