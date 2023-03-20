@@ -728,7 +728,7 @@ class CFG:
                             mark_x = True
                             mark_y = True
                             if instr_temp.deletemode == DeleteMode.CSE:
-                                instr.res_CSE = instr_temp.CSE
+                                instr.res_CSE = instr_temp.res_CSE
                             else:
                                 instr.res_CSE = InstructionResult(instr_temp.id)
                             instr.deletemode = DeleteMode.CSE
