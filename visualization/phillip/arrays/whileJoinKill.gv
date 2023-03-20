@@ -4,7 +4,7 @@ subgraph cluster_main{
 label = "Main";
 BB0 [shape=record, label="<b>BB0|{13: const #2000|16: const #500|21: const #9999}"];
 BB1 [shape=record, label="<b>BB1|{4: read|8: read|11: mul (4) (13)|13: add (0) (4)|15: adda (13) (16)|17: load (15)|18: write (17)}"];
-BB2 [shape=record, label="<b>BB2|{20: cmp (4) (21)|22: ble (20) block:= [4]}"];
+BB2 [shape=record, label="<b>BB2|{20: cmp (4) (21)|22: bgt (20) block:= [4]}"];
 BB3 [shape=record, label="<b>BB3|{31: write (17)|40: adda (13) (16)|42: store (8) (40)|44: bra block:= [2]}"];
 BB4 [shape=record, label="<b>BB4|{45: end}"];
 }
