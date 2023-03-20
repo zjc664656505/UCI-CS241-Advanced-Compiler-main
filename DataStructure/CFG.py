@@ -359,7 +359,6 @@ class CFG:
                         # print(f"***CSE sub-iteration:: {i} - {block.instructions[i].opcode}")
                         inst_temp: Instruction = block.instructions[i]
 
-
                         # delete CSE
                         if (inst_temp.opcode == OperatorCode.move) or (inst_temp.opcode == OperatorCode.phi):
                             temp: int = -1
@@ -395,7 +394,7 @@ class CFG:
                                         break
                             elif isinstance(inst.operandy, VariableResult):
                                 if inst.operandy.variable.address == temp:
-                                    print(f"sub-instruction {inst.opcode} - {i}")
+                                    #print(f"sub-instruction {inst.opcode} - {i}")
                                     if inst.operandy.variable.address == temp:
                                         mark_X = True
                                         mark_Y = True
@@ -444,6 +443,8 @@ class CFG:
                             # print("++++++++++instruction in sub-iteration is load!!")
                             if inst_temp.opcode == OperatorCode.store:
                                 adda_temp_PC: int = i - 1
+                                add_temp_PC: int = i - 2
+                                print(block.instructions[add_temp_PC].toString(True))
                                 if block.instructions[adda_temp_PC].opcode != OperatorCode.adda:
                                     print("adda instruction is missing")
                                 else:
@@ -460,7 +461,7 @@ class CFG:
 
 
                                         print(f"instr temp id: {inst_temp.id}")
-                                        inst.res_CSE = InstructionResult(inst_temp.id-1)
+                                        inst.res_CSE = InstructionResult(inst_temp.id-2)
                                         inst.deletemode = DeleteMode._NOT_DEL
                                         inst.operandy.iid = inst_temp.id-2
                                         block.instructions[id - 1].deletemode = DeleteMode.CSE
@@ -472,6 +473,7 @@ class CFG:
                                         break
                                     else:
                                         continue
+
                             elif (inst_temp.opcode == OperatorCode.load) and (
                                     inst_temp.deletemode == DeleteMode._NOT_DEL):
                                 print()
@@ -479,8 +481,9 @@ class CFG:
                                 print(block.instructions[id - 1].toString(True))
 
                                 adda_temp_PC:int = i - 1
+                                add_temp_PC: int = i -2
                                 print(block.instructions[adda_temp_PC].toString(True))
-                                print()
+
                                 if block.instructions[adda_temp_PC].opcode != OperatorCode.adda:
                                     print("adda instruction is missing")
                                 else:
@@ -500,6 +503,7 @@ class CFG:
                                             continue
                                     else:
                                         print("wrong instruction result")
+
                         else:
                             # print()
                             # print("===== No move and load instruction in sub-iteration ")
