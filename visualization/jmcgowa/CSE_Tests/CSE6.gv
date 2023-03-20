@@ -2,11 +2,11 @@ digraph G {
 node [shape=record];
 subgraph cluster_main{
 label = "Main";
-BB0 [shape=record, label="<b>BB0|{4: const #1|5: const #2000|7: const #4|11: const #500|15: const #10|27: const #0}"];
-BB1 [shape=record, label="<b>BB1|{6: mul (4) (7)|8: add (0) (4)|10: adda (8) (11)|12: store (5) (10)|14: add (15) (15)}"];
-BB2 [shape=record, label="<b>BB2|{20: mul (8) (7)|22: adda (20) (11)|24: load (22)|26: cmp (24) (27)|28: ble (26) block:= [4]}"];
-BB3 [shape=record, label="<b>BB3|{40: sub (24) (14)|48: adda (8) (11)|50: store (40) (48)|52: bra block:= [2]}"];
-BB4 [shape=record, label="<b>BB4|{53: end}"];
+BB0 [shape=record, label="<b>BB0|{4: const #1|5: const #2000|11: const #500|15: const #10|27: const #0}"];
+BB1 [shape=record, label="<b>BB1|{6: mul (4) (5)|8: add (0) (4)|10: adda (8) (11)|12: store (5) (10)|14: add (15) (15)}"];
+BB2 [shape=record, label="<b>BB2|{23: adda (8) (11)|25: load (23)|26: cmp (25) (27)|28: ble (26) block:= [4]}"];
+BB3 [shape=record, label="<b>BB3|{40: sub (15) (15)|50: adda (8) (11)|52: store (40) (50)|54: bra block:= [2]}"];
+BB4 [shape=record, label="<b>BB4|{55: end}"];
 }
 BB0:s -> BB1:n ;
 BB2:b -> BB3:b [color=blue, style=dotted, label="dom"];

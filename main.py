@@ -178,7 +178,7 @@ if __name__ == "__main__":
     debug_mode = False
     
     if debug_mode:
-        file_dir = "./test/class_test/loops/print-old-and-new-variable.smpl"
+        file_dir = "./test/class_test/jmcgowa/CSE_Tests/CSE5.txt"
         tokenize = Tokenizer(file_dir)
         sym = tokenize.getSym()
         parse = Parser(file_dir)
@@ -187,22 +187,20 @@ if __name__ == "__main__":
         graph.showGraph()
     else:
         for file_dirs , file_org in dir_reader("./test/"):
-            try:
-                file_dir = file_dirs
-                tokenize = Tokenizer(file_dir)
-                sym = tokenize.getSym()
-                parse = Parser(file_dir)
-                cfg = parse.run_parser()
+            file_dir = file_dirs
+            tokenize = Tokenizer(file_dir)
+            sym = tokenize.getSym()
+            parse = Parser(file_dir)
+            cfg = parse.run_parser()
 
-                #saving path
-                save_path = "./visualization/" + file_org
-                if not os.path.exists(save_path):
-                    os.makedirs(save_path)
+            #saving path
+            save_path = "./visualization/" + file_org
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
 
-                graph = Graphviz(parse, file_dir, save_path)
-                graph.showGraph()
-            except:
-                print(file_dir)
+            graph = Graphviz(parse, file_dir, save_path)
+            graph.showGraph()
+
 
 
 

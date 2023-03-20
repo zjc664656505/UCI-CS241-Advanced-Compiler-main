@@ -216,6 +216,8 @@ class Parser:
         r_constant_flag = False
         l_constant_flag = False
         factor_l = self.factor(block, array_flag)
+        factor_r_constant = 0
+        factor_l_constant = 0
         if factor_l is not None:
             while self.inputSym.checkTerm():
                 op = self.inputSym
@@ -225,9 +227,12 @@ class Parser:
                     if isinstance(factor_r, ConstantResult):
                         print("FACTOR R is Constant Result!!!")
                         r_constant_flag = True
+                        factor_r_constant = factor_r.constant
+
 
                     if isinstance(factor_l, ConstantResult):
                         l_constant_flag = True
+                        factor_l_constant = factor_l.constant
 
                     if isinstance(factor_l, VariableResult):
                         l_constant_flag = False
@@ -242,10 +247,19 @@ class Parser:
                         self.irGenerator.pc += 2
                     else:
                         if l_constant_flag and r_constant_flag:
+                            if factor_r.constant == None:
+                                factor_r.constant = factor_r_constant
+
+                            if factor_l.constant == None:
+                                factor_l.constant = factor_l_constant
+
                             factor_r.setiid(self.constants[str(factor_r.constant)])
                             self.irGenerator.compute(block, op, factor_l, factor_r)
                             self.irGenerator.pc += 3
                         elif l_constant_flag == False and r_constant_flag == True:
+                            if factor_r.constant == None:
+                                factor_r.constant = factor_r_constant
+
                             factor_r.setiid(self.constants[str(factor_r.constant)])
                             self.irGenerator.compute(block, op, factor_l, factor_r)
                             self.irGenerator.pc += 2
@@ -270,6 +284,8 @@ class Parser:
         term_l = self.term(block, array_flag)
         self.r_constant_flag= False
         self.l_constant_flag = False
+        self.term_r_constant = 0
+        self.term_l_constant = 0
         if term_l is not None:
             while self.inputSym.checkExpression():
                 op = self.inputSym
@@ -281,8 +297,10 @@ class Parser:
                     if isinstance(term_r, ConstantResult):
                         print("TERM R is Constant Result!!!")
                         self.r_constant_flag = True
+                        self.term_r_constant = term_r.constant
                     if isinstance(term_l, ConstantResult):
                         self.l_constant_flag = True
+                        self.term_l_constant = term_l.constant
 
                     if isinstance(term_l, VariableResult):
                         self.l_constant_flag = False
@@ -293,13 +311,18 @@ class Parser:
                         term_l = term_l.toInstruction()
                     if term_r.getiid() > 0 and (not isinstance(term_r, RegisterResult)):
                         term_r = term_r.toInstruction()
+                        print(f"term r constant {term_r.constant}")
                     if isinstance(term_l, ConstantResult) or isinstance(term_r, ConstantResult):
                         self.irGenerator.compute(block, op, term_l, term_r)
                         self.irGenerator.pc += 2
                     else:
                         print(f"expression op value {op.value}")
                         if self.l_constant_flag and self.r_constant_flag:
-                            print(self.constants)
+                            if term_r.constant == None:
+                                term_r.constant = self.term_r_constant
+                            if term_l.constant == None:
+                                term_l.constant = self.term_l_constant
+
                             term_l.setiid(self.constants[str(term_l.constant)])
                             term_r.setiid(self.constants[str(term_r.constant)])
                             print(f"{term_l.constant}: {term_l.iid}")
@@ -313,6 +336,11 @@ class Parser:
                             print(f"\nPCCCCCCCCCCCCC --- expression pc org {self.irGenerator.pc}")
                             print(f"expression current pc {self.irGenerator.pc}")
                             print(f"term r iid {term_r.getiid()}")
+                            print(f"is term_r ConstantResult {isinstance(term_r, ConstantResult)}")
+                            print(term_r.constant)
+
+                            if term_r.constant == None:
+                                term_r.constant = self.term_r_constant
 
                             term_r.setiid(self.constants[str(term_r.constant)])
                             self.irGenerator.compute(block, op, term_l, term_r)
@@ -355,8 +383,10 @@ class Parser:
                 #       f" expr_r version {expr_r.iid}\n")
                 # print(op.value)
                 if expr_r is not None:
+                    print(expr_r)
                     if isinstance(expr_r, ConstantResult):
                         expr_r_flag = True
+                        print("expr r is Constant")
                         # print("Debug: ConstantResult in relation for expr_r")
 
                     if isinstance(expr_l, ConstantResult):
@@ -364,6 +394,12 @@ class Parser:
                     print(f"relation expr_l is Constant {expr_l_flag}, expr_r is constant {expr_r_flag}")
 
                     if expr_l_flag and expr_r_flag:
+                        if expr_r.constant == None:
+                            expr_r.constant = self.term_r_constant
+
+                        if expr_l.constant == None:
+                            expr_l.constant = self.term_l_constant
+
                         expr_l.setiid(self.constants[str(expr_l.constant)])
                         expr_r.setiid(self.constants[str(expr_r.constant)])
                         self.irGenerator.compute(block, op, expr_l, expr_r)
@@ -374,6 +410,9 @@ class Parser:
                         branch_res.iid = self.irGenerator.getPC() - 3
 
                     elif expr_l_flag == False and expr_r_flag == True:
+                        if expr_r.constant == None:
+                            expr_r.constant = self.term_r_constant
+
                         expr_r.setiid(self.constants[str(expr_r.constant)])
                         self.irGenerator.compute(block, op, expr_l, expr_r)
                         self.irGenerator.pc += 2

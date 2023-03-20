@@ -120,10 +120,10 @@ class IrGenerator:
                         self.compute(constant_block, self.createConstantToken(x[j], self.pc + 1), x_j, None,
                                      self.pc + 1)
                         x_j = ConstantResult(x[j])
-                        print("\n***** mul in for loop load")
-                        print(self.pc)
-                        print(y[i].constant)
-                        print(x_j.constant)
+                        # print("\n***** mul in for loop load")
+                        # print(self.pc)
+                        # print(y[i].constant)
+                        # print(x_j.constant)
                         self.compute(block, OperatorCode.mul, y[i], x_j)
                         z[i] = InstructionResult(self.pc)
                         self.pc = self.pc + 2
@@ -131,10 +131,10 @@ class IrGenerator:
                         constant_pc = constants[self.createConstantToken(x[j], self.pc + 1).value]
                         x_j = ConstantResult(x[j], constant_pc)
                         self.compute(block, OperatorCode.mul, y[i], x_j)
-                        print("\n***** mul in for loop load1")
-                        print(self.pc)
-                        print(y[i].constant)
-                        print(x_j.constant)
+                        # print("\n***** mul in for loop load1")
+                        # print(self.pc)
+                        # print(y[i].constant)
+                        # print(x_j.constant)
                         z[i] = InstructionResult(self.pc)
                         self.pc = self.pc + 2
                 else:
@@ -142,20 +142,20 @@ class IrGenerator:
                         constants[self.createConstantToken(x[j], self.pc + 1).value] = self.pc+1
                         x_j = ConstantResult(x[j], self.pc+1)
                         self.compute(constant_block, self.createConstantToken(x[j], self.pc + 1), x_j, None, self.pc + 1)
-                        print("\n***** mul in for loop load2")
-                        print(self.pc)
-                        print(z[i].iid)
-                        print(x_j.constant)
+                        # print("\n***** mul in for loop load2")
+                        # print(self.pc)
+                        # print(z[i].iid)
+                        # print(x_j.constant)
                         self.compute(block, OperatorCode.mul, z[i], x_j)
                         z[i] = InstructionResult(self.pc)
                         self.pc = self.pc + 2
                     else:
                         constant_pc = constants[self.createConstantToken(x[j], self.pc + 1).value]
                         x_j = ConstantResult(x[j], constant_pc)
-                        print("\n***** mul in for loop load3")
-                        print(self.pc)
-                        print(z[i].iid)
-                        print(x_j.constant)
+                        # print("\n***** mul in for loop load3")
+                        # print(self.pc)
+                        # print(z[i].iid)
+                        # print(x_j.constant)
 
                         self.compute(block, OperatorCode.mul, z[i], x_j)
                         z[i] = InstructionResult(self.pc)
@@ -182,7 +182,6 @@ class IrGenerator:
             self.pc = self.pc + 2
 
         if len(z) == 1:
-            self.pc += 1
             self.compute(block, OperatorCode.add, ConstantResult("Frame Pointer", 0), z[0])
             z[0] = InstructionResult(self.pc)
             self.pc += 2
