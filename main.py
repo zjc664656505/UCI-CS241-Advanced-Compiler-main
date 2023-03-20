@@ -178,7 +178,7 @@ if __name__ == "__main__":
     debug_mode = False
     
     if debug_mode:
-        file_dir = "./test/class_test/cbelem/array/array_with_cse_in_index.smpl"
+        file_dir = "./test/class_test/Junchen/if_in_while_1darray.txt"
         tokenize = Tokenizer(file_dir)
         sym = tokenize.getSym()
         parse = Parser(file_dir)
