@@ -251,11 +251,11 @@ class CFG:
             if len(block.instructions) == 0:
                 continue
             for id in range(len(block.instructions)):
-                print("\n****START DEBUGIING CSE******")
+                # print("\n****START DEBUGIING CSE******")
                 inst: Instruction = block.instructions[id]
-                print(f"instruction id - {id}")
-                print(f"instruction {inst.opcode}")
-                print(f"base block counter number : {self.base_block_counter}")
+                # print(f"instruction id - {id}")
+                # print(f"instruction {inst.opcode}")
+                # print(f"base block counter number : {self.base_block_counter}")
                 # begin set all instruction as not deleted
 
                 inst.deletemode = DeleteMode._NOT_DEL
@@ -303,16 +303,16 @@ class CFG:
                     inst.deletemode = DeleteMode._NOT_DEL
                     continue
                 elif inst.opcode == OperatorCode.load:
-                    print(f"current instruction is load with id {id} and instruction id {inst.id}")
-                    print(f"last instruction before load: {block.instructions[id - 1].opcode}")
+                    # print(f"current instruction is load with id {id} and instruction id {inst.id}")
+                    # print(f"last instruction before load: {block.instructions[id - 1].opcode}")
                     inst_adda: Instruction = block.instructions[id - 1]
                     if inst_adda.deletemode == DeleteMode._NOT_DEL:
                         inst.deletemode = DeleteMode._NOT_DEL
                         continue
                     # ------------------
                 elif inst.opcode == OperatorCode.store:
-                    print(f"current instruction is store with id {id} and instruction id {inst.id}")
-                    print(f"last instruction before store: {block.instructions[id-1].opcode}")
+                    # print(f"current instruction is store with id {id} and instruction id {inst.id}")
+                    # print(f"last instruction before store: {block.instructions[id-1].opcode}")
                     inst_adda: Instruction = block.instructions[id - 1]
                     inst_adda.deletemode = DeleteMode._NOT_DEL
                     inst.deletemode = DeleteMode._NOT_DEL
@@ -342,7 +342,7 @@ class CFG:
                             else:
                                 inst.operandx = inst_target_X.res_CSE
                     if isinstance(inst.operandy, InstructionResult):
-                        print(f"********\n Debug CFG {inst.operandy.iid}")
+                        # print(f"********\n Debug CFG {inst.operandy.iid}")
                         inst_target_Y = self.find_instr_from_iid(inst.operandy.iid)
                         if inst_target_Y.opcode != OperatorCode.move:
                             if inst_target_Y.deletemode == DeleteMode._NOT_DEL:
@@ -354,9 +354,9 @@ class CFG:
 
 
                 if (mark_X == False) and (mark_Y == False):
-                    print("MarkX and MarkY are false")
+                    # print("MarkX and MarkY are false")
                     for i in reversed(range(id)):
-                        print(f"***CSE sub-iteration:: {i} - {block.instructions[i].opcode}")
+                        # print(f"***CSE sub-iteration:: {i} - {block.instructions[i].opcode}")
                         inst_temp: Instruction = block.instructions[i]
 
 
@@ -406,7 +406,7 @@ class CFG:
                             if inst_temp.opcode != OperatorCode.move:
                                 continue
                             else:
-                                print("---- instruction in sub-iteration is move")
+                                # print("---- instruction in sub-iteration is move")
                                 if inst_temp.operandy.variable.address != inst.operandy.variable.address:
                                     continue
                                 else:
@@ -441,17 +441,17 @@ class CFG:
                                     else:
                                         continue
                         elif inst.opcode == OperatorCode.load:
-                            print("++++++++++instruction in sub-iteration is load!!")
+                            # print("++++++++++instruction in sub-iteration is load!!")
                             if inst_temp.opcode == OperatorCode.store:
                                 adda_temp_PC: int = i - 1
                                 if block.instructions[adda_temp_PC].opcode != OperatorCode.adda:
                                     print("adda instruction is missing")
                                 else:
-                                    print(f"++++++++ find adda in sub-iteration {adda_temp_PC} - {block.instructions[adda_temp_PC].opcode}")
-                                    print(f"temp adda operandy {block.instructions[adda_temp_PC].operandy.constant} at temp iid {adda_temp_PC}")
-                                    print(f"temp instr {block.instructions[adda_temp_PC].toString(True)}")
-                                    print(f"instr adda operandy {block.instructions[id - 1].operandy.constant} at iid {id-1}")
-                                    print(f"adda instr {block.instructions[id-1].toString(True)}")
+                                    # print(f"++++++++ find adda in sub-iteration {adda_temp_PC} - {block.instructions[adda_temp_PC].opcode}")
+                                    # print(f"temp adda operandy {block.instructions[adda_temp_PC].operandy.constant} at temp iid {adda_temp_PC}")
+                                    # print(f"temp instr {block.instructions[adda_temp_PC].toString(True)}")
+                                    # print(f"instr adda operandy {block.instructions[id - 1].operandy.constant} at iid {id-1}")
+                                    # print(f"adda instr {block.instructions[id-1].toString(True)}")
                                     if block.instructions[adda_temp_PC].operandy.constant == block.instructions[
                                         id - 1].operandy.constant:
                                         # kill current load
@@ -460,14 +460,14 @@ class CFG:
                                         mark_X = True
                                         mark_Y = True
                                         self.delete_iid.add(inst.id)
-                                        print(f"*****CSE on instr {inst.toString(True)} at iid {id-1}!!!*****")
-                                        print(f"check whether CSE is turned on -> {block.instructions[id - 1].deletemode}")
+                                        # print(f"*****CSE on instr {inst.toString(True)} at iid {id-1}!!!*****")
+                                        # print(f"check whether CSE is turned on -> {block.instructions[id - 1].deletemode}")
                                         break
                                     else:
                                         continue
                             elif (inst_temp.opcode == OperatorCode.load) and (
                                     inst_temp.deletemode == DeleteMode._NOT_DEL):
-                                print("++++++++++instruction TEMP in sub-iteration is load!!")
+                                # print("++++++++++instruction TEMP in sub-iteration is load!!")
                                 adda_temp_PC:int = i - 1
                                 if block.instructions[adda_temp_PC].opcode != OperatorCode.adda:
                                     print("adda instruction is missing")
@@ -480,8 +480,8 @@ class CFG:
                                             mark_X = True
                                             mark_Y = True
                                             self.delete_iid.add(inst.id)
-                                            print(f"*****CSE on instr {inst.toString(True)} at iid {id}!!!*****")
-                                            print(f"check whether CSE is turned on -> {inst.deletemode}")
+                                            # print(f"*****CSE on instr {inst.toString(True)} at iid {id}!!!*****")
+                                            # print(f"check whether CSE is turned on -> {inst.deletemode}")
                                             break
 
                                         else:
@@ -489,16 +489,16 @@ class CFG:
                                     else:
                                         print("wrong instruction result")
                         else:
-                            print()
-                            print("===== No move and load instruction in sub-iteration ")
-                            print(f"===== current instruction in sub-iteration {inst_temp.opcode}")
+                            # print()
+                            # print("===== No move and load instruction in sub-iteration ")
+                            # print(f"===== current instruction in sub-iteration {inst_temp.opcode}")
 
                             if inst_temp.opcode != inst.opcode:
                                 continue
                             else:
-                                print("++++++++++++++")
-                                print(f"--->  inst_temp {inst_temp.opcode} == inst {inst.opcode}")
-                                print(f"-----> inst_temp.no: {i}, inst.no: {id}")
+                                # print("++++++++++++++")
+                                # print(f"--->  inst_temp {inst_temp.opcode} == inst {inst.opcode}")
+                                # print(f"-----> inst_temp.no: {i}, inst.no: {id}")
 
 
 
@@ -540,20 +540,20 @@ class CFG:
                                     target_y = inst.operandy.iid
 
 
-                                print(f"---->>  inst xiid {target_x}, inst yiid {target_y}, inst temp_xiid {temp_x}, inst temp_yiid {temp_y}")
+                                # print(f"---->>  inst xiid {target_x}, inst yiid {target_y}, inst temp_xiid {temp_x}, inst temp_yiid {temp_y}")
 
 
                                 if (inst.opcode != OperatorCode.mul) and (inst.opcode != OperatorCode.add):
-                                    print(f"---> Instr is not mul and add. Instr {inst.opcode}")
-                                    print()
+                                    # print(f"---> Instr is not mul and add. Instr {inst.opcode}")
+                                    # print()
                                     if (temp_x == target_x) and (temp_y == target_y):
                                         if inst_temp.deletemode == DeleteMode.CSE:
                                             inst.res_CSE = inst_temp.res_CSE
                                         else:
                                             inst.res_CSE = InstructionResult(inst_temp.id)
                                         inst.deletemode = DeleteMode.CSE
-                                        print(f"*****CSE on instr {inst.toString(True)} at iid {id}!!!*****")
-                                        print(f"check whether CSE is turned on -> {inst.deletemode}")
+                                        # print(f"*****CSE on instr {inst.toString(True)} at iid {id}!!!*****")
+                                        # print(f"check whether CSE is turned on -> {inst.deletemode}")
                                         mark_X = True
                                         mark_Y = True
                                         self.delete_iid.add(inst.id)
@@ -564,13 +564,13 @@ class CFG:
                                             inst.res_CSE = inst_temp.res_CSE
                                         else:
                                             inst.res_CSE = InstructionResult(inst_temp.id)
-                                        print("2 instructions have the same iid")
+                                        # print("2 instructions have the same iid")
                                         inst.deletemode = DeleteMode.CSE
                                         mark_X = True
                                         mark_Y = True
                                         self.delete_iid.add(inst.id)
-                                        print(f"*****CSE on instr {inst.toString(True)} at iid {id}!!!*****")
-                                        print(f"check whether CSE is turned on -> {inst.deletemode}")
+                                        # print(f"*****CSE on instr {inst.toString(True)} at iid {id}!!!*****")
+                                        # print(f"check whether CSE is turned on -> {inst.deletemode}")
                                         break
                                     elif (temp_x == target_y) and (temp_y == target_x):
                                         if inst_temp.deletemode == DeleteMode.CSE:
@@ -581,13 +581,13 @@ class CFG:
                                         mark_X = True
                                         mark_Y = True
                                         self.delete_iid.add(inst.id)
-                                        print("2 instructions have the same iid with x=y and y=x")
-                                        print("*****CSE!!!*****")
+                                        # print("2 instructions have the same iid with x=y and y=x")
+                                        # print("*****CSE!!!*****")
                                         break
                                     else:
                                         continue
                 if (mark_X == True) and (mark_Y == True) or (block.id == self.base_block_counter):
-                    print("at current block!")
+                    # print("at current block!")
                     continue
                 else:
                     # need search parent block

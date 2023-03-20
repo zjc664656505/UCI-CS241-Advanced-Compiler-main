@@ -178,7 +178,7 @@ if __name__ == "__main__":
     debug_mode = False
     
     if debug_mode:
-        file_dir = "./test/class_test/Hongyu/iftests/test1.smpl"
+        file_dir = "./test/class_test/loops/print-old-and-new-variable.smpl"
         tokenize = Tokenizer(file_dir)
         sym = tokenize.getSym()
         parse = Parser(file_dir)

@@ -717,12 +717,21 @@ class Parser:
                     return InstructionResult(self.irGenerator.getPC() - 1)
                 elif self.inputSym.value == "OutputNum":
                     self.next()
+                    print("\n OutputNum is called")
                     if self.inputSym.checkSameType(TokenType.openparenToken):
                         self.next()
                         res = self.expression(block)
                         # print(f"expression type {type(res)}")
                         if res is not None:
+                            print("res is not None!")
+                            print(block.id)
+                            print(res.iid)
+                            if isinstance(res, VariableResult):
+                                print(res.variable.name)
+                                print(res.variable.version)
+                            print(f"instruction op is : {op.value}")
                             self.irGenerator.compute(block, op, res, None)
+                            print([i.toString(True) for i in block.instructions])
                             self.irGenerator.pc += 2
                         if self.inputSym.checkSameType(TokenType.closeparenToken):
                             self.next()
@@ -1036,7 +1045,7 @@ class Parser:
         for i in self.cfg.blocks:
             for j in i.instructions:
                 print(j.toString(True))
-        #print("---------------------\n")
+        print("---------------------\n")
 
 
         self.cfg.move_replace()

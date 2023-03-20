@@ -9,7 +9,7 @@ BB3 [shape=record, label="<b>BB3|{10: write (34)}"];
 BB4 [shape=record, label="<b>BB4|{12: cmp (33) (13)|14: bge (12) block:= [6]|27 : phi i27 := (33) (20)}"];
 BB5 [shape=record, label="<b>BB5|{16: write (27)|18: write (34)|20: add (3) (21)|24: write (34)|26: bra block:= [4]}"];
 BB6 [shape=record, label="<b>BB6|{28: add (3) (21)|32: bra block:= [2]}"];
-BB7 [shape=record, label="<b>BB7|{||39: end}"];
+BB7 [shape=record, label="<b>BB7|{35: write (33)|37: write (34)|39: end}"];
 }
 BB0:s -> BB1:n ;
 BB1:b -> BB2:b [color=blue, style=dotted, label="dom"];

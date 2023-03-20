@@ -91,12 +91,13 @@ class Instruction:
             else:
                 res = f"{self.id}: {self.opcode.name} {self.operandx.toString()} {self.operandy.toString()}"
         elif self.operandx is not None and self.operandy is None:
-            #print("OPERANDX IS NONE")
+            #print("OPERANDX IS not NONE")
             if flag:
                 xres = self.operandx
                 if isinstance(self.operandx, VariableResult):
                     if self.operandx.variable.version != Constants.FORMAL_PARAMETER_VERSION:
                         xres = InstructionResult(self.operandx.variable.version)
+                    res = f"{self.id}: {self.opcode.name} {xres.toString()}"
                 elif isinstance(self.operandx, ConstantResult):
                     res = f"{self.id}: {self.opcode.name} #{self.operandx.constant}"
                 else:
